@@ -23,9 +23,9 @@ using namespace std::chrono;
 int main (int argc, char *argv[] ) {
 
   auto start = high_resolution_clock::now();
-  double Lout1=0.808; //m
-  double Lout2=1.080; //m
-  double Lout3=1.173; //m
+  double Lout1=0.807892; //m
+  double Lout2=1.08048; //m
+  double Lout3=1.17334; //m
   double RFphase=0; //degree
   // command line arguments
  for(int i=1; i <argc; i++) {

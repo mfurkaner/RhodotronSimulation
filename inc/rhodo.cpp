@@ -5,6 +5,14 @@
 #include "rhodo.h"
 using namespace std;
 
+void displayHelp(){
+ cout << "This is a Rhdotron simulator. Cmdline parameters are:\n";
+ cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
+ cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
+ cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
+ cout << "-ph the RF phase (degree)\n";
+}
+
 
 //r is in mm
 //time is in ns
@@ -27,49 +35,12 @@ double dist_to_time(double dist, double vel){
   return dist/vel;
 }
 
-double bir_gecis(double r_pos, double Et, double t){
-  for(; t<SimuTime; t+=dT){
-    double vel = c*sqrt(Et*Et-E0*E0)/Et;
-    double RelBeta  = vel/c;
-    double RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
-
-    double ef=Eradial(r_pos*1000,t,RFphase*deg_to_rad); // convert position to mm
-    double acc=ef*1E6*eQMratio/(RelGamma*RelGamma*RelGamma); 
-
-    r_pos = r_pos + vel * dT*ns + 1/2*acc*(dT*ns)*(dT*ns);
-    vel=vel+acc*dT*ns;
-    RelBeta  = vel/c;
-    RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
-    Et=RelGamma*E0; 
-  }
-  return Et;
-}
-
-double gecis(double r_pos, double Et, double &t){
-
-  for(; r_pos >= -R2 && r_pos <= R2 ; t+=dT){
-    double vel = c*sqrt(Et*Et-E0*E0)/Et;
-    double RelBeta  = vel/c;
-    double RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
-
-    double ef=Eradial(r_pos*1000,t,RFphase*deg_to_rad); // convert position to mm
-    double acc=ef*1E6*eQMratio/(RelGamma*RelGamma*RelGamma); 
-
-    r_pos = r_pos + vel * dT*ns + 1/2*acc*(dT*ns)*(dT*ns);
-    vel=vel+acc*dT*ns;
-    RelBeta  = vel/c;
-    RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
-    Et=RelGamma*E0; 
-  }
-  return Et;
-}
-
-
+//---------------------------------electron functions
 double Electron::get_vel(){
     return c*sqrt(Et*Et-E0*E0)/Et;
 }
 
-double Electron::get_travel_time(double dist){
+double Electron::get_travel_time(double dist){  // calculate drift time
     return dist/get_vel();
 }
 
@@ -97,10 +68,7 @@ void Electron::e_gecis(double &t){
     }
     enerjiler.push_back(Et);
 }
-
-
-
-
+//---------------------------bunch
 void Bunch::reset_pos(){
     for(int i = 0; i < e_count ; i++){
         e[i].r_pos = -R2;
@@ -134,7 +102,7 @@ void Bunch::bunch_gecis_t(double &t_delay_of_max){
 
 void Bunch::bunch_gecis_d(double dist_out){
     if( pass_count ){
-      bunch_nth_gecis_d(dist_out/ns);
+      bunch_nth_gecis_d(dist_out/ns);   // convert to nm
       max_energy_rms_pair me_rms;
       me_rms.first = e[index_fastest].Et - E0;
       me_rms.second = E_rms();
@@ -149,6 +117,7 @@ void Bunch::bunch_ilk_gecis(double &t){
     for(int i = 0 ; i < e_count ; i++){
         t_e[i] = t + i * ns_between;
         tpair.first = t_e[i];
+        e[i].RFphase=RFphase_bunch;
         e[i].e_gecis(t_e[i]);
         tpair.second = t_e[i];
         e[i].t_giris_cikis.push_back(tpair);
@@ -183,13 +152,13 @@ void Bunch::bunch_nth_gecis_t(double t_delay_of_max){
   pass_count++;
 }
 
-void Bunch::bunch_nth_gecis_d(double dist_out){
+void Bunch::bunch_nth_gecis_d(double dist_out){ // distance must be in nm
   double t_e[e_count];
   giris_cikis_tpair tpair;
   double emax = 0;
   for(int i = 0 ; i < e_count ; i++){
-    // bir elektronun giriş zamanı = kaviteden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
-    t_e[i] = e[i].t_giris_cikis.at(pass_count-1).second + e[i].get_travel_time(dist_out);
+    // bir elektronun giriş zamanı = bir öncekinden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
+    t_e[i] = e[i].t_giris_cikis.at(pass_count-1).second + e[i].get_travel_time(dist_out); // units are ns
     tpair.first = t_e[i];
     e[i].e_gecis(t_e[i]);
     tpair.second = t_e[i];

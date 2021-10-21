@@ -35,7 +35,7 @@ double dist_to_time(double dist, double vel){
   return dist/vel;
 }
 
-//---------------------------------electron functions
+#pragma region ELECTRON
 double Electron::get_vel(){
     return c*sqrt(Et*Et-E0*E0)/Et;
 }
@@ -68,7 +68,10 @@ void Electron::e_gecis(double &t){
     }
     enerjiler.push_back(Et);
 }
+#pragma endregion
+
 //---------------------------bunch
+#pragma region BUNCH
 void Bunch::reset_pos(){
     for(int i = 0; i < e_count ; i++){
         e[i].r_pos = -R2;
@@ -186,3 +189,5 @@ double Bunch::E_rms(){
   }
   return sqrt(result/e_count);
 }
+
+#pragma endregion

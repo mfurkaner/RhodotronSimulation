@@ -46,14 +46,14 @@ int main (int argc, char *argv[] ) {
   
   cout<<endl<< "Gecis 1) " ; bunch.print_summary();
   bunch.reset_pos();
-  bunch.bunch_gecis_d(0.807892);
+  bunch.bunch_gecis_d(Lout1);
   cout<<endl<< "Gecis 2) " ; bunch.print_summary();
   bunch.reset_pos();
-  bunch.bunch_gecis_d(1.08048);
+  bunch.bunch_gecis_d(Lout2);
   cout<<endl<< "Gecis 3) " ; bunch.print_summary();
   bunch.reset_pos();
-  bunch.bunch_gecis_d(1.17334);
-  cout<<endl<< "Gecis 3) " ; bunch.print_summary();
+  bunch.bunch_gecis_d(Lout3);
+  cout<<endl<< "Gecis 4) " ; bunch.print_summary();
   
 /*
  #pragma region MAGNET_OPT

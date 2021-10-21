@@ -49,6 +49,7 @@ double bir_gecis(double r_pos, double Et, double t);
 
 double gecis(double r_pos, double Et, double &t);
 
+void displayHelp();
 
 
 typedef pair<double, double> giris_cikis_tpair;

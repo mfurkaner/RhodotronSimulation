@@ -21,9 +21,16 @@ using namespace std::chrono;
 int main (int argc, char *argv[] ) {
 
   auto start = high_resolution_clock::now();
+  double Lout1=0.808;
+  // command line arguments
+ for(int i=1; i <argc; i++) {
+  if        (std::string(argv[i]) == "-h")  { displayHelp(); exit(0);
+  } else if (std::string(argv[i]) == "-L1") { Lout1=atof(argv[i + 1] );
+  }
+ }
+
 
   Bunch bunch;
-
   double t = 0;
   
   bunch.bunch_gecis_t(t);
@@ -84,13 +91,15 @@ int main (int argc, char *argv[] ) {
   cout << "Optimum second out path = " << p2_path << "m with max energy : " << emax2 << " MeV" <<  endl;
   cout << "Optimum third out path = " << p3_path << "m with max energy : " << emax3 << " MeV" <<  endl;
   */
-  bunch.bunch_gecis_d(0.808);
+//  bunch.bunch_gecis_d(0.808);
+  bunch.bunch_gecis_d(Lout1);
+
   //bunch.print_bunch_info();
   cout<<endl<< "Gecis 2) Electron with the most energy : " << bunch.index_fastest + 1 << ") " << bunch.emax_rms.at(bunch.pass_count-1).first << " MeV,\tRMS of bunch : " << bunch.emax_rms.at(bunch.pass_count-1).second << " MeV" << endl;
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
-  cout << "Simulation finished in : " << duration.count() << " mus" << endl;
+  cout << "Simulation finished in : " << duration.count() << " us" << endl;
 
   return 0;
 }

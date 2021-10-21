@@ -1,10 +1,12 @@
-#include "inc/rhodo.h"
 #include <iostream>
 #include <iomanip>
 #include <fstream>
 #include <cstdlib>
 #include <string.h>
 #include <chrono>
+
+#include "inc/rhodo.h"
+
 
 
 using namespace std;
@@ -35,7 +37,6 @@ int main (int argc, char *argv[] ) {
   }
  }
 
-
   Bunch bunch(RFphase);
   double t = 0;
   
@@ -43,7 +44,29 @@ int main (int argc, char *argv[] ) {
   t = bunch.e[bunch.index_fastest].t_giris_cikis.at(0).second;
   double vel_max = bunch.e[bunch.index_fastest].get_vel();
   
+  #pragma region L2_OPT
   
+  bunch.reset_pos();
+  bunch.bunch_gecis_d(Lout1);
+  bunch.reset_pos();
+  Bunch dummy, max;
+  double emax = 0, d_opt;
+  for(double i = 0.8; i<1.2 ; i+=dD){
+    dummy = bunch;
+    dummy.bunch_gecis_d(i);
+    if( emax < dummy.e[dummy.index_fastest].Et ){
+      emax = dummy.e[dummy.index_fastest].Et;
+      max = dummy;
+      d_opt = i;
+    }
+  }
+  max.print_summary();
+  cout << "For L1 : " << Lout1 << " m, L2opt : " << d_opt << " m";
+  
+  #pragma endregion
+
+  #pragma region SUMMARY
+  /*
   cout<<endl<< "Gecis 1) " ; bunch.print_summary();
   bunch.reset_pos();
   bunch.bunch_gecis_d(Lout1);
@@ -54,9 +77,19 @@ int main (int argc, char *argv[] ) {
   bunch.reset_pos();
   bunch.bunch_gecis_d(Lout3);
   cout<<endl<< "Gecis 4) " ; bunch.print_summary();
-  
+
+  pair<double, double> Lout1_pair = distout_to_Lrho_pair(Lout1);
+  pair<double, double> Lout2_pair = distout_to_Lrho_pair(Lout2);
+  cout << std::setprecision(4) << endl;
+  cout << "For the first magnet : " << Lout1 <<" m, magnet guide : " << Lout1_pair.first << " m, rho : " << Lout1_pair.second << " m"<< endl;
+  cout << "For the second magnet : " << Lout2 <<" m, magnet guide : " << Lout2_pair.first << " m, rho : " << Lout2_pair.second << " m"<< endl;
+
+  t = bunch.e[bunch.e_count - 1].t_giris_cikis.at(bunch.pass_count - 1).second;
+  */
+  #pragma endregion
+
+  #pragma region MAGNET_OPT
 /*
- #pragma region MAGNET_OPT
   Bunch dummy, max;
   double emax, t_opt;
   bunch.reset_pos();
@@ -110,11 +143,15 @@ int main (int argc, char *argv[] ) {
   cout << "Optimum third out path = " << p3_path << " m with max energy : " << emax3 << " MeV" <<  endl;
   
   max.print_summary();
-#pragma endregion
 */
+#pragma endregion
+
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
-  cout << "Simulation finished in : " << duration.count() << " us" << endl;
+  cout << std::setprecision(4);
+  cout << endl << "Total steps calculated : " << STEPS_TAKEN << endl;
+  cout << "Simulation total run time : " << t << " ns" << endl;
+  cout << "Simulation finished in : " << duration.count() << " us" << endl << endl;
 
   return 0;
 }

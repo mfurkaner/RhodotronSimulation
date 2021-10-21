@@ -4,6 +4,7 @@
 #include <iomanip>
 #include "rhodo.h"
 using namespace std;
+int STEPS_TAKEN = 0;
 
 void displayHelp(){
  cout << "This is a Rhdotron simulator. Cmdline parameters are:\n";
@@ -33,6 +34,15 @@ double vel_to_dist(double vel, double t){
 
 double dist_to_time(double dist, double vel){
   return dist/vel;
+}
+
+pair<double, double> distout_to_Lrho_pair( double dist_out ){
+  pair<double, double> L_rho;
+  double mag_guide = (dist_out - R2*(M_PI + 2*MAGNET_ROTATION_R)*tan(MAGNET_ROTATION_R)) / (2 + tan(MAGNET_ROTATION_R)*(M_PI + 2*MAGNET_ROTATION_R) ) ;
+  double rho = (dist_out - 2*mag_guide) / (M_PI + 2*MAGNET_ROTATION_R);
+  L_rho.first = mag_guide;
+  L_rho.second = rho;
+  return L_rho;
 }
 
 #pragma region ELECTRON
@@ -65,6 +75,7 @@ void Electron::e_gecis(double &t){
         RelBeta  = vel/c;
         RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
         Et=RelGamma*E0; 
+        STEPS_TAKEN++;
     }
     enerjiler.push_back(Et);
 }

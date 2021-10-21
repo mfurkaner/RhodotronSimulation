@@ -1,20 +1,23 @@
-
 #include <math.h>
 #include <vector>
 #include <iostream>
 #include <iomanip>
 using namespace std;
 
+#define RHODO_H
+
 const double c = 2.99792458e8; //m/s
 const double E0=0.511;  // MeV
 const double ns=1E-9; //ns conversion
 
-const double deg_to_rad = 0.01745;
+//const double deg_to_rad = 0.01745;
+extern int STEPS_TAKEN;
 
 const double emass = 9.10938356e-31;  // kg
 const double echarge = 1.60217662e-19; //coulomb
 const double eQMratio = -1.75882e11; // C/kg
 
+#define deg_to_rad  0.01745
 
 #define Emax 0.960000 // MVolts/m
 #define freq 107.5    // MHz
@@ -25,6 +28,9 @@ const double eQMratio = -1.75882e11; // C/kg
 #define SimuTime 10   // ns
 #define Emax_pos 200 // mm (Emax radial position)
 
+#define MAGNET_ROTATION 5.0 //degrees
+#define MAGNET_ROTATION_R MAGNET_ROTATION*deg_to_rad
+
 #define L1 0.4        // m (distance to first magnet)
 #define Rho1 0.23     // m (radius of the first magnet)
 
@@ -32,6 +38,7 @@ const double eQMratio = -1.75882e11; // C/kg
 #define Rho2 0.23     // m (radius of the second magnet)
 
 #define dT_out 0.01    // ns
+#define dD 0.001       // m
 
 #define NUM_OF_ELECTRONS    50
 #define GUN_ACTIVE_TIME     1.0 // ns
@@ -47,6 +54,8 @@ double dist_to_time(double dist, double vel);
 double bir_gecis(double r_pos, double Et, double t);
 
 double gecis(double r_pos, double Et, double &t);
+
+pair<double, double> distout_to_Lrho_pair( double dist_out );
 
 void displayHelp();
 

@@ -25,7 +25,6 @@ int main (int argc, char *argv[] ) {
   double r_pos, vel;
   double Relbeta;
 
-  double dist=R2-R1;
   double Et=E0 + Ein/1000; // total energy in MeV
   r_pos=-R2;
 
@@ -74,11 +73,9 @@ double Eradial(double r, double time, double phase){
 
   double E_zero = sin(w*time+phase)*Emax*Emax_pos/r;
 
-  double res=( r < -R1*1000 && r > -R2*1000 ) ? E_zero : 0;
-
-  if( !res ){
-    res += ( r < R2*1000 && r > R1*1000 ) ? E_zero : 0;
-  }
+//  double res=( r < -R1*1000 && r > -R2*1000 ) ? E_zero : 0;
+  double res=( r < -R1*1000) *(r > -R2*1000 ) * E_zero;
+       res +=( r <  R2*1000) *(r >  R1*1000 ) * E_zero ;
 
   return res;
 }

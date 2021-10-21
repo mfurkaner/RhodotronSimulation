@@ -19,7 +19,6 @@ const double eQMratio = -1.75882e11; // C/kg
 #define Emax 0.960000 // MVolts/m
 #define freq 107.5    // MHz
 #define Ein 40.0      // KeV
-#define RFphase 0    // degree
 #define dT 0.001        // ns
 #define R1 0.1882     // m
 #define R2 0.753      // m
@@ -58,6 +57,7 @@ class Electron{
 public:
     double Et = E0 + Ein/1000;
     double r_pos = -R2;
+    double RFphase=0;
     vector< double > enerjiler;
     vector< giris_cikis_tpair > t_giris_cikis;
 
@@ -74,6 +74,8 @@ typedef pair<double, double> max_energy_rms_pair;
 
 class Bunch{
 public:
+    Bunch( ){RFphase_bunch=0;}
+    Bunch( double d ){RFphase_bunch=d;} 
     Electron e[NUM_OF_ELECTRONS];
     int e_count = NUM_OF_ELECTRONS;
     double initial_length_ns = GUN_ACTIVE_TIME;
@@ -90,6 +92,7 @@ public:
     void bunch_gecis_t(double &t_delay_of_max);
     void bunch_gecis_d(double dist_out);
 private:
+    double RFphase_bunch;
     void bunch_ilk_gecis(double &t);
     void bunch_nth_gecis_t(double t_delay_of_max);
     void bunch_nth_gecis_d(double dist_out);

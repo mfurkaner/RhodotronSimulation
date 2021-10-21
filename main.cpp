@@ -21,16 +21,22 @@ using namespace std::chrono;
 int main (int argc, char *argv[] ) {
 
   auto start = high_resolution_clock::now();
-  double Lout1=0.808;
+  double Lout1=0.808; //m
+  double Lout2=1.080; //m
+  double Lout3=1.173; //m
+  double RFphase=0; //degree
   // command line arguments
  for(int i=1; i <argc; i++) {
   if        (std::string(argv[i]) == "-h")  { displayHelp(); exit(0);
   } else if (std::string(argv[i]) == "-L1") { Lout1=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-L2") { Lout2=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-L3") { Lout3=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-ph") { RFphase=atof(argv[i + 1] );
   }
  }
 
 
-  Bunch bunch;
+  Bunch bunch(RFphase);
   double t = 0;
   
   bunch.bunch_gecis_t(t);

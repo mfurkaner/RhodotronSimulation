@@ -7,7 +7,10 @@ using namespace std;
 
 void displayHelp(){
  cout << "This is a Rhdotron simulator. Cmdline parameters are:\n";
- cout << "-L1  the total distance outside cavity after traverse 1 (m)\n";
+ cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
+ cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
+ cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
+ cout << "-ph the RF phase (degree)\n";
 }
 
 
@@ -65,7 +68,7 @@ void Electron::e_gecis(double &t){
     }
     enerjiler.push_back(Et);
 }
-
+//---------------------------bunch
 void Bunch::reset_pos(){
     for(int i = 0; i < e_count ; i++){
         e[i].r_pos = -R2;
@@ -114,6 +117,7 @@ void Bunch::bunch_ilk_gecis(double &t){
     for(int i = 0 ; i < e_count ; i++){
         t_e[i] = t + i * ns_between;
         tpair.first = t_e[i];
+        e[i].RFphase=RFphase_bunch;
         e[i].e_gecis(t_e[i]);
         tpair.second = t_e[i];
         e[i].t_giris_cikis.push_back(tpair);

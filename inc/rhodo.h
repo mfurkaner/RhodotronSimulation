@@ -69,6 +69,8 @@ public:
     void e_gecis(double &t);
 };
 
+typedef pair<double, double> max_energy_rms_pair;
+
 class Bunch{
 public:
     Electron e[NUM_OF_ELECTRONS];
@@ -77,11 +79,17 @@ public:
     double ns_between = TIME_BETWEEN_ELECTRONS;
     int index_fastest = 0;
     int pass_count = 0;
+    vector < max_energy_rms_pair > emax_rms;
 
+    double E_ave();
+    double E_rms();
     void reset_pos();
     void print_bunch_info();
-    void bunch_gecis(double &t_delay_of_max);
+    void print_summary();
+    void bunch_gecis_t(double &t_delay_of_max);
+    void bunch_gecis_d(double dist_out);
 private:
     void bunch_ilk_gecis(double &t);
-    void bunch_nth_gecis(double t_delay_of_max);
+    void bunch_nth_gecis_t(double t_delay_of_max);
+    void bunch_nth_gecis_d(double dist_out);
 };

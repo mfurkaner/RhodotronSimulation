@@ -26,18 +26,19 @@ int main (int argc, char *argv[] ) {
 
   double t = 0;
   
-  bunch.bunch_gecis(t);
+  bunch.bunch_gecis_t(t);
   t = bunch.e[bunch.index_fastest].t_giris_cikis.at(0).second;
   double vel_max = bunch.e[bunch.index_fastest].get_vel();
-  
+  cout<<endl<< "Gecis 1) Electron with the most energy : " << bunch.index_fastest + 1 << ") " << bunch.emax_rms.at(bunch.pass_count-1).first << " MeV,\tRMS of bunch : " << bunch.emax_rms.at(bunch.pass_count-1).second << " MeV" << endl;
   bunch.reset_pos();
+
 
   Bunch dummy, max;
   double emax, t_opt;
-
+/*
   for(double i = 2; i < 9 ; i+=dT_out ){
     dummy = bunch;
-    dummy.bunch_gecis(i);
+    dummy.bunch_gecis_t(i);
     if( emax < dummy.e[dummy.index_fastest].Et ){
       emax = dummy.e[dummy.index_fastest].Et;
       max = dummy;
@@ -52,7 +53,7 @@ int main (int argc, char *argv[] ) {
 
   for(double i = 2; i < 9 ; i+=dT_out ){
     dummy = bunch;
-    dummy.bunch_gecis(i);
+    dummy.bunch_gecis_t(i);
     if( emax < dummy.e[dummy.index_fastest].Et ){
       emax = dummy.e[dummy.index_fastest].Et;
       max = dummy;
@@ -67,7 +68,7 @@ int main (int argc, char *argv[] ) {
 
   for(double i = 2; i < 9 ; i+=dT_out ){
     dummy = bunch;
-    dummy.bunch_gecis(i);
+    dummy.bunch_gecis_t(i);
     if( emax < dummy.e[dummy.index_fastest].Et ){
       emax = dummy.e[dummy.index_fastest].Et;
       max = dummy;
@@ -75,15 +76,17 @@ int main (int argc, char *argv[] ) {
     }
   }
 
+
   double p3_path = vel_to_dist(vel_max, t_opt)*ns ;
   double emax3 = emax - E0;
 
   cout << "Optimum first out path = " << p1_path << "m with max energy : " << emax1 << " MeV" <<  endl;
   cout << "Optimum second out path = " << p2_path << "m with max energy : " << emax2 << " MeV" <<  endl;
   cout << "Optimum third out path = " << p3_path << "m with max energy : " << emax3 << " MeV" <<  endl;
-  
-  cout << endl << endl;
-  max.print_bunch_info();
+  */
+  bunch.bunch_gecis_d(0.808);
+  //bunch.print_bunch_info();
+  cout<<endl<< "Gecis 2) Electron with the most energy : " << bunch.index_fastest + 1 << ") " << bunch.emax_rms.at(bunch.pass_count-1).first << " MeV,\tRMS of bunch : " << bunch.emax_rms.at(bunch.pass_count-1).second << " MeV" << endl;
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);

@@ -111,16 +111,35 @@ void Bunch::print_bunch_info(){
     cout<<std::setprecision(4);
     for(int i = 0; i < e_count;i++){
         if( i == index_fastest ){
-        cout << "**\t";
+        cout << "** ";
         }
         cout << "Electron " << i+1 << ":" << endl;
         e[i].print_electron_info();
     }
+    cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << "MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
 }
 
-void Bunch::bunch_gecis(double &t_delay_of_max){
-    bool isFirstPass = this->pass_count == 0;
-    isFirstPass ? this->bunch_ilk_gecis(t_delay_of_max) : this->bunch_nth_gecis(t_delay_of_max);
+void Bunch::print_summary(){
+  cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << "MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
+}
+
+void Bunch::bunch_gecis_t(double &t_delay_of_max){
+    bool isFirstPass = pass_count == 0;
+    isFirstPass ? bunch_ilk_gecis(t_delay_of_max) : bunch_nth_gecis_t(t_delay_of_max);
+    max_energy_rms_pair me_rms;
+    me_rms.first = e[index_fastest].Et - E0;
+    me_rms.second = E_rms();
+    emax_rms.push_back( me_rms );
+}
+
+void Bunch::bunch_gecis_d(double dist_out){
+    if( pass_count ){
+      bunch_nth_gecis_d(dist_out/ns);
+      max_energy_rms_pair me_rms;
+      me_rms.first = e[index_fastest].Et - E0;
+      me_rms.second = E_rms();
+      emax_rms.push_back( me_rms );
+    }
 }
 
 void Bunch::bunch_ilk_gecis(double &t){
@@ -142,7 +161,7 @@ void Bunch::bunch_ilk_gecis(double &t){
 }
 
 // ilk geçiş için bu kullanılmayacak. for loop içerisinde pass_count kontrolü yok
-void Bunch::bunch_nth_gecis(double t_delay_of_max){
+void Bunch::bunch_nth_gecis_t(double t_delay_of_max){
   double t_e[e_count];
   giris_cikis_tpair tpair;
   double emax = 0;
@@ -162,4 +181,41 @@ void Bunch::bunch_nth_gecis(double t_delay_of_max){
     }
   }
   pass_count++;
+}
+
+void Bunch::bunch_nth_gecis_d(double dist_out){
+  double t_e[e_count];
+  giris_cikis_tpair tpair;
+  double emax = 0;
+  // find the distance bunch needs to travel out of the cavity given the delay of the peak energy electron
+
+  for(int i = 0 ; i < e_count ; i++){
+    // bir elektronun giriş zamanı = bir öncekinden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
+    t_e[i] = e[i].t_giris_cikis.at(pass_count-1).second + e[i].get_travel_time(dist_out);
+    tpair.first = t_e[i];
+    e[i].e_gecis(t_e[i]);
+    tpair.second = t_e[i];
+    e[i].t_giris_cikis.push_back(tpair);
+    if(emax < e[i].Et){
+      emax = e[i].Et;
+      index_fastest = i;
+    }
+  }
+  pass_count++;
+}
+
+double Bunch::E_ave(){
+  double result = 0;
+  for(int i = 0; i < e_count ; i++){
+    result += e[i].Et - E0;
+  }
+  return result/e_count;
+}
+
+double Bunch::E_rms(){
+  double result = 0;
+  for(int i = 0; i < e_count ; i++){
+    result += (e[i].Et - E0 - E_ave()) * (e[i].Et - E0 - E_ave());
+  }
+  return sqrt(result/e_count);
 }

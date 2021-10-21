@@ -1,6 +1,8 @@
 
 #include <math.h>
 #include <vector>
+#include <iostream>
+#include <iomanip>
 using namespace std;
 
 const double c = 2.99792458e8; //m/s
@@ -37,16 +39,34 @@ const double eQMratio = -1.75882e11; // C/kg
 
 #define TIME_BETWEEN_ELECTRONS GUN_ACTIVE_TIME/(NUM_OF_ELECTRONS - 1)
 
+double Eradial(double r, double time, double phase);
+
+double vel_to_dist(double vel, double t);
+
+double dist_to_time(double dist, double vel);
+
+double bir_gecis(double r_pos, double Et, double t);
+
+double gecis(double r_pos, double Et, double &t);
+
+
+
 typedef pair<double, double> giris_cikis_tpair;
 
 class Electron{
 public:
     double Et = E0 + Ein/1000;
     double r_pos = -R2;
+    vector< double > enerjiler;
     vector< giris_cikis_tpair > t_giris_cikis;
-    double get_vel(){
-        return c*sqrt(Et*Et-E0*E0)/Et;
-    }
+
+    double get_vel();
+
+    double get_travel_time(double dist);
+
+    void print_electron_info();
+
+    void e_gecis(double &t);
 };
 
 class Bunch{
@@ -55,4 +75,13 @@ public:
     int e_count = NUM_OF_ELECTRONS;
     double initial_length_ns = GUN_ACTIVE_TIME;
     double ns_between = TIME_BETWEEN_ELECTRONS;
+    int index_fastest = 0;
+    int pass_count = 0;
+
+    void reset_pos();
+    void print_bunch_info();
+    void bunch_gecis(double &t_delay_of_max);
+private:
+    void bunch_ilk_gecis(double &t);
+    void bunch_nth_gecis(double t_delay_of_max);
 };

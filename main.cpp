@@ -165,7 +165,7 @@ Bunch bunch_gecis(Bunch bunch, double &t, int gecisSayisi){
 void print_electron_info(Electron e){
   cout<<std::setprecision(4);
   for(int i = 0; i < e.t_giris_cikis.size() ; i++ ){
-    cout << endl << "\tGecis " << i+1 << ") " << "Enerji : " << e.Et-E0 << " ns, giris zamani : " << e.t_giris_cikis.at(i).first << " ns, cikis zamani : " << e.t_giris_cikis.at(i).second << " ns"<<endl;
+    cout << "\tGecis " << i+1 << ") " << "Enerji : " << e.Et-E0 << " ns, giris zamani : " << e.t_giris_cikis.at(i).first << " ns, cikis zamani : " << e.t_giris_cikis.at(i).second << " ns"<<endl;
   }
 }
 

@@ -33,6 +33,7 @@ const double eQMratio = -1.75882e11; // C/kg
 #define Rho2 0.23     // m (radius of the second magnet)
 
 #define dT_out 0.01    // ns
+#define dD_out 
 
 #define NUM_OF_ELECTRONS    50
 #define GUN_ACTIVE_TIME     1.0 // ns
@@ -41,7 +42,7 @@ const double eQMratio = -1.75882e11; // C/kg
 
 double Eradial(double r, double time, double phase);
 
-double vel_to_dist(double vel, double t);
+double vel_to_dist(double vel, double t);   // returns nm
 
 double dist_to_time(double dist, double vel);
 
@@ -61,11 +62,8 @@ public:
     vector< giris_cikis_tpair > t_giris_cikis;
 
     double get_vel();
-
     double get_travel_time(double dist);
-
     void print_electron_info();
-
     void e_gecis(double &t);
 };
 

@@ -116,11 +116,11 @@ void Bunch::print_bunch_info(){
         cout << "Electron " << i+1 << ":" << endl;
         e[i].print_electron_info();
     }
-    cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << "MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
+    cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << " MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
 }
 
 void Bunch::print_summary(){
-  cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << "MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
+  cout << "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << " MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
 }
 
 void Bunch::bunch_gecis_t(double &t_delay_of_max){
@@ -169,7 +169,7 @@ void Bunch::bunch_nth_gecis_t(double t_delay_of_max){
   double dist_out = vel_to_dist(e[index_fastest].get_vel(), t_delay_of_max);
 
   for(int i = 0 ; i < e_count ; i++){
-    // bir elektronun giriş zamanı = bir öncekinden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
+    // bir elektronun giriş zamanı = kaviteden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
     t_e[i] = e[i].t_giris_cikis.at(pass_count-1).second + e[i].get_travel_time(dist_out);
     tpair.first = t_e[i];
     e[i].e_gecis(t_e[i]);
@@ -187,10 +187,8 @@ void Bunch::bunch_nth_gecis_d(double dist_out){
   double t_e[e_count];
   giris_cikis_tpair tpair;
   double emax = 0;
-  // find the distance bunch needs to travel out of the cavity given the delay of the peak energy electron
-
   for(int i = 0 ; i < e_count ; i++){
-    // bir elektronun giriş zamanı = bir öncekinden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
+    // bir elektronun giriş zamanı = kaviteden çıkış zamanı + dışarıdaki yolda geçirdiği zaman
     t_e[i] = e[i].t_giris_cikis.at(pass_count-1).second + e[i].get_travel_time(dist_out);
     tpair.first = t_e[i];
     e[i].e_gecis(t_e[i]);

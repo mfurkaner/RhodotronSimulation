@@ -5,13 +5,20 @@
 #include "rhodo.h"
 using namespace std;
 int STEPS_TAKEN = 0;
+double GUN_ACTIVE_TIME = 1.0;
 
 void displayHelp(){
- cout << "This is a Rhdotron simulator. Cmdline parameters are:\n";
+ cout << "\nThis is a Rhodotron simulator. Cmdline parameters are:\n\n";
  cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
  cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
  cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
  cout << "-ph the RF phase (degree)\n";
+ cout << "-gt the gun active time (ns)\n";
+ cout << "-phopt find the optimal phase lag (degree) -d to get details\n";
+ cout << "-magopt get the optimal outside path geometry. Argument is number of magnets\n";
+ cout << "-l2opt get the optimal second magnet geometry\n";
+ cout << "-sum get the summary of the current settings\n";
+ cout << endl;
 }
 
 
@@ -44,6 +51,112 @@ pair<double, double> distout_to_Lrho_pair( double dist_out ){
   L_rho.second = rho;
   return L_rho;
 }
+
+int phase_opt(double Lout1, double Lout2, bool detail){
+    double minrms = 1;
+    int opt_phase;
+    for(int RFphase = -PHASE_SWEEP; RFphase <= PHASE_SWEEP; RFphase++){
+      Bunch bunch1(RFphase);
+      double t1 = 0;
+      bunch1.bunch_gecis_t(t1);
+      bunch1.reset_pos();
+      if(detail){
+        cout << "phase lag : " << RFphase << endl;
+        cout<< "Gecis 1) " ; bunch1.print_summary();
+      }
+      bunch1.reset_pos();
+      bunch1.bunch_gecis_d(Lout1);
+      if(detail){
+        cout<< "Gecis 2) " ; bunch1.print_summary();
+      }
+      bunch1.reset_pos();
+      bunch1.bunch_gecis_d(Lout2);
+      if(detail){
+        cout<< "Gecis 3) " ; bunch1.print_summary(); cout << endl << endl;
+      }
+      if( bunch1.E_rms() < minrms ){
+        minrms = bunch1.E_rms();
+        opt_phase = RFphase;
+      }
+    }
+    cout << setprecision(4) << endl;
+    cout << "Optimal phase with the least RMS ( " << minrms << " MeV) after third pass : " << opt_phase << endl;
+    return opt_phase;
+}
+
+int phase_opt(double Lout1, double Lout2, double Lout3, bool detail){
+    double minrms = 1;
+    int opt_phase;
+    for(int RFphase = -PHASE_SWEEP; RFphase <= PHASE_SWEEP; RFphase++){
+      Bunch bunch1(RFphase);
+      double t1 = 0;
+      bunch1.bunch_gecis_t(t1);
+      bunch1.reset_pos();
+      if(detail){
+        cout << "phase lag : " << RFphase << endl;
+        cout<< "Gecis 1) " ; bunch1.print_summary();
+      }
+      bunch1.reset_pos();
+      bunch1.bunch_gecis_d(Lout1);
+      if(detail){
+        cout<< "Gecis 2) " ; bunch1.print_summary();
+      }
+      bunch1.reset_pos();
+      bunch1.bunch_gecis_d(Lout2);
+      if(detail){
+        cout<< "Gecis 3) " ; bunch1.print_summary();
+      }
+      bunch1.reset_pos();
+      bunch1.bunch_gecis_d(Lout3);
+      if(detail){
+        cout<< "Gecis 4) " ; bunch1.print_summary(); cout << endl << endl;
+      }
+      if( bunch1.E_rms() < minrms ){
+        minrms = bunch1.E_rms();
+        opt_phase = RFphase;
+      }
+    }
+    cout << setprecision(4) << endl;
+    cout << "Optimal phase with the least RMS ( " << minrms << " MeV) after third pass : " << opt_phase << endl;
+    return opt_phase;
+}
+
+vector<double> mag_opt(double RFphase, int magcount){
+  Bunch dummy, bunch(RFphase), max;
+  double emax = 0, t_opt = 0, vel_max;
+  bunch.bunch_gecis_t(t_opt);
+  bunch.reset_pos();
+  vector<double> path;
+  for(int j = 0 ; j < magcount ; j++){
+    vel_max = bunch.e[bunch.index_fastest].get_vel();
+    for(double i = 2; i < 9 ; i+=dT_out ){
+      dummy = bunch;
+      dummy.bunch_gecis_t(i);
+      if( emax < dummy.e[dummy.index_fastest].Et ){
+        emax = dummy.e[dummy.index_fastest].Et;
+        max = dummy;
+        t_opt = i;
+      }
+    }
+    bunch = max;
+    bunch.reset_pos();
+    path.push_back( vel_to_dist(vel_max, t_opt)*ns );
+  }
+
+  for(int j = 0; j < magcount ; j++){
+    cout << std::setprecision(4) << endl;
+    pair<double, double> Lpair = distout_to_Lrho_pair(path.at(j));
+    cout << "For the " << j+1 << "th magnet:\nOptimum out path = " << path.at(j) << " m" << endl;
+    cout << "Magnet guide = " << Lpair.first;
+    cout << " m\nRho = " << Lpair.second << " m"<< endl;
+    cout <<  "Max energy = " << bunch.emax_rms.at(j).first;
+    cout << " MeV\nRMS = " << bunch.emax_rms.at(j).second << " MeV" << endl;
+  }
+  cout << endl;
+  bunch.print_summary();
+  return path;
+}
+
 
 #pragma region ELECTRON
 double Electron::get_vel(){
@@ -121,6 +234,9 @@ void Bunch::bunch_gecis_d(double dist_out){
       me_rms.first = e[index_fastest].Et - E0;
       me_rms.second = E_rms();
       emax_rms.push_back( me_rms );
+    }
+    else{
+      cerr << "CANNOT USE -bunch_gecis_d- FOR THE FIRST PASS!" << endl;
     }
 }
 

@@ -12,6 +12,7 @@ const double ns=1E-9; //ns conversion
 
 //const double deg_to_rad = 0.01745;
 extern int STEPS_TAKEN;
+extern double GUN_ACTIVE_TIME; // ns
 
 const double emass = 9.10938356e-31;    // kg
 const double echarge = 1.60217662e-19;  //coulomb
@@ -31,17 +32,12 @@ const double eQMratio = -1.75882e11;    // C/kg
 #define MAGNET_ROTATION 5.0 //degrees
 #define MAGNET_ROTATION_R MAGNET_ROTATION*deg_to_rad
 
-#define L1 0.4        // m (distance to first magnet)
-#define Rho1 0.23     // m (radius of the first magnet)
-
-#define L2 0.4        // m (distance to second magnet)
-#define Rho2 0.23     // m (radius of the second magnet)
-
 #define dT_out 0.01    // ns
 #define dD 0.001       // m
+#define PHASE_SWEEP 15 // degrees
 
 #define NUM_OF_ELECTRONS    50
-#define GUN_ACTIVE_TIME     1.0 // ns
+
 
 #define TIME_BETWEEN_ELECTRONS GUN_ACTIVE_TIME/(NUM_OF_ELECTRONS - 1)
 
@@ -51,9 +47,9 @@ double vel_to_dist(double vel, double t);
 
 double dist_to_time(double dist, double vel);
 
-double bir_gecis(double r_pos, double Et, double t);
-
-double gecis(double r_pos, double Et, double &t);
+int phase_opt(double Lout1, double Lout2, bool detail);
+int phase_opt(double Lout1, double Lout2, double Lout3, bool detail);
+vector<double> mag_opt(double RFphase, int magcount);
 
 pair<double, double> distout_to_Lrho_pair( double dist_out );
 

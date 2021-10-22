@@ -10,9 +10,11 @@ const double c = 2.99792458e8; //m/s
 const double E0=0.511;  // MeV
 const double ns=1E-9; //ns conversion
 
+
 //const double deg_to_rad = 0.01745;
 extern int STEPS_TAKEN;
 extern double GUN_ACTIVE_TIME; // ns
+extern int NUM_OF_ELECTRONS;
 
 const double emass = 9.10938356e-31;    // kg
 const double echarge = 1.60217662e-19;  //coulomb
@@ -36,10 +38,7 @@ const double eQMratio = -1.75882e11;    // C/kg
 #define dD 0.001       // m
 #define PHASE_SWEEP 15 // degrees
 
-#define NUM_OF_ELECTRONS    50
 
-
-#define TIME_BETWEEN_ELECTRONS GUN_ACTIVE_TIME/(NUM_OF_ELECTRONS - 1)
 
 double Eradial(double r, double time, double phase);
 
@@ -78,15 +77,26 @@ typedef pair<double, double> max_energy_rms_pair;
 
 class Bunch{
 public:
-    Bunch( ){RFphase_bunch=0;}
-    Bunch( double d ){RFphase_bunch=d;} 
-    Electron e[NUM_OF_ELECTRONS];
+    vector<Electron> e;
     int e_count = NUM_OF_ELECTRONS;
     double initial_length_ns = GUN_ACTIVE_TIME;
-    double ns_between = TIME_BETWEEN_ELECTRONS;
+    double ns_between = GUN_ACTIVE_TIME/(NUM_OF_ELECTRONS - 1);
     int index_fastest = 0;
     int pass_count = 0;
     vector < max_energy_rms_pair > emax_rms;
+
+    Bunch( ){
+        RFphase_bunch=0;
+        for(int i = 0 ; i < NUM_OF_ELECTRONS ; i++){
+            e.push_back(Electron());
+        }        
+    }
+    Bunch( double d ){
+        RFphase_bunch=d;
+        for(int i = 0 ; i < NUM_OF_ELECTRONS ; i++){
+            e.push_back(Electron());
+        }
+    } 
 
     double E_ave();
     double E_rms();

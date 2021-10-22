@@ -25,7 +25,7 @@ using namespace std::chrono;
 int main (int argc, char *argv[] ) {
 
   auto start = high_resolution_clock::now();
-  double Lout1 = 0.8104; //m
+  double Lout1 = 0.8079; //m
   double Lout2 = 1.08326; //m
   double Lout3 = 1.1705; //m
   int magcount = 2;
@@ -44,7 +44,15 @@ int main (int argc, char *argv[] ) {
   } else if (std::string(argv[i]) == "-sum") { summary = true;
   } else if (std::string(argv[i]) == "-magopt") { magopt = true; if( i+1 < argc){magcount = atof(argv[i+1]);}
   } else if (std::string(argv[i]) == "-l2opt") { l2opt = true;
+  } else if (std::string(argv[i]) == "-enum") { NUM_OF_ELECTRONS=atof(argv[i + 1] );
   } 
+
+ }
+
+ if( GUN_ACTIVE_TIME == 0.8 ){
+    Lout1 = 0.8155; //m
+    Lout2 = 1.083; //m
+    Lout3 = 1.17; //m
  }
 
   Bunch bunch(RFphase);

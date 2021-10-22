@@ -6,14 +6,16 @@
 using namespace std;
 int STEPS_TAKEN = 0;
 double GUN_ACTIVE_TIME = 1.0;
+int NUM_OF_ELECTRONS = 100;
 
 void displayHelp(){
  cout << "\nThis is a Rhodotron simulator. Cmdline parameters are:\n\n";
+ cout << "-enum number of electrons in a bunch\n";
+ cout << "-ph the RF phase (degree)\n";
+ cout << "-gt the gun active time (ns)\n";
  cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
  cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
  cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
- cout << "-ph the RF phase (degree)\n";
- cout << "-gt the gun active time (ns)\n";
  cout << "-phopt find the optimal phase lag (degree) -d to get details\n";
  cout << "-magopt get the optimal outside path geometry. Argument is number of magnets\n";
  cout << "-l2opt get the optimal second magnet geometry\n";

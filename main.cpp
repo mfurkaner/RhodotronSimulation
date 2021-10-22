@@ -220,8 +220,7 @@ int main (int argc, char *argv[] ) {
   auto duration = duration_cast<microseconds>(stop - start);
   cout << std::setprecision(4);
   cout << endl << "Total steps calculated : " << STEPS_TAKEN << endl;
-  //cout << "Simulation total run time : " << max.e[NUM_OF_ELECTRONS-1].t_giris_cikis.at(3).second << " ns" << endl;
-  cout << "Simulation finished in : " << duration.count() << " us" << endl << endl;
+  cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl << endl;
 
   return 0;
 }

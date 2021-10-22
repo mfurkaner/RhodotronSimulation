@@ -13,20 +13,20 @@ const double ns=1E-9; //ns conversion
 //const double deg_to_rad = 0.01745;
 extern int STEPS_TAKEN;
 
-const double emass = 9.10938356e-31;  // kg
-const double echarge = 1.60217662e-19; //coulomb
-const double eQMratio = -1.75882e11; // C/kg
+const double emass = 9.10938356e-31;    // kg
+const double echarge = 1.60217662e-19;  //coulomb
+const double eQMratio = -1.75882e11;    // C/kg
 
 #define deg_to_rad  0.01745
 
 #define Emax 0.960000 // MVolts/m
 #define freq 107.5    // MHz
 #define Ein 40.0      // KeV
-#define dT 0.001        // ns
-#define R1 0.1882     // m
-#define R2 0.753      // m
+#define dT 0.001      // ns
+#define R1 0.188241   // m
+#define R2 0.752967   // m
 #define SimuTime 10   // ns
-#define Emax_pos 200 // mm (Emax radial position)
+#define Emax_pos 200  // mm (Emax radial position)
 
 #define MAGNET_ROTATION 5.0 //degrees
 #define MAGNET_ROTATION_R MAGNET_ROTATION*deg_to_rad
@@ -59,14 +59,13 @@ pair<double, double> distout_to_Lrho_pair( double dist_out );
 
 void displayHelp();
 
-
 typedef pair<double, double> giris_cikis_tpair;
 
 class Electron{
 public:
     double Et = E0 + Ein/1000;
     double r_pos = -R2;
-    double RFphase=0;
+    double RFphase = 0;
     vector< double > enerjiler;
     vector< giris_cikis_tpair > t_giris_cikis;
 

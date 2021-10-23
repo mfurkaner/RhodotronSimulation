@@ -248,11 +248,11 @@ void Bunch::print_bunch_info(){
         cout << "Electron " << i+1 << ":" << endl;
         e[i].print_electron_info();
     }
-    cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << " MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV" << endl;
+    cout<<endl<< "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV" << endl;
 }
 
 void Bunch::print_summary(){
-  cout << "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << " MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV" << endl;
+  cout << "Electron with the most energy : " << index_fastest + 1 << ") " << emax_rms.at(pass_count-1).first << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV,\tRMS of bunch : " << emax_rms.at(pass_count-1).second <<  " MeV" << endl;
 }
 
 void Bunch::bunch_gecis_t(double &t_delay_of_max){

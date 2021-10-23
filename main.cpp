@@ -112,7 +112,7 @@ int main (int argc, char *argv[] ) {
     bunch.bunch_gecis_t(t);
 
     cout << std::setprecision(5) << endl;
-    cout << endl << "Summary for " << RFphase << " degrees of phase lag" << endl;
+    cout << "Summary for " << RFphase << " degrees of phase lag" << endl;
     cout << "L1 : " << Lout1 << " m, L2 : " << Lout2 << " m, L3 : "<< Lout3 << " m" << endl << endl;
     cout<< "Gecis 1) " ; bunch.print_summary();
     bunch.reset_pos();
@@ -127,9 +127,10 @@ int main (int argc, char *argv[] ) {
 
     pair<double, double> Lout1_pair = distout_to_Lrho_pair(Lout1);
     pair<double, double> Lout2_pair = distout_to_Lrho_pair(Lout2);
+    pair<double, double> Lout3_pair = distout_to_Lrho_pair(Lout3);
     cout << endl << "For the first magnet : " << Lout1 <<" m, magnet guide : " << Lout1_pair.first << " m, rho : " << Lout1_pair.second << " m"<< endl;
     cout << "For the second magnet : " << Lout2 <<" m, magnet guide : " << Lout2_pair.first << " m, rho : " << Lout2_pair.second << " m"<< endl;
-
+    cout << "For the third magnet : " << Lout3 <<" m, magnet guide : " << Lout3_pair.first << " m, rho : " << Lout3_pair.second << " m"<< endl;
     t = bunch.e[bunch.e_count - 1].t_giris_cikis.at(bunch.pass_count - 1).second;
     }
   #pragma endregion

@@ -2,9 +2,10 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
-using namespace std;
 
+using namespace std;
 #define RHODO_H
+
 
 const double c = 2.99792458e8; //m/s
 const double E0=0.511;  // MeV
@@ -12,9 +13,10 @@ const double ns=1E-9; //ns conversion
 
 
 //const double deg_to_rad = 0.01745;
-extern int STEPS_TAKEN;
+extern uint64_t STEPS_TAKEN;
 extern double GUN_ACTIVE_TIME; // ns
 extern int NUM_OF_ELECTRONS;
+extern bool NOTIFICATIONS;
 
 const double emass = 9.10938356e-31;    // kg
 const double echarge = 1.60217662e-19;  //coulomb
@@ -25,19 +27,19 @@ const double eQMratio = -1.75882e11;    // C/kg
 #define Emax 0.960000 // MVolts/m
 #define freq 107.5    // MHz
 #define Ein 40.0      // KeV
-#define dT 0.001      // ns
+extern double dT;     // ns
+extern double dT_out; // ns
 #define R1 0.188241   // m
 #define R2 0.752967   // m
-#define SimuTime 10   // ns
 #define Emax_pos 200  // mm (Emax radial position)
 
 #define MAGNET_ROTATION 5.0 //degrees
 #define MAGNET_ROTATION_R MAGNET_ROTATION*deg_to_rad
 
-#define dT_out 0.01    // ns
 #define dD 0.001       // m
 #define PHASE_SWEEP 15 // degrees
-
+#define MAGNET_TIME_SWEEP_MIN 2.0 // ns
+#define MAGNET_TIME_SWEEP_MAX 9.0 // ns
 
 
 double Eradial(double r, double time, double phase);
@@ -48,11 +50,14 @@ double dist_to_time(double dist, double vel);
 
 int phase_opt(double Lout1, double Lout2, bool detail);
 int phase_opt(double Lout1, double Lout2, double Lout3, bool detail);
-vector<double> mag_opt(double RFphase, int magcount);
+vector<double> mag_opt(double RFphase, int magcount, bool detail);
 
 pair<double, double> distout_to_Lrho_pair( double dist_out );
 
 void displayHelp();
+
+
+
 
 typedef pair<double, double> giris_cikis_tpair;
 
@@ -72,6 +77,9 @@ public:
 
     void e_gecis(double &t);
 };
+
+
+
 
 typedef pair<double, double> max_energy_rms_pair;
 

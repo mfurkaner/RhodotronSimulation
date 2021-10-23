@@ -25,13 +25,16 @@ using namespace std::chrono;
 int main (int argc, char *argv[] ) {
 
   auto start = high_resolution_clock::now();
-  double Lout1 = 0.8079; //m
-  double Lout2 = 1.08326; //m
+  // OPTIMUM FOR 1ns GUN ACTIVE TIME
+  double Lout1 = 0.81044; //m
+  double Lout2 = 1.0833; //m
   double Lout3 = 1.1705; //m
   int magcount = 2;
   double RFphase = 0; //degree
   bool phopt = false, summary = false, magopt = false, l2opt = false;
-  bool phoptd = false;
+  bool phoptd = false, magd = false;
+
+
   // command line arguments
  for(int i=1; i <argc; i++) {
   if        (std::string(argv[i]) == "-h"){ displayHelp(); exit(0);
@@ -42,34 +45,45 @@ int main (int argc, char *argv[] ) {
   } else if (std::string(argv[i]) == "-gt") { GUN_ACTIVE_TIME=atof(argv[i + 1] );
   } else if (std::string(argv[i]) == "-phopt") { phopt = true; if( i+1 < argc && string(argv[i+1])== "-d"){phoptd = true;}
   } else if (std::string(argv[i]) == "-sum") { summary = true;
-  } else if (std::string(argv[i]) == "-magopt") { magopt = true; if( i+1 < argc){magcount = atof(argv[i+1]);}
+  } else if (std::string(argv[i]) == "-magopt") { magopt = true; if( i+1 < argc){magcount = atof(argv[i+1]); if( i+2 < argc && string(argv[i+2])== "-d"){ magd = true;}}
   } else if (std::string(argv[i]) == "-l2opt") { l2opt = true;
   } else if (std::string(argv[i]) == "-enum") { NUM_OF_ELECTRONS=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-dt") { dT=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-dto") { dT_out=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-n") { NOTIFICATIONS = true;
   } 
 
  }
-
+/*
+//  OPTIMUM FOR 0.8ns GUN ACTIVE TIME
  if( GUN_ACTIVE_TIME == 0.8 ){
-    Lout1 = 0.8155; //m
-    Lout2 = 1.083; //m
-    Lout3 = 1.17; //m
- }
+    Lout1 = 0.8206 ; //m
+    Lout2 = 1.084; //m
+    Lout3 = 1.1705; //m
+ }*/
 
-  Bunch bunch(RFphase);
-  double t = 0;
-  
-  bunch.bunch_gecis_t(t);
-  t = bunch.e[bunch.index_fastest].t_giris_cikis.at(0).second;
-  double vel_max = bunch.e[bunch.index_fastest].get_vel();
+
   
   #pragma region PHASE_OPT
   if (  phopt ) {
     RFphase = phase_opt(Lout1, Lout2, phoptd);
+    if (NOTIFICATIONS){
+      system("terminal-notifier -message \"PHASE_OPT complete\" -title \"Rhodotron Simulation\"");
+    }
+
   }
   #pragma endregion
 
+
+   cout << endl << "Simulation settings : \nph = " << RFphase << " deg, gt = "  << GUN_ACTIVE_TIME << " ns, enum = "<<NUM_OF_ELECTRONS;
+   cout << "\ndT = " << dT << " ns, dT_out = " << dT_out <<" ns\n\n"; 
+
+
   #pragma region L2_OPT
   if ( l2opt ){
+    double t = 0;
+    Bunch bunch(RFphase);
+    bunch.bunch_gecis_t(t);
     bunch.reset_pos();
     bunch.bunch_gecis_d(Lout1);
     bunch.reset_pos();
@@ -93,8 +107,13 @@ int main (int argc, char *argv[] ) {
 
   #pragma region SUMMARY
   if ( summary ){
-    cout << endl << "Summary for " << RFphase << " degrees of phase lag" << endl;
+    double t = 0;
+    Bunch bunch(RFphase);
+    bunch.bunch_gecis_t(t);
 
+    cout << std::setprecision(5) << endl;
+    cout << endl << "Summary for " << RFphase << " degrees of phase lag" << endl;
+    cout << "L1 : " << Lout1 << " m, L2 : " << Lout2 << " m, L3 : "<< Lout3 << " m" << endl << endl;
     cout<< "Gecis 1) " ; bunch.print_summary();
     bunch.reset_pos();
     bunch.bunch_gecis_d(Lout1);
@@ -108,8 +127,7 @@ int main (int argc, char *argv[] ) {
 
     pair<double, double> Lout1_pair = distout_to_Lrho_pair(Lout1);
     pair<double, double> Lout2_pair = distout_to_Lrho_pair(Lout2);
-    cout << std::setprecision(4) << endl;
-    cout << "For the first magnet : " << Lout1 <<" m, magnet guide : " << Lout1_pair.first << " m, rho : " << Lout1_pair.second << " m"<< endl;
+    cout << endl << "For the first magnet : " << Lout1 <<" m, magnet guide : " << Lout1_pair.first << " m, rho : " << Lout1_pair.second << " m"<< endl;
     cout << "For the second magnet : " << Lout2 <<" m, magnet guide : " << Lout2_pair.first << " m, rho : " << Lout2_pair.second << " m"<< endl;
 
     t = bunch.e[bunch.e_count - 1].t_giris_cikis.at(bunch.pass_count - 1).second;
@@ -118,7 +136,10 @@ int main (int argc, char *argv[] ) {
 
   #pragma region MAGNET_OPT
   if (magopt){
-    mag_opt(RFphase, magcount);
+    mag_opt(RFphase, magcount, magd);
+    if ( NOTIFICATIONS ){
+      system("terminal-notifier -message \"MAGNET_OPT complete\" -title \"Rhodotron Simulation\"");
+    }
   }
   #pragma endregion
 
@@ -218,6 +239,9 @@ int main (int argc, char *argv[] ) {
 
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<microseconds>(stop - start);
+  if ( NOTIFICATIONS ){
+      system("terminal-notifier -message \"SIMULATION complete\" -title \"Rhodotron Simulation\"");
+  }
   cout << std::setprecision(4);
   cout << endl << "Total steps calculated : " << STEPS_TAKEN << endl;
   cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl << endl;

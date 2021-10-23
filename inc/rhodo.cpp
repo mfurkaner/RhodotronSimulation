@@ -3,25 +3,36 @@
 #include <iostream>
 #include <iomanip>
 #include "rhodo.h"
+
 using namespace std;
-int STEPS_TAKEN = 0;
+
+
+uint64_t STEPS_TAKEN = 0;
 double GUN_ACTIVE_TIME = 1.0;
-int NUM_OF_ELECTRONS = 100;
+int NUM_OF_ELECTRONS = 250;
+bool NOTIFICATIONS = false;
+double dT = 0.001;
+double dT_out = 0.01;
+
 
 void displayHelp(){
  cout << "\nThis is a Rhodotron simulator. Cmdline parameters are:\n\n";
  cout << "-enum number of electrons in a bunch\n";
  cout << "-ph the RF phase (degree)\n";
  cout << "-gt the gun active time (ns)\n";
+ cout << "-dt time pass for each step inside the cavity (ns)\n";
+ cout << "-dto time pass for each step outside the cavity (ns)\n";
  cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
  cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
  cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
  cout << "-phopt find the optimal phase lag (degree) -d to get details\n";
- cout << "-magopt get the optimal outside path geometry. Argument is number of magnets\n";
+ cout << "-magopt get the optimal outside path geometry. Argument is number of magnets -d to get details\n";
  cout << "-l2opt get the optimal second magnet geometry\n";
  cout << "-sum get the summary of the current settings\n";
+ cout << "-n enable terminal-notifier notifications\n";
  cout << endl;
 }
+
 
 
 //r is in mm
@@ -54,6 +65,7 @@ pair<double, double> distout_to_Lrho_pair( double dist_out ){
   return L_rho;
 }
 
+#pragma region OPT
 int phase_opt(double Lout1, double Lout2, bool detail){
     double minrms = 1;
     int opt_phase;
@@ -123,7 +135,7 @@ int phase_opt(double Lout1, double Lout2, double Lout3, bool detail){
     return opt_phase;
 }
 
-vector<double> mag_opt(double RFphase, int magcount){
+vector<double> mag_opt(double RFphase, int magcount, bool detail){
   Bunch dummy, bunch(RFphase), max;
   double emax = 0, t_opt = 0, vel_max;
   bunch.bunch_gecis_t(t_opt);
@@ -131,7 +143,7 @@ vector<double> mag_opt(double RFphase, int magcount){
   vector<double> path;
   for(int j = 0 ; j < magcount ; j++){
     vel_max = bunch.e[bunch.index_fastest].get_vel();
-    for(double i = 2; i < 9 ; i+=dT_out ){
+    for(double i = MAGNET_TIME_SWEEP_MIN; i < MAGNET_TIME_SWEEP_MAX ; i+=dT_out ){
       dummy = bunch;
       dummy.bunch_gecis_t(i);
       if( emax < dummy.e[dummy.index_fastest].Et ){
@@ -143,21 +155,33 @@ vector<double> mag_opt(double RFphase, int magcount){
     bunch = max;
     bunch.reset_pos();
     path.push_back( vel_to_dist(vel_max, t_opt)*ns );
+    if ( NOTIFICATIONS ) {
+      string mes = "terminal-notifier -message \"MAG-";
+      mes += to_string(j+1);
+      mes += " PASS complete\" -title \"Rhodotron Simulation\"";
+      system(mes.c_str());
+    }
   }
 
   for(int j = 0; j < magcount ; j++){
-    cout << std::setprecision(4) << endl;
+    cout << std::setprecision(5) << endl;
     pair<double, double> Lpair = distout_to_Lrho_pair(path.at(j));
     cout << "For the " << j+1 << "th magnet:\nOptimum out path = " << path.at(j) << " m" << endl;
     cout << "Magnet guide = " << Lpair.first;
     cout << " m\nRho = " << Lpair.second << " m"<< endl;
-    cout <<  "Max energy = " << bunch.emax_rms.at(j).first;
+    if(detail){
+      cout << "Drift time of the first electron in the bunch : " << bunch.e[j].t_giris_cikis.at(j).second - bunch.e[j].t_giris_cikis.at(j).first << " ns" << endl;
+      cout << "Drift time of the middle electron in the bunch : " << bunch.e[NUM_OF_ELECTRONS/2].t_giris_cikis.at(j).second - bunch.e[NUM_OF_ELECTRONS/2].t_giris_cikis.at(j).first << " ns" << endl;
+      cout << "Drift time of the last electron in the bunch : " << bunch.e[NUM_OF_ELECTRONS - 1].t_giris_cikis.at(j).second - bunch.e[NUM_OF_ELECTRONS - 1].t_giris_cikis.at(j).first << " ns" << endl;
+    }
+    cout << "Max energy = " << bunch.emax_rms.at(j).first;
     cout << " MeV\nRMS = " << bunch.emax_rms.at(j).second << " MeV" << endl;
   }
-  cout << endl;
+  cout << endl << "After the optimized magnet passes :\n\n";
   bunch.print_summary();
   return path;
 }
+#pragma endregion OPT
 
 
 #pragma region ELECTRON
@@ -180,7 +204,14 @@ void Electron::e_gecis(double &t){
     for(; r_pos >= -R2 && r_pos <= R2 ; t+=dT){
         double vel = get_vel();
         double RelBeta  = vel/c;
-        double RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
+        double RelGamma;
+
+        #ifdef FAST_INVERSE_SQRT
+        RelGamma = Q_rsqrt(1.0 - RelBeta*RelBeta);
+        #else
+        RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
+        #endif 
+
 
         double ef=Eradial(this->r_pos*1000,t,RFphase*deg_to_rad); // convert position to mm
         double acc=ef*1E6*eQMratio/(RelGamma*RelGamma*RelGamma); 
@@ -188,13 +219,17 @@ void Electron::e_gecis(double &t){
         r_pos += vel * dT*ns + 1/2*acc*(dT*ns)*(dT*ns);
         vel=vel+acc*dT*ns;
         RelBeta  = vel/c;
+        #ifdef FAST_INVERSE_SQRT
+        RelGamma = Q_rsqrt(1.0 - RelBeta*RelBeta);
+        #else
         RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
+        #endif 
         Et=RelGamma*E0; 
         STEPS_TAKEN++;
     }
     enerjiler.push_back(Et);
 }
-#pragma endregion
+#pragma endregion ELECTRON
 
 //---------------------------bunch
 #pragma region BUNCH

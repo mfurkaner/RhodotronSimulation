@@ -8,9 +8,9 @@
 #include "inc/rhodo.h"
 
 
-
 using namespace std;
 using namespace std::chrono;
+
 
 
 // find E field, calculate force,
@@ -24,20 +24,23 @@ using namespace std::chrono;
 
 int main (int argc, char *argv[] ) {
 
+
   auto start = high_resolution_clock::now();
   // OPTIMUM FOR 1ns GUN ACTIVE TIME
+
   double Lout1 = 0.81044; //m
-  double Lout2 = 1.0833; //m
-  double Lout3 = 1.1705; //m
+  double Lout2 = 1.0833;  //m
+  double Lout3 = 1.1705;  //m
   int magcount = 2;
-  double RFphase = 0; //degree
+  double RFphase = 0;     //degree
   bool phopt = false, summary = false, magopt = false, l2opt = false;
   bool phoptd = false, magd = false;
 
 
   // command line arguments
  for(int i=1; i <argc; i++) {
-  if        (std::string(argv[i]) == "-h"){ displayHelp(); exit(0);
+
+  if        (std::string(argv[i]) == "-h")  { displayHelp(); exit(0);
   } else if (std::string(argv[i]) == "-L1") { Lout1=atof(argv[i + 1] );
   } else if (std::string(argv[i]) == "-L2") { Lout2=atof(argv[i + 1] );
   } else if (std::string(argv[i]) == "-L3") { Lout3=atof(argv[i + 1] );
@@ -244,7 +247,7 @@ int main (int argc, char *argv[] ) {
       system("terminal-notifier -message \"SIMULATION complete\" -title \"Rhodotron Simulation\"");
   }
   cout << std::setprecision(4);
-  cout << endl << "Total steps calculated : " << STEPS_TAKEN << endl;
+  cout << endl << "Total steps calculated : " << STEPS_TAKEN << "\t( " << STEPS_TAKEN/1000000000.0 << " B )" << endl;
   cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl << endl;
 
   return 0;

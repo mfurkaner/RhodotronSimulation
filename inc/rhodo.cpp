@@ -2,9 +2,11 @@
 #include <vector>
 #include <iostream>
 #include <iomanip>
+#include <pthread.h>
+#include <chrono>
 #include "rhodo.h"
 
-using namespace std;
+using namespace std;using namespace std::chrono;
 
 
 uint64_t STEPS_TAKEN = 0;
@@ -13,6 +15,9 @@ int NUM_OF_ELECTRONS = 250;
 bool NOTIFICATIONS = false;
 double dT = 0.001;
 double dT_out = 0.01;
+
+bool MULTI_THREAD = false;
+int MAX_THREAD_COUNT = 1;
 
 
 void displayHelp(){
@@ -30,6 +35,7 @@ void displayHelp(){
  cout << "-l2opt get the optimal second magnet geometry\n";
  cout << "-sum get the summary of the current settings\n";
  cout << "-n enable terminal-notifier notifications\n";
+ cout << "-mt enable multi-threading for -magopt. Argument is number of threads to use (default is 2)\n";
  cout << endl;
 }
 
@@ -135,24 +141,90 @@ int phase_opt(double Lout1, double Lout2, double Lout3, bool detail){
     return opt_phase;
 }
 
+
+void mag_sweep_wt(Bunch &bunch, double &t_opt, double sweep_min, double sweep_max){
+  Bunch dummy, max;
+  double emax = 0;
+  for(double i = sweep_min; i < sweep_max ; i+=dT_out){
+    dummy = bunch;
+    dummy.bunch_gecis_t(i);
+    if( emax < dummy.e[dummy.index_fastest].Et ){
+      emax = dummy.e[dummy.index_fastest].Et;
+      max = dummy;
+      t_opt = i;
+    }
+  }
+  bunch = max;
+}
+
+struct thread_arg
+{
+  Bunch *bunch;
+  double *t_opt;
+  double sweep_min;
+  double sweep_max;
+};
+
+void* mg_sw_wt_mt(void* threadargs){
+  thread_arg *arg = (thread_arg*)threadargs;
+  mag_sweep_wt(*arg->bunch, *arg->t_opt, arg->sweep_min, arg->sweep_max);
+  pthread_exit(NULL);
+}
+
+Bunch mag_sweep(Bunch bunch, double &t_opt){
+  mag_sweep_wt(bunch, t_opt, MAGNET_TIME_SWEEP_MIN, MAGNET_TIME_SWEEP_MAX);
+  return bunch;
+}
+
+Bunch mag_sweep_mt(Bunch bunch, double &t_opt){
+  Bunch maxs[MAX_THREAD_COUNT];
+  double t_opts[MAX_THREAD_COUNT-1];
+  pthread_t t[MAX_THREAD_COUNT-1];
+  thread_arg t_args[MAX_THREAD_COUNT];
+  void* status[MAX_THREAD_COUNT-1];
+  double start = MAGNET_TIME_SWEEP_MIN;
+  double add = (MAGNET_TIME_SWEEP_MAX - MAGNET_TIME_SWEEP_MIN)/MAX_THREAD_COUNT;
+  for(int i = 0; i< MAX_THREAD_COUNT-1; i++){
+    maxs[i+1] = bunch;
+    t_args[i].bunch = &maxs[i+1];
+    t_args[i].t_opt = &t_opts[i];
+    t_args[i].sweep_min = start;
+    t_args[i].sweep_max =  start + add - dT_out;
+    start += add;
+    pthread_create(&t[i], NULL, mg_sw_wt_mt, &t_args[i]);
+  }
+  maxs[0] = bunch;
+  mag_sweep_wt( maxs[0], t_opt, start, MAGNET_TIME_SWEEP_MAX );
+
+  for( int i = 0; i< MAX_THREAD_COUNT - 1; i++){
+    pthread_join(t[i], &status[i]);
+  }
+  int maxe_index = 0;
+  double emax = maxs[0].e[maxs[0].index_fastest].Et;
+  for(int i = 1; i< MAX_THREAD_COUNT ; i++){
+      if(emax < maxs[i].e[maxs[i].index_fastest].Et){
+        emax = maxs[i].e[maxs[i].index_fastest].Et;
+        maxe_index = i;
+        t_opt = t_opts[i-1];
+      }
+  }
+  return maxs[maxe_index];
+}
+
 vector<double> mag_opt(double RFphase, int magcount, bool detail){
   Bunch dummy, bunch(RFphase), max;
-  double emax = 0, t_opt = 0, vel_max;
+  double t_opt = 0, vel_max;
   bunch.bunch_gecis_t(t_opt);
   bunch.reset_pos();
   vector<double> path;
   for(int j = 0 ; j < magcount ; j++){
-    vel_max = bunch.e[bunch.index_fastest].get_vel();
-    for(double i = MAGNET_TIME_SWEEP_MIN; i < MAGNET_TIME_SWEEP_MAX ; i+=dT_out ){
-      dummy = bunch;
-      dummy.bunch_gecis_t(i);
-      if( emax < dummy.e[dummy.index_fastest].Et ){
-        emax = dummy.e[dummy.index_fastest].Et;
-        max = dummy;
-        t_opt = i;
-      }
+    if( MULTI_THREAD && MAX_THREAD_COUNT > 1){
+      bunch = mag_sweep_mt(bunch, t_opt);
     }
-    bunch = max;
+    else{
+      bunch = mag_sweep(bunch, t_opt);
+    }
+    vel_max = bunch.e[bunch.index_fastest].get_vel();
     bunch.reset_pos();
     path.push_back( vel_to_dist(vel_max, t_opt)*ns );
     if ( NOTIFICATIONS ) {
@@ -162,6 +234,7 @@ vector<double> mag_opt(double RFphase, int magcount, bool detail){
       system(mes.c_str());
     }
   }
+  
 
   for(int j = 0; j < magcount ; j++){
     cout << std::setprecision(5) << endl;
@@ -181,6 +254,10 @@ vector<double> mag_opt(double RFphase, int magcount, bool detail){
   bunch.print_summary();
   return path;
 }
+
+
+
+
 #pragma endregion OPT
 
 

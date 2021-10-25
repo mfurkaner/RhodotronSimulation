@@ -54,7 +54,8 @@ int main (int argc, char *argv[] ) {
   } else if (std::string(argv[i]) == "-dt") { dT=atof(argv[i + 1] );
   } else if (std::string(argv[i]) == "-dto") { dT_out=atof(argv[i + 1] );
   } else if (std::string(argv[i]) == "-n") { NOTIFICATIONS = true;
-  } 
+  } else if (std::string(argv[i]) == "-mt") { MULTI_THREAD = true; MAX_THREAD_COUNT = ( i+1 < argc) ? atof(argv[i+1]) : 2 ;
+  }
 
  }
 /*
@@ -66,7 +67,12 @@ int main (int argc, char *argv[] ) {
  }*/
 
 
-  
+  uint64_t step_estimation = NUM_OF_ELECTRONS*(1/dT)*6*(phopt*PHASE_SWEEP*6 + magopt*magcount*(MAGNET_TIME_SWEEP_MAX-MAGNET_TIME_SWEEP_MIN)/(dT_out * MAX_THREAD_COUNT) + summary*4);
+  double time_estimation = step_estimation*US_FOR_A_STEP;
+  time_estimation /= 1000000;
+
+  cout << setprecision(3) << "Simulation started. Estimated time to complete : ( " << time_estimation << " s )" << endl;
+
   #pragma region PHASE_OPT
   if (  phopt ) {
     RFphase = phase_opt(Lout1, Lout2, phoptd);
@@ -79,7 +85,8 @@ int main (int argc, char *argv[] ) {
 
 
    cout << endl << "Simulation settings : \nph = " << RFphase << " deg, gt = "  << GUN_ACTIVE_TIME << " ns, enum = "<<NUM_OF_ELECTRONS;
-   cout << "\ndT = " << dT << " ns, dT_out = " << dT_out <<" ns\n\n"; 
+   cout << "\ndT = " << dT << " ns, dT_out = " << dT_out <<" ns\n# of threads = " << MAX_THREAD_COUNT << endl << endl; 
+ 
 
 
   #pragma region L2_OPT
@@ -107,6 +114,18 @@ int main (int argc, char *argv[] ) {
     cout << "For L1 : " << Lout1 << " m, L2 : " << Lout2 << " m, L3opt : "<<d_opt << " m";
   }
   #pragma endregion
+
+  #pragma region MAGNET_OPT
+  if (magopt){
+    vector<double> Lout_vec = mag_opt(RFphase, magcount, magd);
+    if ( NOTIFICATIONS ){
+      system("terminal-notifier -message \"MAGNET_OPT complete\" -title \"Rhodotron Simulation\"");
+    }
+    Lout1 = Lout_vec.at(0);
+    Lout2 = Lout_vec.at(1);
+  }
+  #pragma endregion
+
 
   #pragma region SUMMARY
   if ( summary ){
@@ -137,16 +156,6 @@ int main (int argc, char *argv[] ) {
     t = bunch.e[bunch.e_count - 1].t_giris_cikis.at(bunch.pass_count - 1).second;
     }
   #pragma endregion
-
-  #pragma region MAGNET_OPT
-  if (magopt){
-    mag_opt(RFphase, magcount, magd);
-    if ( NOTIFICATIONS ){
-      system("terminal-notifier -message \"MAGNET_OPT complete\" -title \"Rhodotron Simulation\"");
-    }
-  }
-  #pragma endregion
-
 
 
 #pragma region SINAN

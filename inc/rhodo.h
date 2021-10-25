@@ -17,12 +17,15 @@ extern uint64_t STEPS_TAKEN;
 extern double GUN_ACTIVE_TIME; // ns
 extern int NUM_OF_ELECTRONS;
 extern bool NOTIFICATIONS;
+extern int MAX_THREAD_COUNT;
+extern bool MULTI_THREAD;
 
 const double emass = 9.10938356e-31;    // kg
 const double echarge = 1.60217662e-19;  //coulomb
 const double eQMratio = -1.75882e11;    // C/kg
 
 #define deg_to_rad  0.01745
+#define US_FOR_A_STEP 0.06467
 
 #define Emax 0.960000 // MVolts/m
 #define freq 107.5    // MHz

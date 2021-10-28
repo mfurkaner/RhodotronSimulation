@@ -28,9 +28,9 @@ int main (int argc, char *argv[] ) {
   // command line arguments
  for(int i=1; i <argc; i++) {
   if        (std::string(argv[i]) == "-h")  { displayHelp(); exit(0);
-  } else if (std::string(argv[i]) == "-L1") { Lout1=atof(argv[i + 1] );
-  } else if (std::string(argv[i]) == "-L2") { Lout2=atof(argv[i + 1] );
-  } else if (std::string(argv[i]) == "-L3") { Lout3=atof(argv[i + 1] );
+  } else if (std::string(argv[i]) == "-L1") { Lout1=atof(argv[i + 1] )/1e3;
+  } else if (std::string(argv[i]) == "-L2") { Lout2=atof(argv[i + 1] )/1e3; 
+  } else if (std::string(argv[i]) == "-L3") { Lout3=atof(argv[i + 1] )/1e3;
   } else if (std::string(argv[i]) == "-ph") { RFphase=atof(argv[i + 1] );
   }
  }

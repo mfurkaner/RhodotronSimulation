@@ -7,9 +7,9 @@ using namespace std;
 
 void displayHelp(){
  cout << "This is a Rhdotron simulator. Cmdline parameters are:\n";
- cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
- cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
- cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
+ cout << "-L1 the total distance outside cavity after traverse1 (mm)\n";
+ cout << "-L2 the total distance outside cavity after traverse2 (mm)\n";
+ cout << "-L3 the total distance outside cavity after traverse3 (mm)\n";
  cout << "-ph the RF phase (degree)\n";
 }
 

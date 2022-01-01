@@ -13,7 +13,7 @@ uint64_t STEPS_TAKEN = 0;
 double GUN_ACTIVE_TIME = 1.0;
 int NUM_OF_ELECTRONS = 250;
 bool NOTIFICATIONS = false;
-double dT = 0.001;
+double dT = 0.01;
 double dT_out = 0.01;
 
 bool MULTI_THREAD = false;

@@ -27,6 +27,7 @@ public:
     vector3d getField(vector3d position);
     double getField(double R);
     double getE() {return E;}
+    void setEmax(double E_max) {this->E_max = E_max;}
     vector3d actOn(Electron2D& e);
     void update(double time);
 };
@@ -38,15 +39,24 @@ class Magnet{
     double B;
     Magnet(){};
     Magnet(double B, double r, vector3d position) : B(B), r(r), position(position){}
+    double getOptimalB(double E, double minB, double maxB, double stepsize);           // use as if the magnet is rotated like the first magnet
 };
 
 class MagneticField{
     std::vector<Magnet> magnets;
     int isInside(vector3d position);
+    std::vector<bool> hasEntered;
+    std::vector<double> relativeEnterDistance;
 public:
     void addMagnet(double B, double r, vector3d position);
+    void addMagnet(Magnet m);
     vector3d getField(vector3d position);
     vector3d actOn(Electron2D& e);
+    std::vector<double> getRelativeEnterDistance(){return relativeEnterDistance;}
 };
 
 bool isInsideHalfSphere(vector3d e_position, double r, vector3d hs_position);
+
+double rho_to_magnetic_field(double rho, double Ek);
+
+double magnetic_field_to_rho(double B, double Ek);

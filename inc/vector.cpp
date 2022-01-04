@@ -71,6 +71,7 @@ double vector3d::magnitude(){
 
 vector3d vector3d::direction(){
     double mag = magnitude();
+    if ( !mag ){ return vector3d(1e-9,0,0);}
     return (*this) / mag;
 }
 

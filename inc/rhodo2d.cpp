@@ -27,9 +27,7 @@ void Electron2D::move(vector3d acc, double dt){
 
 void Electron2D::accelerate(vector3d acc, double dt){
     vel += acc*(dt*ns);  
-    double RelBeta = vel.magnitude()/c;
-    double RelGamma = 1.0 / sqrt(1.0-RelBeta*RelBeta);
-    Et = RelGamma*E0;                                                 
+    Et = gamma()*E0;                                                
 }
 
 #pragma endregion ELECTRON
@@ -69,8 +67,9 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         vector3d acc_B = B.actOn(e[i]);
         vector3d acc = acc_E + acc_B;
 
+        e[i].move(time_interval/2);
         e[i].accelerate( acc_E + acc_B , time_interval);
-        e[i].move(acc_E + acc_B, time_interval);
+        e[i].move(acc_E + acc_B, time_interval/2);
 
         if( e[i].isinside && e[i].pos.magnitude() > R2){
             e[i].isinside = false;
@@ -84,7 +83,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         double mag = e[i].vel.magnitude() ;
         vector3d vel = e[i].vel;
         double out = (e[i].t_giris_cikis.size() > 1) ? e[i].t_giris_cikis[1].first : 0 ;
-        ds << setprecision(4) <<"   mag : " << mag << "     vel : " << vel <<"    E : " << setprecision(6) <<e[i].Et - E0 << "      pos : " << e[i].pos << "  out : "<< out << "\n";
+        ds << setprecision(4) <<"   mag : " << mag << "     vel : " << vel <<"    E : " << setprecision(6) << e[i].Et - E0 << "      pos : " << e[i].pos << "  out : "<< out << "    acc_E : "<< acc_E <<"\n";
         if ( e[i].Et > max_energy ){
             index_fastest = i;
             max_energy = e[i].Et;

@@ -13,7 +13,7 @@ private:
     RFField E_field;
     MagneticField B_field;
     double simulation_time = 0;
-    double end_time = 18;
+    double end_time = 45;
     double phase_lag;
     Bunch2D bunch;
     double time_interval = dT;
@@ -23,11 +23,15 @@ public:
         bunch = Bunch2D(phase_lag);
     }
 
+    void setEmax(double E_max){E_field.setEmax(E_max);}
+    void setEin(double E_in){ bunch.setEin(E_in);}
     void addMagnet(double B, double r, vector3d position);
+    void addMagnet(Magnet m);
     void setPhaseLag(double phase_lag){ this->phase_lag = phase_lag;}
     void setEndTime(double end_time){ this->end_time = end_time;}
 
     void run(DataStorage& ds, Gnuplot& gp);
     double getAverageEnergy();
+    std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}
     Electron2D& getElectronWithMaxEnergy();
 };

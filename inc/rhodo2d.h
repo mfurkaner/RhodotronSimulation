@@ -37,14 +37,21 @@ public:
         vel.setX(get_vel());
     }
     double get_vel();
-
     double get_travel_time(double dist);
+
+    void setEin(double E_in){this->Et = E_in + E0; vel.setX(get_vel());};
 
     void print_electron_info();
     void move(double dt);
     void move(vector3d acc, double dt);
     void accelerate(vector3d acc, double dt);
     void e_gecis(double &t);
+    double beta(){
+        return vel.magnitude()/c;
+    }
+    double gamma(){
+        return 1/(sqrt(1 - beta()*beta()));
+    }
 };
 
 
@@ -73,6 +80,8 @@ public:
             e.push_back(Electron2D());
         }
     } 
+
+    void setEin(double E_in){ for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
 
     void interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds);
 

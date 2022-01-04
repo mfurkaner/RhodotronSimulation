@@ -4,13 +4,16 @@
 #ifndef FIELDS_H
     #include "fields.h"
 #endif
+#ifndef GNUPLOT_H
+    #include "gnuplot.h"
+#endif
 
 class Simulator{        // E in MV/m,   En in MeV,   B in T,    t in
 private:
     RFField E_field;
     MagneticField B_field;
     double simulation_time = 0;
-    double end_time = 20;
+    double end_time = 18;
     double phase_lag;
     Bunch2D bunch;
     double time_interval = dT;
@@ -24,7 +27,7 @@ public:
     void setPhaseLag(double phase_lag){ this->phase_lag = phase_lag;}
     void setEndTime(double end_time){ this->end_time = end_time;}
 
-    void run();
+    void run(DataStorage& ds);
     double getAverageEnergy();
     Electron2D& getElectronWithMaxEnergy();
 };

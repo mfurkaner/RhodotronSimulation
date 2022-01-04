@@ -9,6 +9,9 @@
 #ifndef FIELDS_H
     #include "fields.h"
 #endif
+#ifndef GNUPLOT_H
+    #include "gnuplot.h"
+#endif
 
 
 using namespace std;
@@ -39,6 +42,7 @@ public:
 
     void print_electron_info();
     void move(double dt);
+    void move(vector3d acc, double dt);
     void accelerate(vector3d acc, double dt);
     void e_gecis(double &t);
 };
@@ -70,7 +74,7 @@ public:
         }
     } 
 
-    void interact(RFField& E, MagneticField& B, double time, double time_interval);
+    void interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds);
 
     double E_ave();
     double E_rms();

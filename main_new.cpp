@@ -10,23 +10,62 @@ double dT = 0.001;     // ns
 double dT_out = 0.01; // ns
 
 int main(){
+
+    Gnuplot gp;
+    gp.setRange(-1.5,1.5,-1.5,1.5);
+    gp.setRatio(1);
+    gp.addCommand("set palette rgb 33,13,10");
+    gp.addCommand("plot \"xy/engine.txt\" u 25:27:21 title \"path\" palette, \"xy/magnet.txt\" u 1:2 ls 7 ps 0.1");
+    DataStorage mag("xy/magnet.txt");
+    DataStorage path("xy/engine.txt");
+    mag.open();
+    path.open();
+    /*
     double max = 0;
     double maxB;
-    for (double i = 0.1; i < 3; i+=0.001){
-        Simulator simulation(0);
-        Electron2D e;
-        simulation.addMagnet(i, 0.3 , vector3d(1.1995, -0.2115, 0));
-        simulation.run();
-        e = simulation.getElectronWithMaxEnergy();
+    for (double i = 0.1; i < 3; i+=0.001){*/
+
         /*
         if(e.t_giris_cikis.size() > 1 && e.t_giris_cikis[1].first > 5 && e.t_giris_cikis[1].first < 13){
             cout << "When the magnetic field is at " << i << " T , electron enters at " << e.t_giris_cikis[1].first << " ns , finishing with the energy  : " << e.Et - E0 << endl;
         }*/
+        /*
         if(e.t_giris_cikis.size() <= 1){
             cout << "When the magnetic field is at " << i << " T,  electron cannot enter." << endl;
+        }*/
+    //}
+    
+    Simulator simulation(15);
+    vector3d magnet_position(R2 + 0.2574, 0, 0);
+    magnet_position.rotate(vector3d(0,0,1), -5);
+    simulation.addMagnet(-0.14, 0.2 , magnet_position);
+    simulation.run(path);
+    
+
+    
+    MagneticField B;
+    B.addMagnet(-0.14, 0.2 , magnet_position);
+
+    for(double x = -2; x <= 2 ; x+=0.025){
+        for(double y = -2; y <= 2; y+=0.025){
+            vector3d v(x,y,0);
+            if ( B.getField(v).Z() != 0 || v.magnitude() <= R2){
+                mag << x << "  " << y << "\n";
+            }
         }
     }
+
+    mag.close();
+    path.close();
+    gp.executeCommands();
     
+/*
+    vector3d r2pos(R2, 0, 0);
+    for(double i = 0; i <= 360 ; i+=0.01){
+        cout << r2pos << endl;
+        r2pos.rotate(vector3d(0,0,1), 0.01);
+    }
+*/
     
     return 0;
 }

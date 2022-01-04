@@ -1,4 +1,7 @@
 #include "vector.h"
+#ifndef CONSTS_H
+    #include "consts.h"
+#endif
 #include <math.h>
 
 vector3d vector3d::operator+ (vector3d other){
@@ -71,9 +74,31 @@ vector3d vector3d::direction(){
     return (*this) / mag;
 }
 
+void vector3d::rotate(vector3d around, double angle){
+    double mag = this->magnitude();
+    if( around.magnitude() != 1){
+        around = around.direction();
+    }
+    double co = cos(angle*deg_to_rad);
+    double si = sin(angle*deg_to_rad);
+    double ux = around.X();
+    double uy = around.Y();
+    double uz = around.Z();
+    double new_x = x*( co + ux*ux*(1 - co) ) + y*( ux*uy*(1 - co) - uz*si ) + z*( ux*uz*( 1 - co ) + uy*si );
+    double new_y = x*( ux*uy*(1 - co) + uz*si ) + y*( co + uy*uy*(1 - co) ) + z*( uy*uz*( 1 - co ) - ux*si );
+    double new_z = x*( ux*uz*(1 - co) - uy*si ) + y*( uy*uz*( 1 - co ) + ux*si ) + z*( co + uz*uz*(1 - co) );
+    new_x -= (new_x < ROTATION_ZERO_LIMIT && new_x > -ROTATION_ZERO_LIMIT) ? new_x : 0;
+    new_y -= (new_y < ROTATION_ZERO_LIMIT && new_y > -ROTATION_ZERO_LIMIT) ? new_y : 0;
+    new_z -= (new_z < ROTATION_ZERO_LIMIT && new_y > -ROTATION_ZERO_LIMIT) ? new_z : 0;
+    x = new_x;
+    y = new_y;
+    z = new_z;
+    *this *= mag / this->magnitude();
+}
+
 
 
 std::ostream& operator<<(std::ostream& stream, vector3d& vect){
-    stream << std::setprecision(3) << "( " << vect.X() << ", " << vect.Y() << ", " << vect.Z() << " )";
+    stream << std::setprecision(3) << "( " << vect.X() << " , " << vect.Y() << " , " << vect.Z() << " )";
     return stream;
 }

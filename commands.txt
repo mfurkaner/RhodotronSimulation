@@ -1,0 +1,12 @@
+tail engine.txt | awk  '{ print $21 } '
+
+
+Gnuplot -> 
+set xrange [-2:2];set yrange [-2:2];set size ratio 1	
+splot "xy/engine.txt" u 2:3:1 
+splot "xy/engine.txt" u 2:3:1 title "path", "xy/magnet.txt" u 1:2:3 ls 7 ps 0.5
+plot "xy/engine.txt" u 2:3 title "path", "xy/magnet.txt" u 1:2 ls 7 ps 0.4
+
+
+clang++ -std=c++11 -I=inc/ main_new.cpp inc/simulation.cpp inc/rhodo2d.cpp inc/fields.cpp inc/vector.cpp ; ./a.out>engine.txt ; cat engine.txt | awk '{ print $21, $25, $27  }' > xy/engine.txt
+

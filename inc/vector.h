@@ -34,6 +34,8 @@ public:
     double magnitude();
     vector3d direction();
 
+    void rotate(vector3d around, double angle);   // angle is in degrees
+
 };
 
 std::ostream& operator<<(std::ostream& stream, vector3d& vect);  

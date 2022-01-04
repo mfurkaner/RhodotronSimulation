@@ -21,6 +21,10 @@ void Electron2D::move(double dt){
     pos += vel*(dt*ns);
 }
 
+void Electron2D::move(vector3d acc, double dt){
+    pos += vel*(dt*ns) + acc*(dT*ns)*(dT*ns)/2;
+}
+
 void Electron2D::accelerate(vector3d acc, double dt){
     vel += acc*(dt*ns);  
     double RelBeta = vel.magnitude()/c;
@@ -56,12 +60,18 @@ double Bunch2D::E_rms(){
 }
 
 
-void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
+void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
             continue;
         }
-        e[i].move(time_interval);
+        vector3d acc_E = E.actOn(e[i]);
+        vector3d acc_B = B.actOn(e[i]);
+        vector3d acc = acc_E + acc_B;
+
+        e[i].accelerate( acc_E + acc_B , time_interval);
+        e[i].move(acc_E + acc_B, time_interval);
+
         if( e[i].isinside && e[i].pos.magnitude() > R2){
             e[i].isinside = false;
             e[i].t_giris_cikis[(e[i].t_giris_cikis.size() - 1)].second = time;
@@ -70,13 +80,11 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
             e[i].isinside = true;
             e[i].t_giris_cikis.push_back(giris_cikis_tpair(time, time));
         }
-        vector3d acc_E = E.actOn(e[i]);
-        vector3d acc_B = B.actOn(e[i]);
-        //vector3d acc = acc_E + acc_B;
-        //cout << "acc_E : " << acc_E << "     acc_B : " << acc_B << "     acc_tot : " << acc;
-        e[i].accelerate( acc_E + acc_B , time_interval);
-        //vector3d dir = e[i].vel.direction() ;
-        //cout << "   dir : " << dir << "    E : " << e[i].Et - E0 << "  pos : "<<e[i].pos <<"\n";
+        ds << "     acc_B : " << acc_B.magnitude();
+        double mag = e[i].vel.magnitude() ;
+        vector3d vel = e[i].vel;
+        double out = (e[i].t_giris_cikis.size() > 1) ? e[i].t_giris_cikis[1].first : 0 ;
+        ds << setprecision(4) <<"   mag : " << mag << "     vel : " << vel <<"    E : " << setprecision(6) <<e[i].Et - E0 << "      pos : " << e[i].pos << "  out : "<< out << "\n";
         if ( e[i].Et > max_energy ){
             index_fastest = i;
             max_energy = e[i].Et;

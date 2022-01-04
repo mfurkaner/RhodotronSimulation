@@ -34,6 +34,7 @@ class DataStorage{
 class Gnuplot{
     FILE *gnupipe = NULL;
     std::vector<std::string> commands;
+    std::string plotcommand;
     std::string filepath;
 
 public:
@@ -43,6 +44,10 @@ public:
     
     void setFilePath(std::string filepath){
         this->filepath = filepath;
+    }
+
+    void setPlotCommand(std::string plotcommand){
+        this->plotcommand = plotcommand;
     }
 
     void setRange(double x_min, double x_max, double y_min, double y_max){
@@ -56,6 +61,15 @@ public:
         range += std::to_string(y_max);
         range += "]";
         commands.push_back(range);
+    }
+
+    void setCbRange(double min, double max){
+        std::string cbrange = "set cbrange [";
+        cbrange += std::to_string(min);
+        cbrange += ":";
+        cbrange += std::to_string(max);
+        cbrange += "]";
+        commands.push_back(cbrange);
     }
 
     void setRatio(double num){
@@ -72,6 +86,10 @@ public:
         for(int i = 0; i < commands.size(); i++){
             fprintf(gnupipe, "%s\n", commands[i].c_str() );
         }
+    }
+
+    void plot(){
+        fprintf(gnupipe, "%s\n", plotcommand.c_str());
     }
 
 };

@@ -6,7 +6,7 @@
 #endif
 
 
-void Simulator::run(DataStorage& ds){
+void Simulator::run(DataStorage& ds, Gnuplot& gp){
     int steps = 0;
     while ( simulation_time < end_time ){
         E_field.update(simulation_time);

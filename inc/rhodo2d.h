@@ -83,7 +83,7 @@ public:
 
     void setEin(double E_in){ for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
 
-    void interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds);
+    void interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds, bool draw);
 
     double E_ave();
     double E_rms();

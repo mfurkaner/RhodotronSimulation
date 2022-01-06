@@ -4,6 +4,9 @@
 #ifndef CONSTS_H
     #include "consts.h"
 #endif
+#ifndef GNUPLOT_H
+    #include "gnuplot.h"
+#endif
 
 #define FIELDS_H
 
@@ -29,6 +32,7 @@ public:
     double getE() {return E;}
     void setEmax(double E_max) {this->E_max = E_max;}
     vector3d actOn(Electron2D& e);
+    int log(DataStorage& rf, double time);
     void update(double time);
 };
 
@@ -52,6 +56,7 @@ public:
     void addMagnet(Magnet m);
     vector3d getField(vector3d position);
     vector3d actOn(Electron2D& e);
+    void log(DataStorage& magnet);
     std::vector<double> getRelativeEnterDistance(){return relativeEnterDistance;}
 };
 

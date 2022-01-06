@@ -25,6 +25,21 @@ double RFField::getField( double R ){
     return E_radial(R*1000);
 }
 
+int RFField::log( DataStorage& rf , double time){
+    int count = 0;
+    for( double i = -R2; i <= R2 ; i += 0.05){
+        for (double j = -R2; j <= R2 ; j += 0.05){
+            vector3d pos(i,j,0);
+            vector3d Efield = getField(pos);
+            if ( pos.magnitude() > R1 ){
+                rf << "t: " << time << " p: " << pos << "  E: " << Efield << "   mag: " << Efield.magnitude() <<"\n";
+                count ++;
+            }
+        }
+    }
+    return count;
+}
+
 vector3d RFField::actOn(Electron2D& e){
     vector3d Efield = getField(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
@@ -107,6 +122,17 @@ vector3d MagneticField::actOn(Electron2D& e){
     vector3d F_m = (e.vel % Bfield)*eQMratio;                                   // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();                   // Calculate a vector
     return acc;
+}
+
+void MagneticField::log(DataStorage& magnet){
+    for(double x = -2; x <= 2 ; x+=0.001){
+        for(double y = -2; y <= 2; y+=0.001){
+            vector3d v(x,y,0);
+            if ( getField(v).Z() != 0 ){
+                magnet << x << "  " << y << "\n";
+            }
+        }
+    }
 }
 
 

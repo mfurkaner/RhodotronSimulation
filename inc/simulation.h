@@ -30,7 +30,7 @@ public:
     void setPhaseLag(double phase_lag){ this->phase_lag = phase_lag;}
     void setEndTime(double end_time){ this->end_time = end_time;}
 
-    void run(DataStorage& ds, Gnuplot& gp);
+    void run(DataStorage& ds, DataStorage& rf);
     double getAverageEnergy();
     std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}
     Electron2D& getElectronWithMaxEnergy();

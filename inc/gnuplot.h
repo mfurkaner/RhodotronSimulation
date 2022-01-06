@@ -1,6 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <stdio.h> 
+#include <unistd.h> 
+#include <fcntl.h> 
 #include <string.h>
 
 #define GNUPLOT_H
@@ -72,6 +75,23 @@ public:
         commands.push_back(cbrange);
     }
 
+    void enableMinorTics(){
+        commands.push_back("set mxtics");
+        commands.push_back("set mytics");
+    }
+
+    void enableGrid(){
+        commands.push_back("set grid");
+    }
+
+    void setCbTic(double ticLen){
+        commands.push_back("set cbtics " + std::to_string(ticLen));
+    }
+    
+    void disableLegend(){
+        commands.push_back("unset key");
+    }
+
     void setRatio(double num){
         std::string rat = "set size ratio ";
         rat += std::to_string(num); 
@@ -90,6 +110,11 @@ public:
 
     void plot(){
         fprintf(gnupipe, "%s\n", plotcommand.c_str());
+    }
+
+    void waitUntilDone(){
+        std::cout << "Rendering the simulation results.\n"; 
+        pclose(gnupipe);
     }
 
 };

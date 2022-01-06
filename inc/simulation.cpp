@@ -6,12 +6,20 @@
 #endif
 
 
-void Simulator::run(DataStorage& ds, Gnuplot& gp){
+void Simulator::run(DataStorage& path, DataStorage& rf){
+    int step = 0;
+    bool draw = false;
     while ( simulation_time < end_time ){
+        draw = false;
         E_field.update(simulation_time);
-        ds << "Time : " << simulation_time << "       ";
-        bunch.interact(E_field, B_field, simulation_time, time_interval , ds);
+        if ( step%100 == 0 ){
+            E_field.log(rf, simulation_time);
+            path << "t: " << simulation_time << "   ";
+            draw = true;
+        }
+        bunch.interact(E_field, B_field, simulation_time, time_interval , path, draw);
         simulation_time += time_interval;
+        step++;
     }
 }
 

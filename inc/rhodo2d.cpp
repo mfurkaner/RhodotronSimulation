@@ -58,7 +58,7 @@ double Bunch2D::E_rms(){
 }
 
 
-void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds){
+void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& path, bool draw){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
             continue;
@@ -79,11 +79,9 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
             e[i].isinside = true;
             e[i].t_giris_cikis.push_back(giris_cikis_tpair(time, time));
         }
-        ds << "     acc_B : " << acc_B.magnitude();
-        double mag = e[i].vel.magnitude() ;
-        vector3d vel = e[i].vel;
-        double out = (e[i].t_giris_cikis.size() > 1) ? e[i].t_giris_cikis[1].first : 0 ;
-        ds << setprecision(4) <<"   mag : " << mag << "     vel : " << vel <<"    E : " << setprecision(6) << e[i].Et - E0 << "      pos : " << e[i].pos << "  out : "<< out << "    acc_E : "<< acc_E <<"\n";
+        if ( draw ){
+            path << setprecision(4) << "v: " << e[i].vel << "    E: " << setprecision(6) << e[i].Et - E0 << "   pos: " << e[i].pos << "   acc: "<< acc <<"\n";
+        }
         if ( e[i].Et > max_energy ){
             index_fastest = i;
             max_energy = e[i].Et;

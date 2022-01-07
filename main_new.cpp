@@ -1,8 +1,11 @@
 #include "inc/simulation.h"
+#include <chrono>
+
+using namespace std::chrono;
 
 uint64_t STEPS_TAKEN = 0;
 double GUN_ACTIVE_TIME = 1; // ns
-int NUM_OF_ELECTRONS = 1;
+int NUM_OF_ELECTRONS = 100;
 bool NOTIFICATIONS = false;
 int MAX_THREAD_COUNT = 1;
 bool MULTI_THREAD = false;
@@ -10,7 +13,9 @@ double dT = 0.001;     // ns
 double dT_out = 0.01; // ns
 
 int main(){
-    
+    auto start = high_resolution_clock::now();
+
+
     Gnuplot gp;
     gp.setRange(-1.5,1.5,-1.5,1.5);
     gp.enableMinorTics();
@@ -55,6 +60,8 @@ int main(){
     simulation.addMagnet(m1);
     simulation.addMagnet(m2);
     simulation.addMagnet(m3);
+    simulation.setNumberofElectrons(100);
+    //simulation.enableMultiThreading(5);
     simulation.run(path, rf);
     
     rf.close();
@@ -71,6 +78,10 @@ int main(){
     Magnet m(-0.13, 1, magnet_position);
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;
     */
+
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl << endl;
 
     return 0;
 }

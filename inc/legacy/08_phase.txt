@@ -1,0 +1,151 @@
+phase lag : -10
+Gecis 1) Electron with the most energy : 47) 0.475709 MeV,	RMS of bunch : 0.00901255 MeV
+Gecis 2) Electron with the most energy : 47) 0.891615 MeV,	RMS of bunch : 0.0143997 MeV
+Gecis 3) Electron with the most energy : 46) 1.2978 MeV,	RMS of bunch : 0.0188408 MeV
+Gecis 4) Electron with the most energy : 47) 1.6997 MeV,	RMS of bunch : 0.0225118 MeV
+
+
+phase lag : -9
+Gecis 1) Electron with the most energy : 46) 0.47578 MeV,	RMS of bunch : 0.00852749 MeV
+Gecis 2) Electron with the most energy : 47) 0.891583 MeV,	RMS of bunch : 0.0137317 MeV
+Gecis 3) Electron with the most energy : 45) 1.29783 MeV,	RMS of bunch : 0.0180468 MeV
+Gecis 4) Electron with the most energy : 45) 1.69979 MeV,	RMS of bunch : 0.0216129 MeV
+
+
+phase lag : -8
+Gecis 1) Electron with the most energy : 43) 0.475786 MeV,	RMS of bunch : 0.00804677 MeV
+Gecis 2) Electron with the most energy : 45) 0.891572 MeV,	RMS of bunch : 0.0130457 MeV
+Gecis 3) Electron with the most energy : 43) 1.29781 MeV,	RMS of bunch : 0.0172164 MeV
+Gecis 4) Electron with the most energy : 43) 1.69966 MeV,	RMS of bunch : 0.0206642 MeV
+
+
+phase lag : -7
+Gecis 1) Electron with the most energy : 42) 0.475773 MeV,	RMS of bunch : 0.0075177 MeV
+Gecis 2) Electron with the most energy : 42) 0.891673 MeV,	RMS of bunch : 0.0122672 MeV
+Gecis 3) Electron with the most energy : 42) 1.29794 MeV,	RMS of bunch : 0.0162698 MeV
+Gecis 4) Electron with the most energy : 42) 1.6999 MeV,	RMS of bunch : 0.0195619 MeV
+
+
+phase lag : -6
+Gecis 1) Electron with the most energy : 41) 0.475747 MeV,	RMS of bunch : 0.00700218 MeV
+Gecis 2) Electron with the most energy : 40) 0.891607 MeV,	RMS of bunch : 0.0114764 MeV
+Gecis 3) Electron with the most energy : 40) 1.29787 MeV,	RMS of bunch : 0.0152414 MeV
+Gecis 4) Electron with the most energy : 40) 1.69972 MeV,	RMS of bunch : 0.0183272 MeV
+
+
+phase lag : -5
+Gecis 1) Electron with the most energy : 40) 0.47571 MeV,	RMS of bunch : 0.00646273 MeV
+Gecis 2) Electron with the most energy : 39) 0.891608 MeV,	RMS of bunch : 0.0106674 MeV
+Gecis 3) Electron with the most energy : 38) 1.29778 MeV,	RMS of bunch : 0.0142181 MeV
+Gecis 4) Electron with the most energy : 39) 1.6997 MeV,	RMS of bunch : 0.0171075 MeV
+
+
+phase lag : -4
+Gecis 1) Electron with the most energy : 36) 0.475679 MeV,	RMS of bunch : 0.00592591 MeV
+Gecis 2) Electron with the most energy : 37) 0.891548 MeV,	RMS of bunch : 0.00981207 MeV
+Gecis 3) Electron with the most energy : 37) 1.29782 MeV,	RMS of bunch : 0.0130981 MeV
+Gecis 4) Electron with the most energy : 37) 1.69978 MeV,	RMS of bunch : 0.0157768 MeV
+
+
+phase lag : -3
+Gecis 1) Electron with the most energy : 36) 0.475814 MeV,	RMS of bunch : 0.00539601 MeV
+Gecis 2) Electron with the most energy : 36) 0.891721 MeV,	RMS of bunch : 0.00898238 MeV
+Gecis 3) Electron with the most energy : 36) 1.29799 MeV,	RMS of bunch : 0.0120416 MeV
+Gecis 4) Electron with the most energy : 36) 1.69994 MeV,	RMS of bunch : 0.0145668 MeV
+
+
+phase lag : -2
+Gecis 1) Electron with the most energy : 35) 0.475782 MeV,	RMS of bunch : 0.00487937 MeV
+Gecis 2) Electron with the most energy : 34) 0.891664 MeV,	RMS of bunch : 0.00817619 MeV
+Gecis 3) Electron with the most energy : 34) 1.29793 MeV,	RMS of bunch : 0.0110497 MeV
+Gecis 4) Electron with the most energy : 34) 1.6999 MeV,	RMS of bunch : 0.0134869 MeV
+
+
+phase lag : -1
+Gecis 1) Electron with the most energy : 32) 0.475764 MeV,	RMS of bunch : 0.00437858 MeV
+Gecis 2) Electron with the most energy : 32) 0.891649 MeV,	RMS of bunch : 0.00744385 MeV
+Gecis 3) Electron with the most energy : 32) 1.29791 MeV,	RMS of bunch : 0.0102048 MeV
+Gecis 4) Electron with the most energy : 32) 1.69976 MeV,	RMS of bunch : 0.012695 MeV
+
+
+phase lag : 0
+Gecis 1) Electron with the most energy : 30) 0.475734 MeV,	RMS of bunch : 0.00397635 MeV
+Gecis 2) Electron with the most energy : 31) 0.8916 MeV,	RMS of bunch : 0.00692816 MeV
+Gecis 3) Electron with the most energy : 31) 1.29787 MeV,	RMS of bunch : 0.00977719 MeV
+Gecis 4) Electron with the most energy : 31) 1.69983 MeV,	RMS of bunch : 0.012577 MeV
+
+
+phase lag : 1
+Gecis 1) Electron with the most energy : 29) 0.475727 MeV,	RMS of bunch : 0.00365703 MeV
+Gecis 2) Electron with the most energy : 29) 0.891617 MeV,	RMS of bunch : 0.00663657 MeV
+Gecis 3) Electron with the most energy : 29) 1.29788 MeV,	RMS of bunch : 0.00975435 MeV
+Gecis 4) Electron with the most energy : 29) 1.69973 MeV,	RMS of bunch : 0.0131322 MeV
+
+
+phase lag : 2
+Gecis 1) Electron with the most energy : 29) 0.475814 MeV,	RMS of bunch : 0.00350432 MeV
+Gecis 2) Electron with the most energy : 29) 0.891653 MeV,	RMS of bunch : 0.00675134 MeV
+Gecis 3) Electron with the most energy : 27) 1.2978 MeV,	RMS of bunch : 0.0104318 MeV
+Gecis 4) Electron with the most energy : 28) 1.6997 MeV,	RMS of bunch : 0.0146648 MeV
+
+
+phase lag : 3
+Gecis 1) Electron with the most energy : 27) 0.47578 MeV,	RMS of bunch : 0.00350781 MeV
+Gecis 2) Electron with the most energy : 28) 0.891584 MeV,	RMS of bunch : 0.0072503 MeV
+Gecis 3) Electron with the most energy : 26) 1.29783 MeV,	RMS of bunch : 0.0117117 MeV
+Gecis 4) Electron with the most energy : 26) 1.69979 MeV,	RMS of bunch : 0.0170179 MeV
+
+
+phase lag : 4
+Gecis 1) Electron with the most energy : 25) 0.475739 MeV,	RMS of bunch : 0.00378095 MeV
+Gecis 2) Electron with the most energy : 26) 0.891572 MeV,	RMS of bunch : 0.00820926 MeV
+Gecis 3) Electron with the most energy : 24) 1.29783 MeV,	RMS of bunch : 0.0136665 MeV
+Gecis 4) Electron with the most energy : 24) 1.69968 MeV,	RMS of bunch : 0.0202206 MeV
+
+
+phase lag : 5
+Gecis 1) Electron with the most energy : 23) 0.475772 MeV,	RMS of bunch : 0.00420754 MeV
+Gecis 2) Electron with the most energy : 23) 0.891672 MeV,	RMS of bunch : 0.00950343 MeV
+Gecis 3) Electron with the most energy : 23) 1.29794 MeV,	RMS of bunch : 0.0161177 MeV
+Gecis 4) Electron with the most energy : 23) 1.6999 MeV,	RMS of bunch : 0.0241341 MeV
+
+
+phase lag : 6
+Gecis 1) Electron with the most energy : 22) 0.475747 MeV,	RMS of bunch : 0.00480471 MeV
+Gecis 2) Electron with the most energy : 21) 0.891606 MeV,	RMS of bunch : 0.0110763 MeV
+Gecis 3) Electron with the most energy : 21) 1.29787 MeV,	RMS of bunch : 0.0190076 MeV
+Gecis 4) Electron with the most energy : 21) 1.69972 MeV,	RMS of bunch : 0.0286135 MeV
+
+
+phase lag : 7
+Gecis 1) Electron with the most energy : 19) 0.475742 MeV,	RMS of bunch : 0.00552264 MeV
+Gecis 2) Electron with the most energy : 20) 0.891607 MeV,	RMS of bunch : 0.0129481 MeV
+Gecis 3) Electron with the most energy : 20) 1.29775 MeV,	RMS of bunch : 0.0223845 MeV
+Gecis 4) Electron with the most energy : 20) 1.6997 MeV,	RMS of bunch : 0.0338369 MeV
+
+
+phase lag : 8
+Gecis 1) Electron with the most energy : 18) 0.475733 MeV,	RMS of bunch : 0.00634628 MeV
+Gecis 2) Electron with the most energy : 18) 0.891626 MeV,	RMS of bunch : 0.0150007 MeV
+Gecis 3) Electron with the most energy : 18) 1.29789 MeV,	RMS of bunch : 0.0260962 MeV
+Gecis 4) Electron with the most energy : 18) 1.69986 MeV,	RMS of bunch : 0.0396008 MeV
+
+
+phase lag : 9
+Gecis 1) Electron with the most energy : 17) 0.475814 MeV,	RMS of bunch : 0.00727147 MeV
+Gecis 2) Electron with the most energy : 17) 0.89172 MeV,	RMS of bunch : 0.0173019 MeV
+Gecis 3) Electron with the most energy : 17) 1.29799 MeV,	RMS of bunch : 0.0302588 MeV
+Gecis 4) Electron with the most energy : 17) 1.69994 MeV,	RMS of bunch : 0.0460471 MeV
+
+
+phase lag : 10
+Gecis 1) Electron with the most energy : 16) 0.475782 MeV,	RMS of bunch : 0.00821749 MeV
+Gecis 2) Electron with the most energy : 15) 0.891663 MeV,	RMS of bunch : 0.0197567 MeV
+Gecis 3) Electron with the most energy : 15) 1.29793 MeV,	RMS of bunch : 0.0348108 MeV
+Gecis 4) Electron with the most energy : 15) 1.6999 MeV,	RMS of bunch : 0.0532154 MeV
+
+
+Phase with the least RMS after third pass : 1
+Total steps calculated : 25183846
+Simulation finished in : 1278811 us
+

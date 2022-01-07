@@ -59,32 +59,34 @@ public:
 typedef pair<double, double> max_energy_rms_pair;
 
 class Bunch2D{
-public:
-    vector<Electron2D> e;
+private:
     int e_count = NUM_OF_ELECTRONS;
     double initial_length_ns = GUN_ACTIVE_TIME;
     double ns_between = GUN_ACTIVE_TIME/(NUM_OF_ELECTRONS - 1);
-    double RFphase_bunch;
     int index_fastest = 0;
     double max_energy = 0;
     double entry_time = 0;
-    Bunch2D( ){
-        RFphase_bunch=0;
-        for(int i = 0 ; i < NUM_OF_ELECTRONS ; i++){
+    double E_in = 0.04;
+public:
+    vector<Bunch2D> subBunchs;
+    vector<Electron2D> e;
+    Bunch2D(unsigned int num_of_electrons){
+        e_count = num_of_electrons;
+        for(int i = 0 ; i < num_of_electrons ; i++){
             e.push_back(Electron2D());
         }        
     }
-    Bunch2D( double d ){
-        RFphase_bunch=d;
-        for(int i = 0 ; i < NUM_OF_ELECTRONS ; i++){
-            e.push_back(Electron2D());
-        }
-    } 
+    Bunch2D(){
+        Bunch2D(1);
+    }
 
-    void setEin(double E_in){ for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
-
-    void interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds, bool draw);
-
+    Electron2D& getFastest();
+    void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
+    double getEin(){ return E_in;}
+    void interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& ds);
+    void divide(unsigned int num);
+    Bunch2D& subBunch(unsigned int index);
+    vector<Bunch2D*> subBunchPtr();
     double E_ave();
     double E_rms();
     void reset();

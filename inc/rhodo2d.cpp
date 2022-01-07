@@ -58,7 +58,7 @@ double Bunch2D::E_rms(){
 }
 
 
-void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& path, bool draw){
+void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& path){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
             continue;
@@ -70,7 +70,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         e[i].move(time_interval/2);
         e[i].accelerate( acc_E + acc_B , time_interval);
         e[i].move(acc_E + acc_B, time_interval/2);
-
+        /*
         if( e[i].isinside && e[i].pos.magnitude() > R2){
             e[i].isinside = false;
             e[i].t_giris_cikis[(e[i].t_giris_cikis.size() - 1)].second = time;
@@ -79,15 +79,39 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
             e[i].isinside = true;
             e[i].t_giris_cikis.push_back(giris_cikis_tpair(time, time));
         }
-        if ( draw ){
-            path << setprecision(4) << "v: " << e[i].vel << "    E: " << setprecision(6) << e[i].Et - E0 << "   pos: " << e[i].pos << "   acc: "<< acc <<"\n";
-        }
+
         if ( e[i].Et > max_energy ){
             index_fastest = i;
             max_energy = e[i].Et;
         }
+        */
     }
-    
+}
+
+void Bunch2D::divide(unsigned int num){
+    for(int i = 0; i < num ; i++){
+        Bunch2D sub( i ? e_count/num : e_count/num + e_count%num);
+        // settings
+        for(int j = 0 ; j < sub.e_count ; j++){
+            sub.e.push_back( e.at( (i ? (e_count/num)*i + e_count%num : 0)  + j ) );
+        }
+        subBunchs.push_back(sub);
+    }
+}
+
+Bunch2D& Bunch2D::subBunch(unsigned int index){
+    if(subBunchs.size() > index){
+        return subBunchs.at(index);
+    }
+    return *this;
+}
+
+vector<Bunch2D*> Bunch2D::subBunchPtr(){
+    vector<Bunch2D*> ptrv;
+    for(int i = 0; i < subBunchs.size() ; i++ ){
+        ptrv.push_back(&subBunchs[i]);
+    }
+    return ptrv;
 }
 
 void Bunch2D::print_summary(){

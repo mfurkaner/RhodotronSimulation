@@ -39,3 +39,4 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& stream, vector3d& vect);  
+std::ostream& operator<=(std::ostream& stream, vector3d& vect);  

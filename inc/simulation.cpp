@@ -6,7 +6,9 @@
 #endif
 
 
-void Simulator::run(DataStorage& path, DataStorage& rf){
+void Simulator::run(){
+    // Before starting, log the magnetic field to the mag file
+    logBfield();                                          
     if(multi_threading){
         cout << thread_count << endl;
         bunch.divide(thread_count);
@@ -14,19 +16,32 @@ void Simulator::run(DataStorage& path, DataStorage& rf){
     while ( simulation_time < end_time ){
         E_field.update(simulation_time);
         if ( total_steps%100 == 0 ){
-            E_field.log(rf, simulation_time);
-            path << "t: " << simulation_time << "   ";
-            path << setprecision(4) << "v: " << bunch.e[99].vel << "    E: " << setprecision(6) << bunch.e[99].Et - E0 << "   pos: " << bunch.e[99].pos <<"\n";
+            logEfield(simulation_time);
+            // every 100th step, log the E field
+            saveElectronsInfo(simulation_time);
         }
         if( multi_threading ){
-            MTEngine.doWork(bunch.subBunchPtr(), E_field, B_field, simulation_time, time_interval, rf);
+            MTEngine.doWork(bunch.subBunchPtr(), E_field, B_field, simulation_time, time_interval);
             MTEngine.join();
         }
         else{
-            bunch.interact(E_field, B_field, simulation_time, time_interval , path);
+            bunch.interact(E_field, B_field, simulation_time, time_interval);
         }
         simulation_time += time_interval;
         total_steps++;
+    }
+    //logPaths();
+}
+
+void Simulator::saveElectronsInfo(double time){
+    bunch.saveInfo(time);
+}
+
+void Simulator::logPaths(){
+    for(int i = 0; i < num_of_electrons ; i++){
+        pathsStorage.at(i).open();
+        bunch.e[i].loge(pathsStorage[i]);
+        pathsStorage.at(i).close();
     }
 }
 

@@ -1,13 +1,16 @@
 #include "rhodo2d.h"
 
+std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
+    (stream << log.time << "   " << log.energy << "   ") <= log.pos;
+    (stream << "   ") <= log.vel;
+    return stream;
+}
+
 #pragma region ELECTRON
 double Electron2D::get_vel(){
     return c*sqrt(Et*Et-E0*E0)/Et;
 }
 
-double Electron2D::get_travel_time(double dist){  // calculate drift time
-    return dist/get_vel();
-}
 
 void Electron2D::print_electron_info(){
     cout<<std::setprecision(4);
@@ -58,7 +61,7 @@ double Bunch2D::E_rms(){
 }
 
 
-void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval, DataStorage& path){
+void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
             continue;

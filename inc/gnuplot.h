@@ -9,12 +9,17 @@
 #define GNUPLOT_H
 
 class DataStorage{
+    public:
     std::ofstream fout;
     std::string filepath;
     bool fileIsOpen = false;
 
-    public:
+
     DataStorage(std::string filepath):filepath(filepath){}
+    DataStorage(const DataStorage& other){
+        filepath = other.filepath;
+        fileIsOpen = other.fileIsOpen;
+    }
     ~DataStorage(){ if (fileIsOpen) fout.close();}
 
     void open(){

@@ -17,7 +17,6 @@ struct InteractArguments{
     MagneticField* B;
     double time;
     double time_interval;
-    DataStorage* ds;
 };
 
 void* interactForSingleThread(void* interact_arguments);
@@ -36,13 +35,12 @@ class MultiThreadEngine{
         }
     }
 
-    void doWork(std::vector<Bunch2D*> bunch, RFField& RF, MagneticField& B, double time, double time_interval, DataStorage& ds){
+    void doWork(std::vector<Bunch2D*> bunch, RFField& RF, MagneticField& B, double time, double time_interval){
         InteractArguments i_args;
         i_args.E = &RF;
         i_args.B = &B;
         i_args.time = time;
         i_args.time_interval = time_interval;
-        i_args.ds = &ds;
         for(int i = 0; i < thread_count ; i++){
             i_args.b = bunch[i];
             cout << "thread " << i << " made it to create.  ";

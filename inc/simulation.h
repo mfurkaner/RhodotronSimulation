@@ -10,6 +10,7 @@
 #ifndef MTENGINE_H
     #include "multithreadengine.h"
 #endif
+#include <string>
 
 class Simulator{        // E in MV/m,   En in MeV,   B in T,    t in
 private:
@@ -26,6 +27,9 @@ private:
     uint64_t num_of_electrons = 1;
     unsigned int thread_count = 1;
     bool multi_threading = false;
+    DataStorage EfieldStorage = DataStorage("xy/rf.txt");
+    DataStorage BfieldStorage = DataStorage("xy/magnet.txt");
+    vector<DataStorage> pathsStorage;
 public:
     Simulator(double phase_lag) : phase_lag(phase_lag){
         E_field = RFField(phase_lag);
@@ -50,9 +54,31 @@ public:
     void addMagnet(Magnet m);
     void setPhaseLag(double phase_lag){ this->phase_lag = phase_lag;}
     void setEndTime(double end_time){ this->end_time = end_time;}
+    void run();
+    void saveElectronsInfo(double time);
+    void openLogs(){
+        for(int i = 0; i < num_of_electrons ; i++){
+            string path = "xy/paths/e" + to_string(i+1) + ".txt";
+            pathsStorage.push_back(DataStorage(path));
+        }
+        EfieldStorage.open();
+        BfieldStorage.open();
+    }
+    void closeLogs(){
+        EfieldStorage.close();
+        BfieldStorage.close();
+    }
+    void logEfield(double time){
+        E_field.log(EfieldStorage, time);
+    }
+    void logBfield(){
+        B_field.log(BfieldStorage);
+    }
+    void logPaths();
 
-    void run(DataStorage& ds, DataStorage& rf);
     double getAverageEnergy();
     std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}
-    Electron2D& getElectronWithMaxEnergy();
+    Electron2D& getElectronWithMaxEnergy(){
+        return bunch.e[0];
+    }
 };

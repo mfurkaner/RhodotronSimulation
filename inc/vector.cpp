@@ -103,3 +103,8 @@ std::ostream& operator<<(std::ostream& stream, vector3d& vect){
     stream << std::setprecision(3) << "( " << vect.X() << " , " << vect.Y() << " , " << vect.Z() << " )";
     return stream;
 }
+
+std::ostream& operator<=(std::ostream& stream, vector3d& vect){
+    stream << std::setprecision(4) << vect.X() << "   " << vect.Y() << "   " << vect.Z();
+    return stream;
+}

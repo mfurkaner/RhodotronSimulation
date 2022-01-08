@@ -8,7 +8,7 @@ int getrusage(int who, struct rusage *usage);
 using namespace std::chrono;
 
 uint64_t STEPS_TAKEN = 0;
-double GUN_ACTIVE_TIME = 2; // ns
+double GUN_ACTIVE_TIME = 0.8; // ns
 int NUM_OF_ELECTRONS = 100;
 bool NOTIFICATIONS = false;
 int MAX_THREAD_COUNT = 1;
@@ -31,7 +31,7 @@ int main(){
     Magnet m2(-0.039, 0.15, magnet_position2);
     Magnet m3(-0.054, 0.15, magnet_position3);
 
-    Simulator simulation(-5);
+    Simulator simulation(0);
     simulation.addMagnet(m1);
     simulation.addMagnet(m2);
     simulation.addMagnet(m3);

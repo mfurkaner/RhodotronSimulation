@@ -15,7 +15,7 @@ void Simulator::run(){
     }
     while ( simulation_time < end_time ){
         E_field.update(simulation_time);
-        if ( total_steps%100 == 0 ){
+        if ( total_steps%log_interval() == 0 ){
             logEfield(simulation_time);
             // every 100th step, log the E field
             saveElectronsInfo(simulation_time);
@@ -38,6 +38,7 @@ void Simulator::saveElectronsInfo(double time){
 }
 
 void Simulator::logPaths(){
+    system("rm xy/paths/**");
     for(int i = 0; i < num_of_electrons ; i++){
         pathsStorage.at(i).open();
         bunch.e[i].loge(pathsStorage[i]);

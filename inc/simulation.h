@@ -57,6 +57,7 @@ public:
     void run();
     void saveElectronsInfo(double time);
     void openLogs(){
+
         for(int i = 0; i < num_of_electrons ; i++){
             string path = "xy/paths/e" + to_string(i+1) + ".txt";
             pathsStorage.push_back(DataStorage(path));
@@ -75,6 +76,10 @@ public:
         B_field.log(BfieldStorage);
     }
     void logPaths();
+
+    unsigned int log_interval(){
+        return 0.1/time_interval;
+    }
 
     double getAverageEnergy();
     std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}

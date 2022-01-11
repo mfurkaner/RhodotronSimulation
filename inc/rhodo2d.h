@@ -52,7 +52,9 @@ public:
     void print_electron_info();
     void move(double dt);
     void move(vector3d acc, double dt);
+    void move(vector3d acc, vector3d jerk, double dt);
     void accelerate(vector3d acc, double dt);
+    void accelerate(vector3d acc, vector3d jerk, double dt);
 
     void saveInfo(double t){
         ElectronLog info;

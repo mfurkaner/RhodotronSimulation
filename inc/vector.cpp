@@ -65,6 +65,10 @@ vector3d vector3d::operator% (vector3d other){
     return crossed;
 }
 
+bool vector3d::operator==(vector3d other){
+    return x == other.x && y == other.y && z == other.z;
+}
+
 double vector3d::magnitude(){
     return sqrt( x*x + y*y + z*z );
 }

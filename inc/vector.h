@@ -27,6 +27,7 @@ public:
     void operator*=(double);  
     vector3d operator/(double);  
     void operator/=(double);  
+    bool operator==(vector3d);
 
     double operator*(vector3d);             // DOT PRODUCT
     vector3d operator%(vector3d);           // CROSS PRUDUCT

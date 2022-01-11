@@ -75,7 +75,7 @@ double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
 
 bool isInsideHalfSphere(vector3d e_position, double r, vector3d hs_position){
     vector3d relative = e_position - hs_position;                                       // get the relative position of electron with respect to magnet center
-    if ( relative.magnitude() <= r && relative * hs_position.direction() > 0){          // if the relative distance is less than r && relative doesn't have opposite direction
+    if ( relative.magnitude() <= r && relative * hs_position.direction() >= 0){          // if the relative distance is less than r && relative doesn't have opposite direction
         return true;                                                                    // electron is inside the half sphere
     }
     return false;
@@ -122,6 +122,18 @@ vector3d MagneticField::actOn(Electron2D& e){
     vector3d F_m = (e.vel % Bfield)*eQMratio;                                   // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();                   // Calculate a vector
     return acc;
+}
+
+vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){
+    if(acc == vector3d(0,0,0)){
+        return vector3d(0,0,0);
+    }
+    vector3d Bfield = getField(pos);   
+    vector3d F_m = (vel % Bfield)*eQMratio;        
+    vector3d derF_m = (acc % Bfield)*eQMratio;
+    double A = acc * vel / (c*c);
+    A *= -2*(1 - vel*vel/(c*c));
+    return (vel*(acc * F_m)/(c*c) + vel*(vel*derF_m)/(c*c) + acc*(vel*F_m)/(c*c) - derF_m)*A;
 }
 
 void MagneticField::log(DataStorage& magnet){

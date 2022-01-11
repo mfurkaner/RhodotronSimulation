@@ -25,13 +25,25 @@ void Electron2D::move(double dt){
 }
 
 void Electron2D::move(vector3d acc, double dt){
-    pos += vel*(dt*ns) + acc*(dT*ns)*(dT*ns)/2;
+    pos += vel*(dt*ns) + acc*(dt*ns)*(dt*ns)/2;
+}
+
+void Electron2D::move(vector3d acc, vector3d jerk, double dt){
+    pos += vel*(dt*ns) + acc*(dt*ns)*(dt*ns)/2 + jerk*(dt*ns*dt*ns*dt*ns)/6 ;
+}
+
+void Electron2D::accelerate(vector3d acc, vector3d jerk, double dt){
+    vel += acc*(dt*ns) + jerk*(dt*ns*dt*ns)/2;  
+    Et = gamma()*E0;                                                
 }
 
 void Electron2D::accelerate(vector3d acc, double dt){
     vel += acc*(dt*ns);  
     Et = gamma()*E0;                                                
 }
+
+
+
 
 #pragma endregion ELECTRON
 
@@ -69,10 +81,14 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         vector3d acc_E = E.actOn(e[i]);
         vector3d acc_B = B.actOn(e[i]);
         vector3d acc = acc_E + acc_B;
-
-        e[i].move(time_interval/2);
-        e[i].accelerate( acc_E + acc_B , time_interval);
-        e[i].move(acc_E + acc_B, time_interval/2);
+        vector3d jerk = B.getJerk(e[i].pos, e[i].vel, acc);
+        if ( time > 6 && time < 7){
+            vector3d v = (jerk*time_interval*time_interval*ns*ns/2);
+            cout << v << "\n";
+        }
+        e[i].move( acc, jerk, time_interval/2);
+        e[i].accelerate( acc, jerk, time_interval);
+        e[i].move( acc, jerk, time_interval/2);
         /*
         if( e[i].isinside && e[i].pos.magnitude() > R2){
             e[i].isinside = false;

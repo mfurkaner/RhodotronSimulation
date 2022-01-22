@@ -5,39 +5,10 @@
     #include "rhodo2d.h"
 #endif
 
+/////////           RF FIELD
 void RFField::update(double time){
     double w = 2 * M_PI * frequency / 1000;
     E = sin(w*time + phase_lag*deg_to_rad)*E_max;
-}
-
-double RFField::E_radial(double R){
-    double E_zero = E*Emax_pos/R;
-    double res = E_zero*((R < -R1*1000)*(R > -R2*1000) | (R < R2*1000)*(R > R1*1000));
-    return res;
-}
-
-vector3d RFField::getField(vector3d position){
-    double radial = E_radial( position.magnitude()*1000 );
-    return position.direction() * radial;
-}
-
-double RFField::getField( double R ){
-    return E_radial(R*1000);
-}
-
-int RFField::log( DataStorage& rf , double time){
-    int count = 0;
-    for( double i = -R2; i <= R2 ; i += 0.05){
-        for (double j = -R2; j <= R2 ; j += 0.05){
-            vector3d pos(i,j,0);
-            vector3d Efield = getField(pos);
-            if ( pos.magnitude() > R1 ){
-                rf << "t: " << time << " p: " << pos << "  E: " << Efield << "   mag: " << Efield.magnitude() <<"\n";
-                count ++;
-            }
-        }
-    }
-    return count;
 }
 
 vector3d RFField::actOn(Electron2D& e){
@@ -47,15 +18,54 @@ vector3d RFField::actOn(Electron2D& e){
     return acc;
 }
 
+/////////           Coaxial RF FIELD
+vector3d CoaxialRFField::actOn(Electron2D& e){
+    vector3d Efield = getField(e.pos);                            // Calculate E vector
+    vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
+    vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
+    return acc;
+}
+
+double CoaxialRFField::E_radial(double R){
+    double E_zero = E*E_max_pos/R;
+    double res = E_zero*((R < -r1)*(R > -r2) | (R < r2)*(R > r1));
+    return res;
+}
+
+vector3d CoaxialRFField::getField(vector3d position){
+    double radial = E_radial( position.magnitude() );
+    return position.direction() * radial;
+}
+
+double CoaxialRFField::getField( double R ){
+    return E_radial(R);
+}
+
+int CoaxialRFField::log( DataStorage& rf , double time){
+    int count = 0;
+    for( double i = -r2; i <= r2 ; i += 0.05){
+        for (double j = -r2; j <= r2 ; j += 0.05){
+            vector3d pos(i,j,0);
+            vector3d Efield = getField(pos);
+            if ( pos.magnitude() > r1 ){
+                rf << "t: " << time << " p: " << pos << "  E: " << Efield << "   mag: " << Efield.magnitude() <<"\n";
+                count ++;
+            }
+        }
+    }
+    return count;
+}
+
+/////////           Magnet
 double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
     Electron2D e;
     e.Et = E + E0;
     double mag = e.get_vel();
-    double min_r = R2;
+    double min_r = 0.752967;
     double optB = 0;
 
     for(double B = minB; B < maxB ; B += stepsize){
-        e.pos = vector3d(R1,0,0);
+        e.pos = vector3d(0.188241,0,0);
         e.vel = vector3d(mag, 0, 0);
         MagneticField mf;
         mf.addMagnet(B, this->r, this->position);
@@ -73,9 +83,10 @@ double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
     return optB;
 }
 
+/////////           MAGNETIC FIELD
 bool isInsideHalfSphere(vector3d e_position, double r, vector3d hs_position){
     vector3d relative = e_position - hs_position;                                       // get the relative position of electron with respect to magnet center
-    if ( relative.magnitude() <= r && relative * hs_position.direction() >= 0){          // if the relative distance is less than r && relative doesn't have opposite direction
+    if ( relative.magnitude() <= r && relative * hs_position.direction() >= -r/5){          // if the relative distance is less than r && relative doesn't have opposite direction
         return true;                                                                    // electron is inside the half sphere
     }
     return false;

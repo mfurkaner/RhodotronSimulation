@@ -1,5 +1,7 @@
 #include "rhodo2d.h"
 
+
+
 std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
     (stream << log.time << "   " << log.energy << "   ") <= log.pos;
     (stream << "   ") <= log.vel;
@@ -10,7 +12,6 @@ std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
 double Electron2D::get_vel(){
     return c*sqrt(Et*Et-E0*E0)/Et;
 }
-
 
 void Electron2D::print_electron_info(){
     cout<<std::setprecision(4);
@@ -50,8 +51,8 @@ void Electron2D::accelerate(vector3d acc, double dt){
 #pragma region BUNCH
 void Bunch2D::reset(){
     for(int i = 0; i < e_count ; i++){
-        e[i].pos = vector3d(-R2, 0, 0);
-        e[i].Et = E0 + Ein/1000;
+        e[i].pos = gun_pos;
+        e[i].Et = E0 + E_in;
         e[i].vel = vector3d(e[i].get_vel(), 0, 0);
     }
 }
@@ -76,19 +77,14 @@ double Bunch2D::E_rms(){
 void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
-            continue;
+            break;
         }
         vector3d acc_E = E.actOn(e[i]);
         vector3d acc_B = B.actOn(e[i]);
         vector3d acc = acc_E + acc_B;
-        vector3d jerk = B.getJerk(e[i].pos, e[i].vel, acc);
-        if ( time > 6 && time < 7){
-            vector3d v = (jerk*time_interval*time_interval*ns*ns/2);
-            cout << v << "\n";
-        }
-        e[i].move( acc, jerk, time_interval/2);
-        e[i].accelerate( acc, jerk, time_interval);
-        e[i].move( acc, jerk, time_interval/2);
+        e[i].move( acc, time_interval/2);
+        e[i].accelerate( acc, time_interval);
+        e[i].move( acc, time_interval/2);
         /*
         if( e[i].isinside && e[i].pos.magnitude() > R2){
             e[i].isinside = false;
@@ -109,7 +105,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
 
 void Bunch2D::divide(unsigned int num){
     for(int i = 0; i < num ; i++){
-        Bunch2D sub( i ? e_count/num : e_count/num + e_count%num);
+        Bunch2D sub( i ? e_count/num : e_count/num + e_count%num, E_in, gun_pos, gun_dir, initial_length_ns );
         // settings
         for(int j = 0 ; j < sub.e_count ; j++){
             sub.e.push_back( e.at( (i ? (e_count/num)*i + e_count%num : 0)  + j ) );

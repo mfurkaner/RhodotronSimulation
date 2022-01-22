@@ -13,27 +13,46 @@
 class Electron2D;
 
 class RFField{
-private:
-    double E;
-    double E_max = Emax;
-    double E_max_pos = Emax_pos;
-    double frequency = freq;
-    double phase_lag = 0;
-    double r1 = R1;
-    double r2 = R2;
-    
-    double E_radial(double R);
+protected:
+    double E;                       // MV/m
+    double E_max = 0;               // MV/m
+    double frequency = 107.5;       // MHz
+    double phase_lag = 0;           // degree
 public:
     RFField() { update(0); };
     RFField(double phase_lag) : phase_lag(phase_lag) { update(0); }
 
+    virtual vector3d getField(vector3d position){return vector3d(0,0,0);}              // FIX
+    virtual double getField(double R){ return 0;}                         // FIX
+    virtual int log(DataStorage& rf, double time){return 0;}             // FIX
+    virtual vector3d actOn(Electron2D& e);                      
+    
+    double getE() {return E;}
+    void setEmax(double E_max) {this->E_max = E_max; update(0);}
+    void setFreq(double freq){ frequency = freq;}
+    void setPhaseLag(double phaselag){ phase_lag = phaselag; update(0);}
+    void update(double time);
+};
+
+class CoaxialRFField : public RFField{
+private:
+    double r1 = 0.188;                         // m
+    double r2 = 0.753;                         // m
+    double E_max_pos = r1;                     // m
+
+    double E_radial(double R);
+public:
+    CoaxialRFField() { update(0); };
+    CoaxialRFField(double phase_lag){ this->phase_lag = phase_lag; update(0); }
+    void setR1(double r1) {this->r1 = r1;}
+    void setR2(double r2) {this->r2 = r2;}
+    void setEmaxPos(double Emaxpos) {E_max_pos = Emaxpos;}     // m
+
     vector3d getField(vector3d position);
     double getField(double R);
-    double getE() {return E;}
-    void setEmax(double E_max) {this->E_max = E_max;}
     vector3d actOn(Electron2D& e);
+
     int log(DataStorage& rf, double time);
-    void update(double time);
 };
 
 class Magnet{

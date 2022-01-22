@@ -31,22 +31,24 @@ struct ElectronLog{
 
 
 std::ostream& operator<<(std::ostream& stream, ElectronLog& log);
-
 class Electron2D{
     vector<ElectronLog> log;
 public:
-    double Et = E0 + Ein/1000;
+    uint64_t index;
+    double Et = E0;
     vector3d pos;
     vector3d vel;
-    double RFphase = 0;
     vector< double > enerjiler;
     vector< giris_cikis_tpair > t_giris_cikis;
     bool isinside = true;
-    Electron2D(){
+    Electron2D(){}
+    Electron2D(double Ein, vector3d position, vector3d direction){
+        Et += Ein;
         t_giris_cikis.push_back(giris_cikis_tpair(0,0));
-        pos.setX(-R2);
-        vel.setX(get_vel());
+        pos = position;
+        vel = direction*get_vel();
     }
+    
     double get_vel();
     void setEin(double E_in){this->Et = E_in + E0; vel.setX(get_vel());};
     void print_electron_info();
@@ -83,30 +85,36 @@ public:
 };
 
 
-
 typedef pair<double, double> max_energy_rms_pair;
 
 class Bunch2D{
 private:
-    int e_count = NUM_OF_ELECTRONS;
-    double initial_length_ns = GUN_ACTIVE_TIME;
-    double ns_between = GUN_ACTIVE_TIME/(NUM_OF_ELECTRONS - 1);
+    int e_count = 1;
+    double initial_length_ns = 1;
+    double ns_between = 0.1;
     int index_fastest = 0;
     double max_energy = 0;
     double entry_time = 0;
     double E_in = 0.04;
+    vector3d gun_pos;
+    vector3d gun_dir;
 public:
     vector<Bunch2D> subBunchs;
     vector<Electron2D> e;
-    Bunch2D(unsigned int num_of_electrons){
+    Bunch2D(unsigned int num_of_electrons, double Ein, vector3d gunpos, vector3d gundir, double gun_ns){
+        E_in = Ein;
         e_count = num_of_electrons;
+        initial_length_ns = gun_ns;
+        gun_pos = gunpos;
+        gun_dir = gundir;
         for(int i = 0 ; i < num_of_electrons ; i++){
-            e.push_back(Electron2D());
-        }        
+            e.push_back(Electron2D(Ein, gunpos, gundir));
+        }
+        ns_between = initial_length_ns/(e_count - 1);
     }
 
     Bunch2D(){
-        Bunch2D(1);
+        Bunch2D(1, 0.4, vector3d(-0.753,0,0), vector3d(1,0,0), 0);
     }
 
     void saveInfo(double time){
@@ -116,7 +124,9 @@ public:
     }
 
     Electron2D& getFastest();
+
     void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
+    void setNSLen(double len){ initial_length_ns = len; ns_between = initial_length_ns/(e_count - 1);}
     double getEin(){ return E_in;}
     void interact(RFField& E, MagneticField& B, double time, double time_interval);
     void divide(unsigned int num);

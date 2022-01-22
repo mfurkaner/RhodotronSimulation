@@ -1,0 +1,35 @@
+emax = 0.960
+ein = 0.04
+freq = 107.5
+phaselag = 0
+endtime = 50
+dt = 0.0001
+guntime = 50
+enum = 500
+r1 = 0.188241
+r2 = 0.752967
+magrotation = 5
+addmagnet = -0.029796384 , 0.15 , <1.103>
+addmagnet = -0.041 , 0.15 , <1.14444>
+addmagnet = -0.055 , 0.15 , <1.163
+
+
+# emax = Maximum electric field strength (MV/m)
+# ein = Energy of electrons coming out of the gun (MeV)
+# freq = Frequency of the RF field (MHz)
+# phaselag = phase lag of the first electrons (degree)
+# endtime = ns to run the simulation (ns)
+# dt = time interval to do the calculations (ns)
+# guntime = how long a gun pulse is (ns)
+# enum = number of electrons to simulate in a bunch
+# r1 = radius of the inner cylinder (m)
+# r2 = radius of the outer cylinder (m)
+# epath = path to store the electric field data
+# bpath = path to store the magnetic field data
+# cfield = path to store the settings
+# ppath = path to store electron data
+# starttime = time to start firing the gun (ns)
+# multh = enable or disable multitheading
+# thcount = set the maximum thread to be used
+# magrotation = degrees of rotation to enter each magnet 
+# addmagnet = takes 3 input. (B , R, < Radial distance of center >)

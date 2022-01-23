@@ -7,7 +7,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 int getrusage(int who, struct rusage *usage);
-void plot(double, uint64_t, bool);
+void plot(Configuration& config);
 
 using namespace std::chrono;
 
@@ -70,11 +70,10 @@ int main(){
     rhodotron.run();
     rhodotron.logPaths();
     rhodotron.closeLogs();
-    void*__nullable * a;
-    pthread_join(notifier, a);
+    void* a;
+    pthread_join(notifier, &a);
+    plot(config);
     pthread_mutex_destroy(&lck);
-
-    plot(config.getETime(), config.getNumOfE(), true);
 
     
 
@@ -86,11 +85,11 @@ int main(){
 }
 
 
-void plot(double simulation_time, uint64_t NUM_OF_ELECTRONS, bool isThereMagnet){
+void plot(Configuration& config){
     Gnuplot gp;
     gp.setRange(-1.5,1.5,-1.5,1.5);
     gp.enableMinorTics();
-    gp.setCbRange(0, 1.6);
+    gp.setCbRange(0, config.getTargetEnergy());
     gp.setCbTic(0.1);
     gp.setRatio(1);
     gp.addCommand("set isosamples 500,500");
@@ -100,10 +99,10 @@ void plot(double simulation_time, uint64_t NUM_OF_ELECTRONS, bool isThereMagnet)
     gp.addCommand("set output \"out.gif\"");
     gp.addCommand("set key top left");
     
-    std::string plotCommand = "do for [i=1:" + to_string(simulation_time*10 - 1) + "] {plot \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 5:7:($13/15):($15/15) title \"RF Field\" with vectors lc 6 head filled,";
-    plotCommand += (isThereMagnet) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
+    std::string plotCommand = "do for [i=1:" + to_string(config.getETime()*10 - 1) + "] {plot \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 5:7:($13/15):($15/15) title \"RF Field\" with vectors lc 6 head filled,";
+    plotCommand += (config.areThereMagnets() ) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
     plotCommand +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
-    for( int j = 2 ; j <= NUM_OF_ELECTRONS ; j++){
+    for( int j = 2 ; j <= config.getNumOfE()*config.getNumOfB() ; j++){
         plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";
     }
     plotCommand += "}";

@@ -19,12 +19,12 @@
 
 class Simulator{        // E in MV/m,   En in MeV,   B in T,    t in
 protected:
-    Bunch2D bunch;
+    Gun gun;
     RFField E_field;    double Emax; double freq = 107.5; double phase_lag = 0; 
     MagneticField B_field;
     DataStorage EfieldStorage = DataStorage("xy/rf.txt");
     DataStorage BfieldStorage = DataStorage("xy/magnet.txt");
-    vector<DataStorage> pathsStorage;
+    vector<vector<DataStorage>> pathsStorage;
     std::string configPath = "xy/settings.txt";
     std::string pathsPath = "xy/paths/";
 
@@ -36,7 +36,9 @@ protected:
     double time_interval = 0.0001;
     uint64_t STEPS_TAKEN = 0;
     double GUN_ACTIVE_TIME = 1;         // ns
+    double GUN_PERIOD = 9.3;
     uint64_t NUM_OF_ELECTRONS = 1;
+    uint64_t NUM_OF_BUNCHS = 1;
     double Ein = 0.04;
 
     vector3d gunPosition;
@@ -58,10 +60,14 @@ public:
 
     void setdT(double dT){time_interval = dT;}
     void setEmax(double E_max){E_field.setEmax(E_max); Emax = E_max;}
-    void setEin(double E_in){ bunch.setEin(E_in); Ein = E_in;}
+    void setEin(double E_in){ gun.setEin(E_in); Ein = E_in;}
     void setNumberofElectrons(uint64_t num_of_electrons){
         this->NUM_OF_ELECTRONS = num_of_electrons;
-        bunch = Bunch2D(NUM_OF_ELECTRONS, Ein, gunPosition, gunDirection, GUN_ACTIVE_TIME);
+        gun.setNumberOfElectrons(NUM_OF_ELECTRONS);
+    }
+    void setNumberofBunchs(uint64_t num_of_bunchs){
+        NUM_OF_BUNCHS = num_of_bunchs;
+        gun.setNumberOfBunchs(NUM_OF_BUNCHS);
     }
     void setStartTime(double starttime){ simulation_time += starttime - start_time; start_time = starttime;}
     void setEndTime(double end_time){ this->end_time = end_time;}
@@ -75,7 +81,11 @@ public:
     }
     void setGunActiveTime(double gun_ns){
         GUN_ACTIVE_TIME = gun_ns;
-        bunch.setNSLen(gun_ns);
+        gun.setGunActiveTime(gun_ns);
+    }
+    void setGunPeriod(double pi){
+        GUN_PERIOD = pi;
+        gun.setGunInterval(pi);
     }
     void setGunPosition(vector3d pos){gunPosition = pos;
         setNumberofElectrons(NUM_OF_ELECTRONS);
@@ -86,6 +96,7 @@ public:
 
     void setRFPath(std::string path){EfieldStorage.filepath = path;}
     void setBPath(std::string path){BfieldStorage.filepath = path;}
+    void setPathsPath(std::string path){pathsPath = path;}
     void setConfigPath(std::string path){configPath = path;}
 
     void addMagnet(double B, double r, vector3d position);
@@ -93,9 +104,13 @@ public:
     virtual void run();
     void saveElectronsInfo(double time);
     void openLogs(){
-        for(int i = 0; i < NUM_OF_ELECTRONS ; i++){
-            string path = pathsPath + "e" + to_string( i + 1) + ".txt";
-            pathsStorage.push_back(DataStorage(path));
+        for(int i = 0; i < NUM_OF_BUNCHS; i++){
+            vector<DataStorage> ds;
+            for(int j = 0; j < NUM_OF_ELECTRONS ; j++){
+                string path = pathsPath + "e" + to_string( j + i*NUM_OF_ELECTRONS + 1) + ".txt";
+                ds.push_back(DataStorage(path));
+            }
+            pathsStorage.push_back(ds);
         }
         EfieldStorage.open();
         BfieldStorage.open();
@@ -109,11 +124,8 @@ public:
         return 0.1/time_interval;
     }
 
-    double getAverageEnergy();
-    std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}
-    Electron2D& getElectronWithMaxEnergy(){
-        return bunch.e[0];
-    }
+    //double getAverageEnergy();
+    //std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}
 
     virtual void getConfig(Configuration& config) = 0;
     virtual void logEfield(double time) = 0;

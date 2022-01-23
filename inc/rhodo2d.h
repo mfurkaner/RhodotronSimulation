@@ -125,6 +125,7 @@ public:
 
     Electron2D& getFastest();
 
+    void setEntryTime(double entry_time){this->entry_time = entry_time;}
     void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
     void setNSLen(double len){ initial_length_ns = len; ns_between = initial_length_ns/(e_count - 1);}
     double getEin(){ return E_in;}
@@ -137,4 +138,86 @@ public:
     void reset();
     void print_bunch_info();
     void print_summary();
+
+    void logPaths(vector<DataStorage>& pathStorage){
+        for(int i = 0; i < e.size() && i < pathStorage.size(); i++){
+            pathStorage[i].open();
+            e[i].loge(pathStorage[i]);
+            pathStorage[i].close();
+        }
+    }
+};
+
+
+class Gun{
+    double Ein;
+    double gun_period;
+    double gun_active_time;
+    vector3d gunpos;
+    vector3d gundir = vector3d(1,0,0);
+    uint64_t bunch_count = 0;
+    uint64_t e_per_bunch = 1;
+
+    void setNSLen(double len){ for (int i = 0; i < bunchs.size() ; i++){  bunchs[i].setNSLen(len); }}
+public:
+    Gun(){}
+    Gun(double Ein, double gun_active_time, double pulse_interval, vector3d gunpos){
+        this->Ein = Ein;
+        this->gun_active_time = gun_active_time;
+        gun_period = pulse_interval;
+        this->gunpos = gunpos;
+    }
+    vector<Bunch2D> bunchs;
+    void interact(RFField& E, MagneticField& B, double time, double time_interval){
+        int interacters = 1 + time/gun_period;
+        for(int i = 0; i < interacters && i < bunchs.size(); i++){
+            bunchs.at(i).interact(E, B, time, time_interval);
+        }
+    }
+    void addBunch(unsigned int num_of_electrons, double Ein){
+        e_per_bunch = num_of_electrons;
+        bunchs.push_back(Bunch2D(num_of_electrons, Ein, gunpos, gundir, gun_active_time));
+        bunch_count = bunchs.size();
+        bunchs[bunch_count - 1].setEntryTime( (bunch_count - 1)*gun_period );
+    }
+    void setGunActiveTime(double gt){gun_active_time = gt; setNSLen(gt);}
+    void setGunInterval(double guninterval){gun_period = guninterval;}
+    void setGunPos(vector3d gun_pos){gunpos = gun_pos;}
+    void setGunDir(vector3d gun_dir){gundir = gun_dir;}
+    void setEin(double Ein) {this->Ein = Ein ; for (int i = 0; i < bunchs.size() ; i++){ bunchs[i].setEin(Ein);}; }
+    void setNumberOfElectrons(uint64_t e_num){ 
+        e_per_bunch = e_num;
+        uint64_t bnum = bunch_count;
+        while( !bunchs.empty() ){
+            bunchs.erase(bunchs.begin());
+        }
+        bunch_count = bunchs.size();
+        for(int i = 0; i < bnum; i++){
+            addBunch(e_num, Ein);
+        }
+    }
+    void setNumberOfBunchs(uint64_t b_num){
+        while( !bunchs.empty() ){
+            bunchs.erase(bunchs.begin());
+        }
+        bunch_count = bunchs.size();
+        for(int i = 0; i < b_num; i++){
+            addBunch(e_per_bunch, Ein);
+        }
+    }
+    
+    void saveInfo(double time){
+        for(int i = 0; i< bunchs.size(); i++){
+            bunchs[i].saveInfo(time);
+        }
+    }
+
+    void logPaths(vector<vector<DataStorage>>& pathsStorage, std::string pathsPath){
+        std::string rmcmd = "rm " + pathsPath + "**";
+        system(rmcmd.c_str());
+        for(int i = 0 ; i < bunchs.size() ; i++){
+            bunchs[i].logPaths(pathsStorage.at(i));
+        }
+    }
+
 };

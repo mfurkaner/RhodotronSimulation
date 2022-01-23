@@ -12,6 +12,8 @@ enum AvailableConfigIndex{
     guntime, _enum, multh,
     thcount, _r1, _r2, ein,
     addmagnet, magrotation,
+    bunchnum, gunperiod,
+    targeten,
 
     endofconfig
 };
@@ -24,7 +26,10 @@ private:
         "starttime", "endtime", "dt", 
         "guntime", "enum", "multh", 
         "thcount", "r1", "r2", "ein", 
-        "addmagnet", "magrotation"};
+        "addmagnet", "magrotation",
+        "bunchnum", "gunperiod",
+        "targeten"
+        };
     std::ifstream fin;
     std::string filepath;
     bool fileIsOpen = false;
@@ -40,13 +45,16 @@ private:
     double etime;           bool eTimeIsSet = false;
     double dT;              bool dTIsSet = false;
     double gun_time;        bool gunTimeIsSet = false;
+    double gun_period;  bool gunPeriodIsSet = false;
     double num_of_e;        bool enumIsSet = false;
+    double num_of_bunch;    bool bnumIsSet = false;
     bool multi_thread;      bool mtIsSet = false;
     unsigned int th_count;  bool thCountIsSet = false;
     double r1;              bool r1IsSet = false;
     double r2;              bool r2IsSet = false;
     double Ein;             bool EinIsSet = false;
     double mag_rotation;    bool magRotIsSet = false;
+    double target_energy = 2 ; bool targetEnSet = false;
 
     double magB;
     double magR;
@@ -57,24 +65,27 @@ public:
     Configuration(std::string filepath):filepath(filepath){}
 
     void print(){
-        cout << "\n-- Simulation Configuration --\n";
+        cout << "\n -- Simulation Configuration --\n";
         if (isEmaxSet()) cout << "Emax : " << Emax << "\tMV/m\n";
         if (isFreqSet()) cout << "Freq : " << freq << "\tMHz\n";
         if (isPhaseLagSet()) cout << "Phase Lag : " << phase_lag << "\tdegree\n";
         if (isEPathSet()) cout << "E_path : " << e_path << "\n";
         if (isBPathSet()) cout << "B_path : " << b_path << "\n";
-        //if (isPPathSet()) setPath(getPpath());
+        if (isPPathSet()) cout << "P_path : " << p_path << "\n";
         if (isCPathSet()) cout << "C_path : " << c_path << "\n";
         if (isSTimeSet()) cout << "StartTime : " << stime << "\tns\n";
         if (isETimeSet()) cout << "EndTime : " << etime << "\tns\n";
         if (isdTSet()) cout << "dT : " << dT << "\tns\n";
         if (isGunTimeSet()) cout << "guntime : " << gun_time << "\tns\n";
+        if (isGunPeriodSet()) cout << "gunperiod : " << gun_period << "\tns\n";
         if (isNumOfESet()) cout << "enum : " << num_of_e << "\n";
+        if (isNumOfBunchSet()) cout << "bunchnum : " << num_of_bunch << "\n";
         if (isMTSet()) cout << "MT : " << multi_thread << "\n";
         if (isR1Set()) cout << "R1 : " << r1 << "\tm\n";
         if (isR2Set()) cout << "R2 : " << r2 << "\tm\n";
-        if (isEinSet()) cout << "Ein : " << Ein << "\tMeV\n";
         if (magnets.size()) cout << "Magnet count :\t" << magnets.size() << "\n";
+        if (isEinSet()) cout << "Ein : " << Ein << "\tMeV\n";
+        if (isTargetEnSet()) cout << "TargetE : " << target_energy << "\tMeV\n";
         cout << "--------------------------------\n\n";
     }
 
@@ -89,12 +100,15 @@ public:
     double getETime(){return etime;}
     double getdT(){return dT;}
     double getGunTime(){return gun_time;}
+    double getGunPeriod(){return gun_period;}
     double getNumOfE(){return num_of_e;}
+    double getNumOfB(){return num_of_bunch;}
     bool getMultiThread(){return multi_thread;}
     unsigned int getThCount(){return th_count;}
     double getR1(){return r1;}
     double getR2(){return r2;}
     double getEin(){return Ein;}
+    double getTargetEnergy(){return target_energy;}
 
     bool isEmaxSet(){return EmaxIsSet;}
     bool isFreqSet(){return freqIsSet;}
@@ -107,12 +121,15 @@ public:
     bool isETimeSet(){return eTimeIsSet;}
     bool isdTSet(){return dTIsSet;}
     bool isGunTimeSet(){return gunTimeIsSet;}
+    bool isGunPeriodSet(){return gunPeriodIsSet;}
     bool isNumOfESet(){return enumIsSet;}
+    bool isNumOfBunchSet(){return bnumIsSet;}
     bool isMTSet(){return mtIsSet;}
     bool isThCountSet(){return thCountIsSet;}
     bool isR1Set(){return r1IsSet;}
     bool isR2Set(){return r2IsSet;}
     bool isEinSet(){return EinIsSet;}
+    bool isTargetEnSet(){return targetEnSet;}
     bool areThereMagnets(){return magnets.size() != 0;}
 
     void logConfiguration(std::string logpath){
@@ -141,7 +158,6 @@ public:
                     break;
                 }
             }
-
             switch (i)
             {
             case emax:
@@ -228,6 +244,18 @@ public:
             case magrotation:
                 mag_rotation = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
                 magRotIsSet = true;
+                break;
+            case bunchnum:
+                num_of_bunch = atoll( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
+                bnumIsSet = true;
+                break;
+            case gunperiod:
+                gun_period = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
+                gunPeriodIsSet = true;
+                break;
+            case targeten:
+                target_energy = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
+                targetEnSet = true;
                 break;
             default:
                 break;

@@ -76,7 +76,7 @@ double Bunch2D::E_rms(){
 
 void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
-        if ( time < i*ns_between){
+        if ( time < i*ns_between + entry_time){
             break;
         }
         vector3d acc_E = E.actOn(e[i]);

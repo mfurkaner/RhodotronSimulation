@@ -17,7 +17,7 @@ struct simtime{
     double end_time;
 };
 
-pthread_mutex_t lck;
+mutex mutex_lock;
 
 void* UIThreadWork(void* arg){
     for(int i = 0; i < 13; i++){
@@ -25,14 +25,14 @@ void* UIThreadWork(void* arg){
     }
     cout << "...Simulation is running...\nV";
     for(int i = 0; i < 50; i++){
-        cout << " ";
+        cout << "_";
     }
     cout << "V\n[" << flush;
     simtime sim = *(simtime*)arg;
     double piece = (sim.end_time - sim.start_time)/50;
-    pthread_mutex_lock(&lck);
+    mutex_lock.lock();
     double simtime = *(sim.simulation_time);
-    pthread_mutex_unlock(&lck);
+    mutex_lock.unlock();
     int count = 0;
     while(simtime < sim.end_time){
         int a = simtime / piece ;
@@ -40,10 +40,10 @@ void* UIThreadWork(void* arg){
             cout << "#" << flush;
             count++;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        pthread_mutex_lock(&lck);
+        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        mutex_lock.lock();
         simtime = *(sim.simulation_time);
-        pthread_mutex_unlock(&lck);
+        mutex_lock.unlock();
     }
     cout << "#]\n\n" << flush;
     cout << "     ...Simulation is finished successfully...\n\n" << flush;
@@ -63,7 +63,6 @@ int main(){
     notifierarg.start_time = config.getSTime();
     notifierarg.end_time = config.getETime();
     notifierarg.simulation_time = rhodotron.getTimePtr();
-    pthread_mutex_init(&lck, NULL);
     pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
 
     rhodotron.openLogs();
@@ -72,15 +71,14 @@ int main(){
     rhodotron.closeLogs();
     void* a;
     pthread_join(notifier, &a);
+
+    auto sim_stop = high_resolution_clock::now();
+    auto sim_time = duration_cast<microseconds>(sim_stop - start);
     plot(config);
-    pthread_mutex_destroy(&lck);
-
-    
-
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<microseconds>(stop - start);
-    cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl;
-
+    auto render_stop = high_resolution_clock::now();
+    auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
+    cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
+    cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
     return 0;
 }
 

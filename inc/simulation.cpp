@@ -9,6 +9,7 @@
 void Simulator::run(){
     // Before starting, log the magnetic field to the mag file
     logBfield();      
+    cout << "you are in simulator::run " << endl;
     /*                                    
     if(MULTI_THREAD){
         cout << MAX_THREAD_COUNT << endl;
@@ -121,16 +122,15 @@ void RhodotronSimulator::updateSimulation(){
 // r1
 // r2
 
-extern pthread_mutex_t lck;
+extern mutex mutex_lock;
 
 void RhodotronSimulator::run(){                                 // TODO : implement Multithreading
     // Before starting, log the magnetic field to the mag file
-    logBfield();   
-    /*                                       
+    logBfield();                           
     if(MULTI_THREAD){
-        cout << MAX_THREAD_COUNT << endl;
-        bunch.divide(MAX_THREAD_COUNT);
-    }*/
+        
+        gun.bunchs[0].divide(MAX_THREAD_COUNT);
+    }
     while ( simulation_time < end_time ){
         E_field.update(simulation_time);
         if ( STEPS_TAKEN%log_interval() == 0 ){
@@ -139,16 +139,19 @@ void RhodotronSimulator::run(){                                 // TODO : implem
             saveElectronsInfo(simulation_time);
         }
         if( MULTI_THREAD ){
-            //MTEngine.doWork(bunch.subBunchPtr(), E_field, B_field, simulation_time, time_interval);
-            //MTEngine.join();
+            MTEngine.doWork(gun.bunchs[0].subBunchPtr(), E_field, B_field, simulation_time, time_interval);
+            MTEngine.join();
         }
         else{
             gun.interact(E_field, B_field, simulation_time, time_interval);
         }
         simulation_time += time_interval;
-        pthread_mutex_lock(&lck);
+        mutex_lock.lock();
         dummy_time = simulation_time;
-        pthread_mutex_unlock(&lck);
+        mutex_lock.unlock();
         STEPS_TAKEN++;
+    }
+    if(MULTI_THREAD){
+        gun.bunchs[0].concat();
     }
 }

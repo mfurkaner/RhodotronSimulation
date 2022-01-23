@@ -1,4 +1,5 @@
-#include <vector>
+#include <thread>         
+#include <vector>         
 #ifndef RHODO2D_H
     #include "rhodo2d.h"
 #endif
@@ -19,21 +20,14 @@ struct InteractArguments{
     double time_interval;
 };
 
-void* interactForSingleThread(void* interact_arguments);
-
+void interactForSingleThread(InteractArguments interact_arguments);
 class MultiThreadEngine{
-    std::vector<pthread_t> threads;
-    std::vector<void*> status;
+    std::vector<thread> threads = {};
     unsigned int thread_count;
 
     public:
     MultiThreadEngine(){}
-    MultiThreadEngine(unsigned int thread_count):thread_count(thread_count){
-        for(int i = 0; i < thread_count ; i++ ){
-            pthread_t t;
-            threads.push_back(t);
-        }
-    }
+    MultiThreadEngine(unsigned int thread_count):thread_count(thread_count){}
 
     void doWork(std::vector<Bunch2D*> bunch, RFField& RF, MagneticField& B, double time, double time_interval){
         InteractArguments i_args;
@@ -43,19 +37,14 @@ class MultiThreadEngine{
         i_args.time_interval = time_interval;
         for(int i = 0; i < thread_count ; i++){
             i_args.b = bunch[i];
-            cout << "thread " << i << " made it to create.  ";
-            pthread_create(&threads.at(i), NULL, interactForSingleThread, &i_args);
-            cout << "create complete\n";
+            threads.push_back(thread(interactForSingleThread, i_args));
         }
     }
 
     void join(){
-        for(int i = 0; i < thread_count ; i++){
-            void* p;
-            status.push_back(p);
-            cout << "thread " << i << " made it to join.  ";
-            pthread_join(threads.at(i), &status[i]);
-            cout << "join complete\n";
+        while(threads.size()){
+            threads.back().join();
+            threads.pop_back();
         }
     }
 

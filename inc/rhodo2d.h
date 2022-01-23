@@ -131,6 +131,7 @@ public:
     double getEin(){ return E_in;}
     void interact(RFField& E, MagneticField& B, double time, double time_interval);
     void divide(unsigned int num);
+    void concat();
     Bunch2D& subBunch(unsigned int index);
     vector<Bunch2D*> subBunchPtr();
     double E_ave();

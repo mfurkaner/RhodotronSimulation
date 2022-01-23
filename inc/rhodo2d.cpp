@@ -114,6 +114,15 @@ void Bunch2D::divide(unsigned int num){
     }
 }
 
+void Bunch2D::concat(){
+    while( !e.empty() ) e.pop_back();
+    for(int i = 0; i < subBunchs.size(); i++){
+        for(int j = 0; j < subBunchs.at(i).e.size() ; j++){
+            e.push_back(subBunchs.at(i).e.at(j));
+        }
+    }
+}
+
 Bunch2D& Bunch2D::subBunch(unsigned int index){
     if(subBunchs.size() > index){
         return subBunchs.at(index);

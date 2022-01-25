@@ -19,20 +19,61 @@ struct simtime{
 
 mutex mutex_lock;
 
+void* UIThreadWork(void* simtime_struct);
+
+int main(){
+    auto start = high_resolution_clock::now();
+    
+    Configuration config("config.in");
+    config.getConfiguration();
+    config.print();
+    RhodotronSimulator rhodotron(config);
+
+    pthread_t notifier;
+    simtime notifierarg;
+    notifierarg.start_time = config.getSTime();
+    notifierarg.end_time = config.getETime();
+    notifierarg.simulation_time = rhodotron.getTimePtr();
+
+    rhodotron.openLogs(); 
+    pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
+    rhodotron.run();
+    rhodotron.logPaths();
+    rhodotron.closeLogs();
+    void* a;
+    pthread_join(notifier, &a);
+
+    auto sim_stop = high_resolution_clock::now();
+    auto sim_time = duration_cast<microseconds>(sim_stop - start);
+    plot(config);
+    auto render_stop = high_resolution_clock::now();
+    auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
+    cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
+    cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
+    return 0;
+}
+
 void* UIThreadWork(void* arg){
-    for(int i = 0; i < 13; i++){
+    auto start = high_resolution_clock::now();
+    std::string sim_running_msg = "...Simulation is running...";
+
+    simtime sim = *(simtime*)arg;
+    double piece = (sim.end_time - sim.start_time)/50;
+
+    for(int i = 0; i < 26 - sim_running_msg.size()/2 ; i++){
         cout << " ";
     }
-    cout << "...Simulation is running...\nV";
+    cout << sim_running_msg <<"\n";
+
+    mutex_lock.lock();
+    double simtime = *(sim.simulation_time);
+    mutex_lock.unlock();
+
+    cout << "V";
     for(int i = 0; i < 50; i++){
         cout << "_";
     }
     cout << "V\n[" << flush;
-    simtime sim = *(simtime*)arg;
-    double piece = (sim.end_time - sim.start_time)/50;
-    mutex_lock.lock();
-    double simtime = *(sim.simulation_time);
-    mutex_lock.unlock();
     int count = 0;
     while(simtime < sim.end_time){
         int a = simtime / piece ;
@@ -48,38 +89,6 @@ void* UIThreadWork(void* arg){
     cout << "#]\n\n" << flush;
     cout << "     ...Simulation is finished successfully...\n\n" << flush;
     return NULL;
-}
-
-int main(){
-    auto start = high_resolution_clock::now();
-    
-    Configuration config("config.in");
-    config.getConfiguration();
-    config.print();
-    RhodotronSimulator rhodotron(config);
-
-    pthread_t notifier;
-    simtime notifierarg;
-    notifierarg.start_time = config.getSTime();
-    notifierarg.end_time = config.getETime();
-    notifierarg.simulation_time = rhodotron.getTimePtr();
-    pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
-
-    rhodotron.openLogs();
-    rhodotron.run();
-    rhodotron.logPaths();
-    rhodotron.closeLogs();
-    void* a;
-    pthread_join(notifier, &a);
-
-    auto sim_stop = high_resolution_clock::now();
-    auto sim_time = duration_cast<microseconds>(sim_stop - start);
-    plot(config);
-    auto render_stop = high_resolution_clock::now();
-    auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
-    cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
-    cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
-    return 0;
 }
 
 

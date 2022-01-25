@@ -80,7 +80,7 @@ public:
         if (isGunPeriodSet()) cout << "gunperiod : " << gun_period << "\tns\n";
         if (isNumOfESet()) cout << "enum : " << num_of_e << "\n";
         if (isNumOfBunchSet()) cout << "bunchnum : " << num_of_bunch << "\n";
-        if (isMTSet()) cout << "MT : " << multi_thread << "\n";
+        if (isMTSet()) cout << "thcount : " << th_count << "\n";
         if (isR1Set()) cout << "R1 : " << r1 << "\tm\n";
         if (isR2Set()) cout << "R2 : " << r2 << "\tm\n";
         if (magnets.size()) cout << "Magnet count :\t" << magnets.size() << "\n";
@@ -217,6 +217,8 @@ public:
             case thcount: 
                 th_count = atoi( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
                 thCountIsSet = true;
+                mtIsSet = true;
+                multi_thread = true;
                 break;
             case _r1:
                 r1 = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );

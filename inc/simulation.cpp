@@ -128,7 +128,6 @@ void RhodotronSimulator::run(){                                 // TODO : implem
     // Before starting, log the magnetic field to the mag file
     logBfield();                           
     if(MULTI_THREAD){
-        
         gun.bunchs[0].divide(MAX_THREAD_COUNT);
     }
     while ( simulation_time < end_time ){

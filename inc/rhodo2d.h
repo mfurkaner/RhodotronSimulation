@@ -158,9 +158,9 @@ class Gun{
     vector3d gundir = vector3d(1,0,0);
     uint64_t bunch_count = 0;
     uint64_t e_per_bunch = 1;
-
     void setNSLen(double len){ for (int i = 0; i < bunchs.size() ; i++){  bunchs[i].setNSLen(len); }}
 public:
+    vector<Bunch2D> bunchs;
     Gun(){}
     Gun(double Ein, double gun_active_time, double pulse_interval, vector3d gunpos){
         this->Ein = Ein;
@@ -168,7 +168,6 @@ public:
         gun_period = pulse_interval;
         this->gunpos = gunpos;
     }
-    vector<Bunch2D> bunchs;
     void interact(RFField& E, MagneticField& B, double time, double time_interval){
         int interacters = 1 + time/gun_period;
         for(int i = 0; i < interacters && i < bunchs.size(); i++){

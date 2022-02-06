@@ -1,0 +1,34 @@
+0.8 ns aktif gun için
+
+-optimum phase lag : 0 derece
+	*Gecis 1)
+		Electron with the most energy : 30) 0.475734 MeV,	RMS of bunch : 0.00397635 MeV
+		-Disaridaki toplam yol : 0.812979 m
+		-Manyetik alan dışında drift : 0.25963 m
+		-Manyetik alanda yaricap : 0.0885739 m
+		-İlk elektronun dışarıda geçirdiği süre : 7.629 ns
+		-Ortadaki elektronun dışarıda geçirdiği süre : 7.504 ns
+		-Son elektronun dışarıda geçirdiği süre : 7.48 ns
+	*Gecis 2)
+		Electron with the most energy : 30) 0.891628 MeV,	RMS of bunch : 0.0067936 MeV
+		-Disaridaki toplam yol : 1.08325 m
+		-Manyetik alan dışında drift : 0.377651 m
+		-Manyetik alanda yaricap : 0.0988975 m
+		-İlk elektronun dışarıda geçirdiği süre : 5.589 ns
+		-Ortadaki elektronun dışarıda geçirdiği süre : 5.579 ns
+		-Son elektronun dışarıda geçirdiği süre : 5.606 ns
+	*Gecis 3)
+		Electron with the most energy : 30) 1.2979 MeV,	RMS of bunch : 0.00959156 MeV
+		-Disaridaki toplam yol : 1.17046 m
+		-Manyetik alan dışında drift : 0.41573 m
+		-Manyetik alanda yaricap : 0.102228 m
+		-İlk elektronun dışarıda geçirdiği süre : 5.31 ns
+		-Ortadaki elektronun dışarıda geçirdiği süre : 5.304 ns
+		-Son elektronun dışarıda geçirdiği süre : 5.319 ns
+	*Gecis 4)
+		Electron with the most energy : 30) 1.69986 MeV,	RMS of bunch : 0.0124741 MeV
+
+Total steps calculated : 593875987
+Simulation total run time : 35.55 ns
+Simulation finished in : 29413270 us
+

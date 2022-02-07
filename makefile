@@ -18,4 +18,4 @@ $(ROBJS): %.o : %.cpp
 all: simrhodo.exe
 
 clean: 
-	rm -rf *.o *.exe
+	rm -rf *.o inc/*.o *.exe

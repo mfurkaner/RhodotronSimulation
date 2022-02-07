@@ -24,7 +24,7 @@ void* UIThreadWork(void* simtime_struct);
 int main(){
     auto start = high_resolution_clock::now();
     
-    Configuration config("config.in");
+    Configuration config("config.ini");
     config.getConfiguration();
     config.print();
     RhodotronSimulator rhodotron(config);

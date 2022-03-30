@@ -5,4 +5,4 @@
 
 
 
-![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/out.gif)
+![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/gifs/5bunch_5nsPeriod.gif)

@@ -25,7 +25,8 @@ public:
     virtual vector3d getField(vector3d position){return vector3d(0,0,0);}              // FIX
     virtual double getField(double R){ return 0;}                         // FIX
     virtual int log(DataStorage& rf, double time){return 0;}             // FIX
-    virtual vector3d actOn(Electron2D& e);                      
+    vector3d actOn(Electron2D& e);    
+    vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);                  
     
     double getE() {return E;}
     void setEmax(double E_max) {this->E_max = E_max; update(0);}
@@ -51,6 +52,7 @@ public:
     vector3d getField(vector3d position);
     double getField(double R);
     vector3d actOn(Electron2D& e);
+    vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);        
 
     int log(DataStorage& rf, double time);
 };
@@ -68,6 +70,7 @@ class Magnet{
 class MagneticField{
     std::vector<Magnet> magnets;
     int isInside(vector3d position);
+    int isInsideDebug();
     std::vector<bool> hasEntered;
     std::vector<double> relativeEnterDistance;
 public:
@@ -75,6 +78,7 @@ public:
     void addMagnet(Magnet m);
     vector3d getField(vector3d position);
     vector3d actOn(Electron2D& e);
+    vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);        
     vector3d getJerk(vector3d pos, vector3d vel, vector3d acc);
     void log(DataStorage& magnet);
     std::vector<double> getRelativeEnterDistance(){return relativeEnterDistance;}

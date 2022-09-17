@@ -16,6 +16,8 @@
 
 using namespace std;
 #define RHODO2D_H
+//#define RUNGE_KUTTA
+#define LEAP_FROG
 
 double Eradial(double r, double time, double phase);
 

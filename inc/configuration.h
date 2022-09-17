@@ -13,7 +13,7 @@ enum AvailableConfigIndex{
     thcount, _r1, _r2, ein,
     addmagnet, magrotation,
     bunchnum, gunperiod,
-    targeten,
+    targeten, output,
 
     endofconfig
 };
@@ -28,7 +28,7 @@ private:
         "thcount", "r1", "r2", "ein", 
         "addmagnet", "magrotation",
         "bunchnum", "gunperiod",
-        "targeten"
+        "targeten", "output"
         };
     std::ifstream fin;
     std::string filepath;
@@ -55,6 +55,7 @@ private:
     double Ein;             bool EinIsSet = false;
     double mag_rotation;    bool magRotIsSet = false;
     double target_energy = 2 ; bool targetEnSet = false;
+    std::string _output = "out.gif" ; bool outputIsSet = false;
 
     double magB;
     double magR;
@@ -86,6 +87,7 @@ public:
         if (magnets.size()) cout << "Magnet count :\t" << magnets.size() << "\n";
         if (isEinSet()) cout << "Ein : " << Ein << "\tMeV\n";
         if (isTargetEnSet()) cout << "TargetE : " << target_energy << "\tMeV\n";
+        if (isOutputSet()) cout << "Output : " << _output << "\n";
         cout << "--------------------------------\n\n";
     }
 
@@ -109,6 +111,7 @@ public:
     double getR2(){return r2;}
     double getEin(){return Ein;}
     double getTargetEnergy(){return target_energy;}
+    std::string getOutput(){return _output;}
 
     bool isEmaxSet(){return EmaxIsSet;}
     bool isFreqSet(){return freqIsSet;}
@@ -130,6 +133,7 @@ public:
     bool isR2Set(){return r2IsSet;}
     bool isEinSet(){return EinIsSet;}
     bool isTargetEnSet(){return targetEnSet;}
+    bool isOutputSet(){return outputIsSet;}
     bool areThereMagnets(){return magnets.size() != 0;}
 
     void logConfiguration(std::string logpath){
@@ -258,6 +262,12 @@ public:
             case targeten:
                 target_energy = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
                 targetEnSet = true;
+                break;
+            case output:
+                cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
+                cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                _output = cmd;
+                outputIsSet = true;
                 break;
             default:
                 break;

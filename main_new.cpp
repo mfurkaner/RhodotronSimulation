@@ -70,14 +70,13 @@ void* UIThreadWork(void* arg){
     mutex_lock.unlock();
 
     cout << "V";
-    for(int i = 0; i < 50; i++){
+    for(int i = 0; i < 51; i++){
         cout << "_";
     }
     cout << "V\n[" << flush;
     int count = 0;
-    while(simtime < sim.end_time){
-        int a = simtime / piece ;
-        if( a > count ){
+    while(simtime < sim.end_time || count < 50){
+        if( simtime > count * piece ){
             cout << "#" << flush;
             count++;
         }
@@ -96,18 +95,18 @@ void plot(Configuration& config){
     Gnuplot gp;
     gp.setRange(-1.5,1.5,-1.5,1.5);
     gp.enableMinorTics();
-    gp.setCbRange(0, config.getTargetEnergy());
+    gp.setCbRange(0.49, config.getTargetEnergy());
     gp.setCbTic(0.1);
     gp.setRatio(1);
     gp.addCommand("set isosamples 500,500");
     gp.addCommand("set cblabel \"Energy(MeV)\" offset 1,0,0");
     gp.addCommand("set palette rgb 33,13,10");
     gp.addCommand("set terminal gif animate delay 3");
-    gp.addCommand("set output \"out.gif\"");
+    gp.addCommand("set output \""+ config.getOutput() + "\"");
     gp.addCommand("set key top left");
     
-    std::string plotCommand = "do for [i=1:" + to_string(config.getETime()*10 - 1) + "] {plot \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 5:7:($13/15):($15/15) title \"RF Field\" with vectors lc 6 head filled,";
-    plotCommand += (config.areThereMagnets() ) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
+    std::string plotCommand = "do for [i=1:" + to_string(config.getETime()*10 - 1) + "] {plot"/* \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 5:7:($13/15):($15/15) title \"RF Field\" with vectors lc 6 head filled,"*/;
+    plotCommand += (/*config.areThereMagnets()*/ 0 ) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
     plotCommand +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
     for( int j = 2 ; j <= config.getNumOfE()*config.getNumOfB() ; j++){
         plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";

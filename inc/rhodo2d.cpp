@@ -79,27 +79,28 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         if ( time < i*ns_between + entry_time){
             break;
         }
-        vector3d acc_E = E.actOn(e[i]);
+
+        #ifdef LEAP_FROG
+        vector3d acc_E = vector3d(0,0,0);//E.actOn(e[i]);
         vector3d acc_B = B.actOn(e[i]);
+
         vector3d acc = acc_E + acc_B;
+
         e[i].move( acc, time_interval/2);
         e[i].accelerate( acc, time_interval);
         e[i].move( acc, time_interval/2);
-        /*
-        if( e[i].isinside && e[i].pos.magnitude() > R2){
-            e[i].isinside = false;
-            e[i].t_giris_cikis[(e[i].t_giris_cikis.size() - 1)].second = time;
-        }
-        else if( !e[i].isinside && e[i].pos.magnitude() <= R2){
-            e[i].isinside = true;
-            e[i].t_giris_cikis.push_back(giris_cikis_tpair(time, time));
-        }
+        #endif
 
-        if ( e[i].Et > max_energy ){
-            index_fastest = i;
-            max_energy = e[i].Et;
-        }
-        */
+        #ifdef RUNGE_KUTTA
+        vector3d run_kut_E = vector3d(0,0,0);/*E.actOnAndGetRungeKuttaCoef(e[i], time_interval);*/
+        vector3d run_kut_B = B.actOnAndGetRungeKuttaCoef(e[i], time_interval);
+
+        vector3d acc = run_kut_E + run_kut_B;
+        e[i].move(acc, time_interval/2);
+        e[i].accelerate(acc, time_interval);
+        e[i].move(acc, time_interval/2);
+        #endif
+
     }
 }
 

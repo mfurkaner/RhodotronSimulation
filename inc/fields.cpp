@@ -18,12 +18,72 @@ vector3d RFField::actOn(Electron2D& e){
     return acc;
 }
 
+vector3d RFField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+    Electron2D e_dummy;
+    e_dummy.Et = e.Et;
+    e_dummy.pos = e.pos;
+    e_dummy.vel = e.vel;
+    // get k1
+    vector3d Efield = getField(e_dummy.pos);                                        // Calculate E vector
+    vector3d F_m = Efield*1E6*eQMratio;                                             // Calculate F/m vector
+    vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      // Calculate a vector
+    // get k2
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(k1, dt/2);
+    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    F_m = Efield*1E6*eQMratio;                                                      // Calculate F/m vector
+    vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      // Calculate a vector
+    // get k3
+    e_dummy.vel = e.vel;
+    e_dummy.accelerate(k2, dt/2);
+    vector3d k3 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      // Calculate a vector
+    // get k4
+    e_dummy.vel = e.vel;
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(k3, dt);
+    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    F_m = Efield*1E6*eQMratio;   
+    vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();
+
+    return (k1 + k2*2 + k3*2 + k4)/6;
+}
+
 /////////           Coaxial RF FIELD
 vector3d CoaxialRFField::actOn(Electron2D& e){
     vector3d Efield = getField(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
     return acc;
+}
+
+vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+    Electron2D e_dummy;
+    e_dummy.Et = e.Et;
+    e_dummy.pos = e.pos;
+    e_dummy.vel = e.vel;
+    // get k1
+    vector3d Efield = getField(e_dummy.pos);                                        // Calculate E vector
+    vector3d F_m = Efield*1E6*eQMratio;                                             // Calculate F/m vector
+    vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      // Calculate a vector
+    // get k2
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(k1, dt/2);
+    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    F_m = Efield*1E6*eQMratio;                                                      // Calculate F/m vector
+    vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      // Calculate a vector
+    // get k3
+    e_dummy.vel = e.vel;
+    e_dummy.accelerate(k2, dt/2);
+    vector3d k3 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      // Calculate a vector
+    // get k4
+    e_dummy.vel = e.vel;
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(k3, dt);
+    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    F_m = Efield*1E6*eQMratio;   
+    vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();
+
+    return (k1 + k2*2 + k3*2 + k4)/6;
 }
 
 double CoaxialRFField::E_radial(double R){
@@ -101,6 +161,10 @@ int MagneticField::isInside(vector3d position){
     return -1;
 }
 
+int MagneticField::isInsideDebug(){
+    return 0;
+}
+
 void MagneticField::addMagnet(double B, double r, vector3d position){
     magnets.push_back(Magnet(B, r, position));
     hasEntered.push_back(false);
@@ -112,7 +176,7 @@ void MagneticField::addMagnet(Magnet m){
 }
 
 vector3d MagneticField::getField(vector3d position){
-    int magnet_index = isInside(position);
+    int magnet_index = isInsideDebug();
     if ( magnet_index == -1 ){
         return vector3d(0, 0, 0);
     }
@@ -125,7 +189,7 @@ vector3d MagneticField::getField(vector3d position){
 }
 
 vector3d MagneticField::actOn(Electron2D& e){
-    if (isInside(e.pos) == -1){
+    if (isInsideDebug() == -1){
         return vector3d(0,0,0);
     }
 
@@ -134,6 +198,40 @@ vector3d MagneticField::actOn(Electron2D& e){
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();                   // Calculate a vector
     return acc;
 }
+
+vector3d MagneticField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+    if (isInsideDebug() == -1){
+        return vector3d(0,0,0);
+    }
+    Electron2D e_dummy;
+    e_dummy.Et = e.Et;
+    e_dummy.pos = e.pos;
+    e_dummy.vel = e.vel;
+    // get k1
+    vector3d Bfield = getField(e.pos);                                             
+    vector3d F_m = (e_dummy.vel % Bfield)*eQMratio;                                       
+    vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();     
+    // get k2
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(k1, dt/2);
+    Bfield = getField(e_dummy.pos);                                                 
+    F_m = (e_dummy.vel % Bfield)*eQMratio;                                               
+    vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();      
+    // get k3
+    e_dummy.vel = e.vel;
+    e_dummy.accelerate(k2, dt/2);
+    vector3d k3 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();     
+    // get k4
+    e_dummy.vel = e.vel;
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(k3, dt);
+    Bfield = getField(e_dummy.pos);                                                 
+    F_m = (e_dummy.vel % Bfield)*eQMratio;  
+    vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)/(c*c))/e_dummy.gamma();
+
+    return (k1 + k2*2 + k3*2 + k4)/6;
+}
+
 
 vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){
     if(acc == vector3d(0,0,0)){

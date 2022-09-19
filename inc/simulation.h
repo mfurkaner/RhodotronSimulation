@@ -24,7 +24,7 @@ protected:
     MagneticField B_field;
     DataStorage EfieldStorage = DataStorage("xy/rf.txt");
     DataStorage BfieldStorage = DataStorage("xy/magnet.txt");
-    vector<vector<DataStorage>> pathsStorage;
+    vector<vector<DataStorage> > pathsStorage;
     std::string configPath = "xy/settings.txt";
     std::string pathsPath = "xy/paths/";
 

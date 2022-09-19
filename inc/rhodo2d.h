@@ -214,7 +214,7 @@ public:
         }
     }
 
-    void logPaths(vector<vector<DataStorage>>& pathsStorage, std::string pathsPath){
+    void logPaths(vector<vector<DataStorage> >& pathsStorage, std::string pathsPath){
         std::string rmcmd = "rm " + pathsPath + "**";
         system(rmcmd.c_str());
         for(int i = 0 ; i < bunchs.size() ; i++){

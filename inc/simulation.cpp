@@ -9,10 +9,10 @@
 void Simulator::run(){
     // Before starting, log the magnetic field to the mag file
     logBfield();      
-    cout << "you are in simulator::run " << endl;
+    //cout << "you are in simulator::run " << endl;
     /*                                    
     if(MULTI_THREAD){
-        cout << MAX_THREAD_COUNT << endl;
+        //cout << MAX_THREAD_COUNT << endl;
         bunch.divide(MAX_THREAD_COUNT);
     }*/
     while ( simulation_time < end_time ){

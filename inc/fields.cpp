@@ -139,7 +139,7 @@ double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
             }
         }
     }
-    cout << min_r << "  ";
+    //cout << min_r << "  ";
     return optB;
 }
 

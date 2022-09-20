@@ -47,7 +47,7 @@ class Gnuplot{
 
 public:
     Gnuplot(){
-        gnupipe = popen("gnuplot -persistent", "w");
+        gnupipe = popen("/opt/homebrew/bin/gnuplot -persistent", "w");
     }
     
     void setFilePath(std::string filepath){
@@ -118,7 +118,7 @@ public:
     }
 
     void waitUntilDone(){
-        std::cout << "Rendering the simulation results.\n"; 
+        //std::cout << "Rendering the simulation results.\n"; 
         pclose(gnupipe);
     }
 

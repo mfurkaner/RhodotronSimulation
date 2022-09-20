@@ -7,18 +7,18 @@ std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
     (stream << "   ") <= log.vel;
     return stream;
 }
-
+ 
 #pragma region ELECTRON
 double Electron2D::get_vel(){
     return c*sqrt(Et*Et-E0*E0)/Et;
 }
 
 void Electron2D::print_electron_info(){
-    cout<<std::setprecision(4);
+    //cout<<std::setprecision(4);
     for(int i = 0; i < t_giris_cikis.size() ; i++ ){
-        cout << "\tGecis " << i+1 << ") " << "Enerji : " << enerjiler.at(i)-E0 << " MeV, giris zamani : " << t_giris_cikis.at(i).first << " ns, cikis zamani : " << t_giris_cikis.at(i).second << " ns" << endl;
+        //cout << "\tGecis " << i+1 << ") " << "Enerji : " << enerjiler.at(i)-E0 << " MeV, giris zamani : " << t_giris_cikis.at(i).first << " ns, cikis zamani : " << t_giris_cikis.at(i).second << " ns" << endl;
     }
-    cout << "Energy : " << Et - E0 << "    Position : " << pos << "    Velocity : " << vel << endl;
+    //cout << "Energy : " << Et - E0 << "    Position : " << pos << "    Velocity : " << vel << endl;
 }
 
 void Electron2D::move(double dt){
@@ -140,16 +140,16 @@ vector<Bunch2D*> Bunch2D::subBunchPtr(){
 }
 
 void Bunch2D::print_summary(){
-  cout << "Electron with the most energy : " << index_fastest + 1 << ") " << e[index_fastest].Et - E0 << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV,\tRMS of bunch : " << E_rms() <<  " MeV" << endl;
+  //cout << "Electron with the most energy : " << index_fastest + 1 << ") " << e[index_fastest].Et - E0 << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV,\tRMS of bunch : " << E_rms() <<  " MeV" << endl;
 }
 
 void Bunch2D::print_bunch_info(){
-    cout<<std::setprecision(4);
+    //cout<<std::setprecision(4);
     for(int i = 0; i < e_count;i++){
         if( i == index_fastest ){
-        cout << "** ";
+        //cout << "** ";
         }
-        cout << "Electron " << i+1 << ":" << endl;
+        //cout << "Electron " << i+1 << ":" << endl;
         e[i].print_electron_info();
     }
     print_summary();

@@ -1,11 +1,19 @@
 #ifndef SIMULATION_H
     #include "inc/simulation.h"
 #endif
+#include "inc/gui/signal.h"
 
 #include <chrono>
 #include <thread>
 #include <sys/time.h>
 #include <sys/resource.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+
+//#define DEBUG
+
+
 int getrusage(int who, struct rusage *usage);
 void plot(Configuration& config);
 
@@ -15,13 +23,28 @@ struct simtime{
     double start_time;
     double* simulation_time;
     double end_time;
+    uint8_t* state_ptr;
+    char* pipe_name;
 };
 
 mutex mutex_lock;
+mutex state_lock;
+uint8_t state = 0x0;
+int _fd;
 
 void* UIThreadWork(void* simtime_struct);
 
-int main(){
+int main(int argc, char** argv) {
+
+    
+
+    pthread_t notifier;
+    simtime notifierarg;
+
+    if ( argc > 0  && strcmp(argv[1],"-fd") == 0 ) {
+        notifierarg.pipe_name = argv[2];
+        _fd = open(argv[2], O_WRONLY | O_APPEND | O_CREAT);
+    }
     auto start = high_resolution_clock::now();
     
     Configuration config("config.ini");
@@ -29,14 +52,19 @@ int main(){
     config.print();
     RhodotronSimulator rhodotron(config);
 
-    pthread_t notifier;
-    simtime notifierarg;
+
     notifierarg.start_time = config.getSTime();
     notifierarg.end_time = config.getETime();
     notifierarg.simulation_time = rhodotron.getTimePtr();
+    notifierarg.state_ptr = &state;
 
     rhodotron.openLogs(); 
     pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
+
+    state_lock.lock();
+    state |= SIM_RUNNING;
+    state_lock.unlock();
+
     rhodotron.run();
     rhodotron.logPaths();
     rhodotron.closeLogs();
@@ -48,45 +76,85 @@ int main(){
     plot(config);
     auto render_stop = high_resolution_clock::now();
     auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
-    cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
-    cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
+
+    if ( argc > 0  && strcmp(argv[1],"-fd") == 0 ){
+        state_lock.lock();
+        state = SIM_WORK_MASK | SIM_NOT_RUNNING;
+        write(_fd, &state, SIGNAL_SIZE);
+        close(_fd);
+        state_lock.unlock();
+    }
+
+    #ifdef DEBUG
+        cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
+        cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
+    #endif
+
     return 0;
 }
 
 void* UIThreadWork(void* arg){
+
+    int UI_WORK_PIECE = SIM_WORK_MASK;
+    #ifdef DEBUG
+        UI_WORK_PIECE = 50;
+    #endif
+
     auto start = high_resolution_clock::now();
-    std::string sim_running_msg = "...Simulation is running...";
 
     simtime sim = *(simtime*)arg;
-    double piece = (sim.end_time - sim.start_time)/50;
+    double piece = (sim.end_time - sim.start_time)/UI_WORK_PIECE;
 
-    for(int i = 0; i < 26 - sim_running_msg.size()/2 ; i++){
-        cout << " ";
-    }
-    cout << sim_running_msg <<"\n";
+    //int _fd = open(sim.pipe_name, O_WRONLY | O_APPEND | O_CREAT);
+
+    #ifdef DEBUG
+        std::string sim_running_msg = "...Simulation is running...";
+        for(int i = 0; i < 26 - sim_running_msg.size()/2 ; i++){
+            cout << " ";
+        }
+        cout << sim_running_msg <<"\n";
+    #endif
 
     mutex_lock.lock();
     double simtime = *(sim.simulation_time);
     mutex_lock.unlock();
 
-    cout << "V";
-    for(int i = 0; i < 51; i++){
-        cout << "_";
-    }
-    cout << "V\n[" << flush;
+    #ifdef DEBUG
+        cout << "V";
+        for(int i = 0; i < 51; i++){
+            cout << "_";
+        }
+        cout << "V\n[" << flush;
+    #endif
+
     int count = 0;
-    while(simtime < sim.end_time || count < 50){
+    while(simtime < sim.end_time || count < UI_WORK_PIECE){
         if( simtime > count * piece ){
-            cout << "#" << flush;
+            #ifdef DEBUG
+                cout << "#" << flush;
+            #endif
             count++;
+            state_lock.lock();
+            *sim.state_ptr = (*sim.state_ptr & ~SIM_WORK_MASK) | (count & SIM_WORK_MASK);
+            write(_fd, sim.state_ptr, SIGNAL_SIZE);
+            state_lock.unlock();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(25));
         mutex_lock.lock();
         simtime = *(sim.simulation_time);
         mutex_lock.unlock();
+
     }
-    cout << "#]\n\n" << flush;
-    cout << "     ...Simulation is finished successfully...\n\n" << flush;
+    #ifdef DEBUG
+        cout << "#]\n\n" << flush;
+        cout << "     ...Simulation is finished successfully...\n\n" << flush;
+    #endif
+
+    state_lock.lock();
+    *sim.state_ptr |= SIM_RENDERING;
+    write(_fd, sim.state_ptr, SIGNAL_SIZE);
+    state_lock.unlock();
+
     return NULL;
 }
 

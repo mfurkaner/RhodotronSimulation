@@ -27,9 +27,9 @@ void displayHelp(){
  cout << "-gt the gun active time (ns)\n";
  cout << "-dt time pass for each step inside the cavity (ns)\n";
  cout << "-dto time pass for each step outside the cavity (ns)\n";
- cout << "-L1 the total distance outside cavity after traverse1 (m)\n";
- cout << "-L2 the total distance outside cavity after traverse2 (m)\n";
- cout << "-L3 the total distance outside cavity after traverse3 (m)\n";
+ cout << "-L1 the total distance outside cavity after traverse1 (mm)\n";
+ cout << "-L2 the total distance outside cavity after traverse2 (mm)\n";
+ cout << "-L3 the total distance outside cavity after traverse3 (mm)\n";
  cout << "-phopt find the optimal phase lag (degree) -d to get details\n";
  cout << "-magopt get the optimal outside path geometry. Argument is number of magnets -d to get details\n";
  cout << "-l2opt get the optimal second magnet geometry\n";
@@ -48,6 +48,7 @@ double Eradial(double r, double time, double phase){
   double w=2*M_PI*freq/1000;
 
   double E_zero = sin(w*time+phase)*Emax*Emax_pos/r;
+//  double E_zero = sin(w*time+phase)*Emax/r;
 
   double res = E_zero*((r < -R1*1000)*(r > -R2*1000) | (r < R2*1000)*(r > R1*1000));
 

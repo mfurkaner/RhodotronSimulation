@@ -36,8 +36,6 @@ void* UIThreadWork(void* simtime_struct);
 
 int main(int argc, char** argv) {
 
-    
-
     pthread_t notifier;
     simtime notifierarg;
 

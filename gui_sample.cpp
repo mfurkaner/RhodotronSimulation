@@ -113,7 +113,7 @@ void GUI::StartSimulation(){
 
 void* GUI::SIM_SERVER_THREAD_WORK(void* sim_server_args){   
 
-    int _fd = open((char*)sim_server_args, O_RDONLY);
+    int _fd = open((char*)sim_server_args, O_RDONLY | O_CREAT );
 
     if (_fd < 0){
         std::cout << "Failed to open : " << _fd      << std::endl;

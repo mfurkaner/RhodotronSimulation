@@ -41,9 +41,10 @@ int main(int argc, char** argv) {
     pthread_t notifier;
     simtime notifierarg;
 
-    if ( argc > 0  && strcmp(argv[1],"-fd") == 0 ) {
+    if ( argc > 1  && strcmp(argv[1],"-fd") == 0 ) {
+        std::cout << argv[1] << " " << argv[2] << " recieved" << std::endl;
         notifierarg.pipe_name = argv[2];
-        _fd = open(argv[2], O_WRONLY | O_APPEND | O_CREAT);
+        _fd = open(argv[2], O_WRONLY | O_CREAT | O_APPEND);
     }
     auto start = high_resolution_clock::now();
     
@@ -79,7 +80,7 @@ int main(int argc, char** argv) {
 
     if ( argc > 0  && strcmp(argv[1],"-fd") == 0 ){
         state_lock.lock();
-        state = SIM_WORK_MASK | SIM_NOT_RUNNING;
+        state &= ~SIM_RUNNING;
         write(_fd, &state, SIGNAL_SIZE);
         close(_fd);
         state_lock.unlock();

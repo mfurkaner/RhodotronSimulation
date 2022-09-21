@@ -42,7 +42,7 @@ int main(int argc, char** argv) {
     if ( argc > 1  && strcmp(argv[1],"-fd") == 0 ) {
         std::cout << argv[1] << " " << argv[2] << " recieved" << std::endl;
         notifierarg.pipe_name = argv[2];
-        _fd = open(argv[2], O_WRONLY | O_CREAT | O_APPEND);
+        _fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
     }
     auto start = high_resolution_clock::now();
     

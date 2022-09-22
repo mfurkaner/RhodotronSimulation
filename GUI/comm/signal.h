@@ -1,0 +1,17 @@
+#ifndef SIGNAL_H
+#define SIGNAL_H
+
+
+// FLAGS
+
+enum SIM_GUI_SIGNAL : uint8_t {
+    SIM_NOT_RUNNING = 0b00000000,
+    SIM_RUNNING  = 0b00100000,
+    SIM_SIMULATING = 0b00100000,
+    SIM_RENDERING = 0b01000000,
+    SIM_WORK_MASK = 0b00011111,
+};
+
+#define SIGNAL_SIZE sizeof(uint8_t)
+
+#endif

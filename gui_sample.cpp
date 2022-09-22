@@ -9,22 +9,41 @@
 #include <iostream>
 #include <iomanip>
 #include <bitset>
+#include <fstream>
 
 #include "TGFrame.h"
 #include "TGButton.h"
-#include "TGText.h"
+#include "TGTextView.h"
+#include "TGLabel.h"
 #include "TGTextEntry.h"
 #include "TGLViewer.h"
-#include "TGPicture.h"
+#include "TRootEmbeddedCanvas.h"
+#include "TCanvas.h"
+#include "TImage.h"
+#include "TASImage.h"
+
 
 #include "inc/gui/signal.h"
+#include "inc/gui/sim_server.h"
+#include "inc/gui/sim_server.cpp"
 
 
 class GUI : public TGMainFrame {
-    pthread_t sim_server;
 
+    GUISimulationHandler sim_handler;
+    TRootEmbeddedCanvas* gif_output;
 
-    TGPicture* gif_output;
+    std::vector<std::string> configs = {
+        "emax", "ein", "targeten", "freq", "phaselag", "starttime",
+        "endtime", "dt", "guntime", "gunperiod", "enum", "bunchnum",
+        "r1", "r2", "epath", "bpath", "cfield", "ppath", "starttime",
+        "multh", "thcount", "magrotation", "addmagnet", "output"
+    };
+    std::vector<TGTextEntry*> config_entries;
+
+    TGVerticalFrame* SetupConfigurationInputs();
+    TRootEmbeddedCanvas* SetupGifCanvas();
+
     public:
 
     GUI(const TGWindow *p, UInt_t w, UInt_t h);
@@ -32,40 +51,136 @@ class GUI : public TGMainFrame {
     void CloseWindow();
 
     void StartSimulation();
-    static void* SIM_SERVER_THREAD_WORK(void* sim_server_args);
-
-
+    void PushConfigurationsToFile();
     virtual ~GUI();
 
 };
 
 
+TGVerticalFrame* GUI::SetupConfigurationInputs(){
+    TGVerticalFrame *verticalFrame = new TGVerticalFrame( this, 500, 500);
+
+    TGLayoutHints* right_layout = new TGLayoutHints(kLHintsRight, 5, 5, 5, 5);
+    TGLayoutHints* left_layout = new TGLayoutHints(kLHintsLeft, 5, 5, 5, 5);
+    TGLayoutHints* bottom_layout = new TGLayoutHints(kLHintsBottom, 5, 5, 5, 5);
+
+    for( int i = 0; i < configs.size(); i++ ){
+        TGHorizontalFrame* config_line_frame = new TGHorizontalFrame( verticalFrame, 150, 50);
+        TGTextEntry* entry = new TGTextEntry( "" , config_line_frame, 9);
+
+        config_entries.push_back(entry);
+
+        //entry->Connect("ReturnPressed()", "GUI", this, "asd");
+        entry->Resize(100, 25);
+        TGLabel* tag = new TGLabel(config_line_frame, configs[i].c_str() );
+
+        config_line_frame->AddFrame(tag, bottom_layout);
+        config_line_frame->AddFrame(entry, right_layout);
+
+        verticalFrame->AddFrame(config_line_frame, right_layout);
+    }
+    
+    return verticalFrame;
+}
+
+TRootEmbeddedCanvas* GUI::SetupGifCanvas(){
+        /*
+    gif_output = new TRootEmbeddedCanvas("output gif", frame, 200, 200);
+
+    gif_output->GetCanvas()->cd(1);
+    //TImage *image[100];
+    TASImage *image = new TASImage("1.gif", TImage::kAnimGif);
+    
+    for (int i = 0; i < 100; i++){
+        image[i] = TImage::Open("1.gif", TImage::kAnimGif).;
+    }
+    for (int i = 0; i < 100; i++){
+        image->Draw();
+        gif_output->GetCanvas()->cd(1)->Update();
+    }
+    
+    image->Draw();
+    gif_output->GetCanvas()->cd(1)->Update();
+    */
+    return new TRootEmbeddedCanvas();
+}
+
+
+void GUI::PushConfigurationsToFile() {
+    std::ofstream file;
+    file.open("config.ini", std::ios::out);
+
+    file <<     "#                  RhodoSim Configuration File\n"
+                "# ================================================================\n"
+                "#    M.Furkan Er                                     22/09/2022   \n"
+                "# ================================================================\n#\n"
+                "# emax = Maximum electric field strength (MV/m)\n"
+                "# ein = Energy of electrons coming out of the gun (MeV)\n" 
+                "# targeten = Max energy on the output gif (MeV)\n"
+                "# freq = Frequency of the RF field (MHz)\n"
+                "# phaselag = phase lag of the first electrons (degree)\n"
+                "# starttime = ns to start the simulation (ns)\n"
+                "# endtime = ns to run the simulation (ns)\n"
+                "# dt = time interval to do the calculations (ns)\n"
+                "# guntime = how long a gun pulse is (ns)\n"
+                "# gunperiod = time between two gun pulses (ns)\n"
+                "# enum = number of electrons to simulate in a bunch\n"
+                "# bunchnum = number of times the gun fires\n"
+                "# r1 = radius of the inner cylinder (m)\n"
+                "# r2 = radius of the outer cylinder (m)\n"
+                "# epath = path to store the electric field data\n"
+                "# bpath = path to store the magnetic field data\n"
+                "# cfield = path to store the settings\n"
+                "# ppath = path to store electron data\n"
+                "# starttime = time to start firing the gun (ns)\n"
+                "# multh = enable or disable multitheading\n"
+                "# thcount = set the maximum thread to be used\n"
+                "# magrotation = degrees of rotation to enter each magnet \n"
+                "# addmagnet = takes 3 input. (B , R, < Radial distance of center >)\n"
+                "# output = output file name \n" << std::endl;
+    
+    for ( int i = 0; i < configs.size(); i++ ) {
+        file << configs.at(i) << " = " << config_entries.at(i)->GetText() << (i + 1 < configs.size() ? "\n" : "");
+    }
+    file.close();
+}
+
+
 GUI::GUI(const TGWindow *p, UInt_t w, UInt_t h) : TGMainFrame(p, w, h) {
     SetCleanup(kDeepCleanup);
     
-    // Setup the main frame
-    TGHorizontalFrame* frame = new TGHorizontalFrame( this, 500, 500);
+    // Setup the button frame
+    TGHorizontalFrame* button_frame = new TGHorizontalFrame( this, 500, 500);
+    TGLayoutHints* button_frame_layout = new TGLayoutHints(kLHintsCenterX, 2, 2, 2, 2);
 
-    TGLayoutHints* frame_layout = new TGLayoutHints(kLHintsCenterX, 2, 2, 2, 2);
+    // Setup the input frame
+    TGVerticalFrame* input_frame = SetupConfigurationInputs();
+
+    TGLayoutHints* input_frame_layout = new TGLayoutHints(kLHintsCenterX, 2, 2, 2, 2); 
+
+    //SetupGifCanvas()
+
 
     // Setup the exit button
-    TGTextButton* exit_button = new TGTextButton(frame, "Exit");
-
+    TGTextButton* exit_button = new TGTextButton(button_frame, "Exit");
+    TGLayoutHints* exit_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 5, 5);
     exit_button->Connect( "Clicked()", "GUI", this, "CloseWindow()");
-    TGLayoutHints* exit_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 5, 55);
+
+    // Setup the save button
+    TGTextButton* save_button = new TGTextButton(button_frame, "Save");
+    save_button->Connect( "Clicked()", "GUI", this, "PushConfigurationsToFile()");
 
     // Setup the simulate button
-    TGTextButton* simulate_button = new TGTextButton(frame, "Simulate");
-
+    TGTextButton* simulate_button = new TGTextButton(button_frame, "Simulate");
     simulate_button->Connect("Clicked()", "GUI", this, "StartSimulation()");
-    TGLayoutHints* simulate_layout = new TGLayoutHints(kLHintsCenterX, 5,5, 55, 5);
 
-    frame->AddFrame( exit_button, exit_layout);
-    frame->AddFrame( simulate_button, exit_layout);
+    button_frame->AddFrame( exit_button, exit_layout);
+    button_frame->AddFrame( save_button, exit_layout);
+    button_frame->AddFrame( simulate_button, exit_layout);
+    //frame->AddFrame( gif_output, simulate_layout);
 
-    this->AddFrame( frame, frame_layout );
-
-    
+    this->AddFrame( button_frame, button_frame_layout );
+    this->AddFrame( input_frame, input_frame_layout );
 
 
     SetName("RhodoSim_GUI");
@@ -78,88 +193,25 @@ GUI::GUI(const TGWindow *p, UInt_t w, UInt_t h) : TGMainFrame(p, w, h) {
 }
 
 void GUI::StartSimulation(){
-    extern char** environ;
+
     std::cout << "Simulation started" << std::endl;
-    
-    pid_t pid;
-    int res;
 
-    char* args[] = {(char*)"./simulation", (char*)"-fd", (char*)"gui_pipe", nullptr};
+    PushConfigurationsToFile();
 
-    posix_spawn_file_actions_t file_actions;
-    posix_spawn_file_actions_init(&file_actions);
-    posix_spawn_file_actions_addopen(&file_actions, STDOUT_FILENO, "newout",  O_RDWR|O_TRUNC|O_CREAT, 0666);
-    
-    posix_spawnattr_t spawnattr;
+    sim_handler.spawn_server();
+    sim_handler.spawn_simulation();
 
-    posix_spawnattr_init(&spawnattr);
-
-    res = posix_spawn(&pid, "./simulation", &file_actions, nullptr, args, environ);   
-
-    if (res != 0){
-        perror("posix_spawn error");
-        std::cout <<"Spawn res : " << res << std::endl;
-        return;
-    
-    }
-    posix_spawn_file_actions_destroy(&file_actions);
-
-    void* pipe_name = malloc(strlen("gui_pipe"));
-    strcpy((char*)pipe_name, "gui_pipe");
-
-    pthread_create(&sim_server, NULL, GUI::SIM_SERVER_THREAD_WORK, (void*) "gui_pipe");
-    
-}
-
-void* GUI::SIM_SERVER_THREAD_WORK(void* sim_server_args){   
-
-    int _fd = open((char*)sim_server_args, O_RDONLY | O_CREAT | O_TRUNC, 0666);
-
-    if (_fd < 0){
-        std::cout << "Failed to open : " << _fd      << std::endl;
-        perror("open gui_pipe failed.");
-        return nullptr;
-    }
-
-    uint8_t recvd_signal;
-
-    ssize_t n ;
-    bool isRunning = true;
-    while ( isRunning ){
-        n = read(_fd, &recvd_signal, SIGNAL_SIZE);
-        if ( n <= 0){
-            continue;
-        }
-        std::bitset<8> a(recvd_signal );
-        std::cout << a << " : " << ( (recvd_signal & SIM_WORK_MASK) != SIM_WORK_MASK ? "Calculating" : "Not calculating" ) << std::endl;
-        if ( (recvd_signal & SIM_RUNNING) == 0){
-            isRunning = false;
-            break;
-        }
-        else {
-            std::cout << 100*((float)(recvd_signal & SIM_WORK_MASK))/SIM_WORK_MASK << "% done." << std::endl;
-        }
-        recvd_signal = 0;
-    }
-    std::cout << "Simulation is finished" << std::endl;
-    isRunning = false;
-
-
-    close(_fd);
-    // close frees sim_server_args for us
-    //free(sim_server_args);
-    return nullptr;
 }
 
 void GUI::CloseWindow(){
     void* a;
-    pthread_join(sim_server, &a);
+    sim_handler.join_server();
     DeleteWindow();
 }
 
 GUI::~GUI(){
     void* a;
-    pthread_kill(sim_server,9);
+    sim_handler.kill_server();
     DeleteWindow();
 }
 

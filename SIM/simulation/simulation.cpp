@@ -4,8 +4,9 @@
 
 void Simulator::run(){
     // Before starting, log the magnetic field to the mag file
+    cout << "aa you are in simulator::run " << endl;
     logBfield();      
-    //cout << "you are in simulator::run " << endl;
+    cout << "you are in simulator::run " << endl;
     /*                                    
     if(MULTI_THREAD){
         //cout << MAX_THREAD_COUNT << endl;
@@ -147,6 +148,8 @@ void RhodotronSimulator::run(){                                 // TODO : implem
         STEPS_TAKEN++;
     }
     if(MULTI_THREAD){
+    cout <<"qqa "<< MULTI_THREAD <<"\n";
         gun.bunchs[0].concat();
+    cout <<"qqb "<< MULTI_THREAD <<"\n";
     }
 }

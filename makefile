@@ -11,6 +11,7 @@ DOBJS=SIM/simulation/simulation.o SIM/rhodo/rhodo2d.o SIM/fields/fields.o SIM/ba
 
 simrhodo.exe: SIM/main_new.cpp $(DOBJS)
 	$(CPP) $(CPPFLAGS) SIM/main_new.cpp $(DOBJS) -o $@ $(LIBS) 
+	mkdir -p xy/paths
 
 $(ROBJS): %.o : %.cpp
 	$(CPP) -c $< -o $@ $(CPPFLAGS)

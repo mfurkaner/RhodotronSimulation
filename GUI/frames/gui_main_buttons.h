@@ -1,3 +1,8 @@
+#ifndef GUI_MAIN_BUTTONS_FRAME_H
+#define GUI_MAIN_BUTTONS_FRAME_H
+
+
+#include "TSystem.h"
 #include "TGFrame.h"
 #include "TGButton.h"
 #include "TGTextView.h"
@@ -23,30 +28,29 @@
 #include <bitset>
 #include <fstream>
 
-
-#ifndef GUI_MAIN_BUTTONS_FRAME_H
-#define GUI_MAIN_BUTTONS_FRAME_H
+#include "gui_frames_common.h"
 
 
 
 namespace RhodotronSimulatorGUI::frames{
 
-
-
     class MainButtonsFrame : public TGHorizontalFrame{
-        std::vector<TGTextButton*> buttons;
+        std::vector<std::shared_ptr<TGTextButton>> buttons;
+        const TGWindow* parent;
         
-
-        public:
+    public:
         static const std::vector<std::string> button_names;
+        static const std::vector<std::string> button_functions;
 
-
+        MainButtonsFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
 
     };
 
+    const std::vector<std::string> MainButtonsFrame::button_names = {"Save Config", "Load Config",  "Save Gif", "Run", "Stop", "Quit"};
 
-
+    const std::vector<std::string> MainButtonsFrame::button_functions = {"SaveConfigPressed()", "LoadConfigPressed()", "SaveGifPressed()",
+                                                                         "RunPressed()", "StopPressed()", "QuitPressed()"};
 }
 
 

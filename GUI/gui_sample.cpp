@@ -182,6 +182,7 @@ GUI::GUI(const TGWindow *p, UInt_t w, UInt_t h) : TGMainFrame(p, w, h) {
 
     this->AddFrame( button_frame, button_frame_layout );
     this->AddFrame( input_frame, input_frame_layout );
+    //((TGTextButton*)button_frame->FindObject("Exit"))->SetName("Hella!");
 
 
     SetName("RhodoSim_GUI");

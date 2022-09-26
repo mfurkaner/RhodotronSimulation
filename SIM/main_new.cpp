@@ -11,8 +11,6 @@
 
 //#define DEBUG
 
-
-int getrusage(int who, struct rusage *usage);
 void plot(Configuration& config);
 
 using namespace std::chrono;
@@ -29,6 +27,7 @@ mutex mutex_lock;
 mutex state_lock;
 uint8_t state = 0x0;
 int _fd;
+bool isService = false;
 
 void* UIThreadWork(void* simtime_struct);
 
@@ -41,6 +40,7 @@ int main(int argc, char** argv) {
         std::cout << argv[1] << " " << argv[2] << " recieved" << std::endl;
         notifierarg.pipe_name = argv[2];
         _fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+        isService = true;
     }
     auto start = high_resolution_clock::now();
     
@@ -49,14 +49,15 @@ int main(int argc, char** argv) {
     config.print();
     RhodotronSimulator rhodotron(config);
 
-
-    notifierarg.start_time = config.getSTime();
-    notifierarg.end_time = config.getETime();
-    notifierarg.simulation_time = rhodotron.getTimePtr();
-    notifierarg.state_ptr = &state;
+    if (isService) {
+        notifierarg.start_time = config.getSTime();
+        notifierarg.end_time = config.getETime();
+        notifierarg.simulation_time = rhodotron.getTimePtr();
+        notifierarg.state_ptr = &state;
+        pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
+    }
 
     rhodotron.openLogs(); 
-    pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
 
     state_lock.lock();
     state |= SIM_RUNNING;
@@ -65,8 +66,11 @@ int main(int argc, char** argv) {
     rhodotron.run();
     rhodotron.logPaths();
     rhodotron.closeLogs();
-    void* a;
-    pthread_join(notifier, &a);
+    
+    if ( isService){
+        void* a;
+        pthread_join(notifier, &a);
+    }
 
     auto sim_stop = high_resolution_clock::now();
     auto sim_time = duration_cast<microseconds>(sim_stop - start);
@@ -74,7 +78,8 @@ int main(int argc, char** argv) {
     auto render_stop = high_resolution_clock::now();
     auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
 
-    if ( argc > 0  && strcmp(argv[1],"-fd") == 0 ){
+    if ( isService ){
+        std::cout << "What are you doing here?" << std::endl;
         state_lock.lock();
         state &= ~SIM_RUNNING;
         write(_fd, &state, SIGNAL_SIZE);

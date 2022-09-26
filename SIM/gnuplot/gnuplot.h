@@ -48,7 +48,7 @@ class Gnuplot{
 
 public:
     Gnuplot(){
-        gnupipe = popen("/opt/homebrew/bin/gnuplot -persistent", "w");
+        gnupipe = popen("gnuplot -persistent", "w");
     }
     
     void setFilePath(std::string filepath){

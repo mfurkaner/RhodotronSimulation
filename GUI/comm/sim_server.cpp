@@ -1,17 +1,18 @@
 #include "sim_server.h"
 #include "signal.h"
+#include <sys/wait.h>
+#include <sys/types.h>
 
 
 const std::string GUISimulationHandler::sim_server_pipe_name = "gui_pipe";
 const std::string GUISimulationHandler::sim_stdout_redirect = "newout";
-const std::string GUISimulationHandler::sim_exe = "./simulation";
+const std::string GUISimulationHandler::sim_exe = "./simrhodo.exe";
 const std::vector<std::string> GUISimulationHandler::sim_args = { sim_exe, "-fd", sim_server_pipe_name};
 
 
 
 void GUISimulationHandler::spawn_simulation(){
     extern char** environ;
-    pid_t pid;
 
     char* args[] = {(char*)sim_args[0].c_str(), (char*)sim_args[1].c_str(), (char*)sim_args[2].c_str(), nullptr};
 
@@ -23,12 +24,25 @@ void GUISimulationHandler::spawn_simulation(){
     posix_spawnattr_t spawnattr;
     posix_spawnattr_init(&spawnattr);
     // spawn the simulation
-    int res = posix_spawn(&pid, sim_exe.c_str(), &file_actions, nullptr, args, environ);   
+    int res = posix_spawn(&_sim_pid, sim_exe.c_str(), &file_actions, nullptr, args, environ);   
 
     if (res != 0){
         perror("posix_spawn error");
     }
     posix_spawn_file_actions_destroy(&file_actions);
+}
+
+void GUISimulationHandler::kill_simulation(){
+    int status;
+    int cpid = waitpid(_sim_pid, &status, WNOHANG);
+    if (cpid < 0) return;
+    if (WIFEXITED(status) || WIFSTOPPED(status)) {
+        return;
+    }
+    std::cout << getpid() << " "<<_sim_pid << " " << WIFSIGNALED(status) << std::endl; 
+    kill(_sim_pid, SIGTERM);
+    cpid = waitpid(_sim_pid, &status, 0);
+    std::cout << getpid() << " "<<_sim_pid << " " << WIFSIGNALED(status) << std::endl; 
 }
 
 
@@ -81,6 +95,7 @@ void GUISimulationHandler::join_server(){
     void* a;
     pthread_join(worker, &a);
 }
+
 void GUISimulationHandler::kill_server(){
     pthread_kill(worker, SIGKILL);
 }

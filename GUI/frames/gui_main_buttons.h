@@ -35,7 +35,7 @@
 namespace RhodotronSimulatorGUI::frames{
 
     class MainButtonsFrame : public TGHorizontalFrame{
-        std::vector<std::shared_ptr<TGTextButton>> buttons;
+        std::vector<TGTextButton*> buttons;
         const TGWindow* parent;
         
     public:

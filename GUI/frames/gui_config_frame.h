@@ -38,8 +38,8 @@ namespace RhodotronSimulatorGUI::frames{
         static const std::string config_comment;
         static const std::vector<std::string> configs;
         static const std::vector<std::string> label_texts;
-        std::vector<std::shared_ptr<TGLabel>> labels;
-        std::vector<std::shared_ptr<TGTextEntry>> inputs;
+        std::vector<TGLabel*> labels;
+        std::vector<TGTextEntry*> inputs;
 
         const TGWindow* parent;
     

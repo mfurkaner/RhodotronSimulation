@@ -148,8 +148,6 @@ void RhodotronSimulator::run(){                                 // TODO : implem
         STEPS_TAKEN++;
     }
     if(MULTI_THREAD){
-    cout <<"qqa "<< MULTI_THREAD <<"\n";
         gun.bunchs[0].concat();
-    cout <<"qqb "<< MULTI_THREAD <<"\n";
     }
 }

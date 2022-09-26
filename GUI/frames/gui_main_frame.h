@@ -38,22 +38,13 @@
 namespace RhodotronSimulatorGUI::frames{
 
 
-    #define MAIN_FRAME_W 500
-    #define MAIN_FRAME_H 500
-
-    #define MAIN_BUTTON_FRAME_W 500
-    #define MAIN_BUTTON_FRAME_H 500
-
-    #define CONFIG_FRAME_W 500
-    #define CONFIG_FRAME_H 500
-    #define CONFIG_FRAME_LINE_W 150
-    #define CONFIG_FRAME_LINE_H 50
 
 
     class MainFrame : public TGMainFrame {
+        GUISimulationHandler sim_handler;
 
-        std::unique_ptr<MainButtonsFrame> main_buttons_frame;
-        std::unique_ptr<ConfigurationFrame> config_frame;
+        MainButtonsFrame* main_buttons_frame;
+        ConfigurationFrame* config_frame;
 
 
 

@@ -68,29 +68,29 @@ public:
     Configuration(std::string filepath):filepath(filepath){}
 
     void print(){
-        //cout << "\n -- Simulation Configuration --\n";
-        if (isEmaxSet()) //cout << "Emax : " << Emax << "\tMV/m\n";
-        if (isFreqSet()) //cout << "Freq : " << freq << "\tMHz\n";
-        if (isPhaseLagSet()) //cout << "Phase Lag : " << phase_lag << "\tdegree\n";
-        if (isEPathSet()) //cout << "E_path : " << e_path << "\n";
-        if (isBPathSet()) //cout << "B_path : " << b_path << "\n";
-        if (isPPathSet()) //cout << "P_path : " << p_path << "\n";
-        if (isCPathSet()) //cout << "C_path : " << c_path << "\n";
-        if (isSTimeSet()) //cout << "StartTime : " << stime << "\tns\n";
-        if (isETimeSet()) //cout << "EndTime : " << etime << "\tns\n";
-        if (isdTSet()) //cout << "dT : " << dT << "\tns\n";
-        if (isGunTimeSet()) //cout << "guntime : " << gun_time << "\tns\n";
-        if (isGunPeriodSet()) //cout << "gunperiod : " << gun_period << "\tns\n";
-        if (isNumOfESet()) //cout << "enum : " << num_of_e << "\n";
-        if (isNumOfBunchSet()) //cout << "bunchnum : " << num_of_bunch << "\n";
-        if (isMTSet()) //cout << "thcount : " << th_count << "\n";
-        if (isR1Set()) //cout << "R1 : " << r1 << "\tm\n";
-        if (isR2Set()) //cout << "R2 : " << r2 << "\tm\n";
-        if (magnets.size()) //cout << "Magnet count :\t" << magnets.size() << "\n";
-        if (isEinSet()) //cout << "Ein : " << Ein << "\tMeV\n";
-        if (isTargetEnSet()) //cout << "TargetE : " << target_energy << "\tMeV\n";
-        if (isOutputSet()) //cout << "Output : " << _output << "\n";
-        //cout << "--------------------------------\n\n";
+        cout << "\n -- Simulation Configuration --\n";
+        if (isEmaxSet()) cout << "Emax : " << Emax << "\tMV/m\n";
+        if (isFreqSet()) cout << "Freq : " << freq << "\tMHz\n";
+        if (isPhaseLagSet()) cout << "Phase Lag : " << phase_lag << "\tdegree\n";
+        if (isEPathSet()) cout << "E_path : " << e_path << "\n";
+        if (isBPathSet()) cout << "B_path : " << b_path << "\n";
+        if (isPPathSet()) cout << "P_path : " << p_path << "\n";
+        if (isCPathSet()) cout << "C_path : " << c_path << "\n";
+        if (isSTimeSet()) cout << "StartTime : " << stime << "\tns\n";
+        if (isETimeSet()) cout << "EndTime : " << etime << "\tns\n";
+        if (isdTSet()) cout << "dT : " << dT << "\tns\n";
+        if (isGunTimeSet()) cout << "guntime : " << gun_time << "\tns\n";
+        if (isGunPeriodSet()) cout << "gunperiod : " << gun_period << "\tns\n";
+        if (isNumOfESet()) cout << "enum : " << num_of_e << "\n";
+        if (isNumOfBunchSet()) cout << "bunchnum : " << num_of_bunch << "\n";
+        if (isMTSet()) cout << "thcount : " << th_count << "\n";
+        if (isR1Set()) cout << "R1 : " << r1 << "\tm\n";
+        if (isR2Set()) cout << "R2 : " << r2 << "\tm\n";
+        if (magnets.size()) cout << "Magnet count :\t" << magnets.size() << "\n";
+        if (isEinSet()) cout << "Ein : " << Ein << "\tMeV\n";
+        if (isTargetEnSet()) cout << "TargetE : " << target_energy << "\tMeV\n";
+        if (isOutputSet()) cout << "Output : " << _output << "\n";
+        cout << "--------------------------------\n\n";
         return;
     }
 

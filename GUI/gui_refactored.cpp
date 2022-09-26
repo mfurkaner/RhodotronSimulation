@@ -25,17 +25,19 @@
 
 
 #include "comm/signal.h"
-#include "comm/sim_server.h"
-#include "comm/sim_server.cpp"
 #include "frames/gui_main_frame.h"
 #include "frames/gui_main_frame.cpp"
-#include "frames/gui_main_buttons.cpp"
-#include "frames/gui_config_frame.cpp"
+#include "frames/subframes/gui_main_buttons.cpp"
+#include "frames/subframes/gui_config_frame.cpp"
+#include "frames/subframes/gui_render_frame.cpp"
+#include "comm/sim_server.cpp"
 
 
 
 
 void gui_refactored(){
     gSystem->cd("..");
+    //gSystem->DispatchOneEvent();
+    gSystem->ProcessEvents();
     new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot(), MAIN_FRAME_W, MAIN_FRAME_W);
 }

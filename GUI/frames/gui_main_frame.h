@@ -31,20 +31,19 @@
 #include "../comm/signal.h"
 #include "../comm/sim_server.h"
 #include "gui_frames_common.h"
-#include "gui_main_buttons.h"
-#include "gui_config_frame.h"
+#include "subframes/gui_main_buttons.h"
+#include "subframes/gui_config_frame.h"
+#include "subframes/gui_render_frame.h"
 
 
 namespace RhodotronSimulatorGUI::frames{
-
-
-
 
     class MainFrame : public TGMainFrame {
         GUISimulationHandler sim_handler;
 
         MainButtonsFrame* main_buttons_frame;
         ConfigurationFrame* config_frame;
+        RenderFrame* render_frame;
 
 
 

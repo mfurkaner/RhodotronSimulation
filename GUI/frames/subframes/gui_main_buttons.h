@@ -28,7 +28,7 @@
 #include <bitset>
 #include <fstream>
 
-#include "gui_frames_common.h"
+#include "../gui_frames_common.h"
 
 
 

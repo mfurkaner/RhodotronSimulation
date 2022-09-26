@@ -1,5 +1,4 @@
 #include "gui_main_frame.h" 
-#include "gui_config_frame.h"
 
 namespace RhodotronSimulatorGUI::frames{
 
@@ -8,9 +7,13 @@ namespace RhodotronSimulatorGUI::frames{
         SetCleanup(kDeepCleanup);
         main_buttons_frame = new MainButtonsFrame(this, MAIN_BUTTON_FRAME_W, MAIN_BUTTON_FRAME_H);
         config_frame = new ConfigurationFrame(this, CONFIG_FRAME_W, CONFIG_FRAME_H);
+        render_frame = new RenderFrame(this, RENDER_FRAME_W, RENDER_FRAME_H);
+
+        sim_handler.set_progress_bar(render_frame->GetProgressBar());
 
         this->AddFrame(main_buttons_frame, center_layout);
         this->AddFrame(config_frame, center_layout);
+        this->AddFrame(render_frame, center_layout);
 
         SetName("RhodoSim_GUI");
         SetWindowName("RhodoSim GUI");
@@ -19,6 +22,8 @@ namespace RhodotronSimulatorGUI::frames{
 
         Resize( GetDefaultSize() );
         MapWindow();
+
+        this->HideFrame(render_frame);
     }
 
     MainFrame::~MainFrame(){
@@ -52,6 +57,9 @@ namespace RhodotronSimulatorGUI::frames{
 
         sim_handler.spawn_server();
         sim_handler.spawn_simulation();
+
+        this->HideFrame(config_frame);
+        this->ShowFrame(render_frame);
     }
 
     void MainFrame::StopPressed(){

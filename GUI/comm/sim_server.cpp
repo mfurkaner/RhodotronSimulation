@@ -10,7 +10,6 @@ const std::string GUISimulationHandler::sim_exe = "./simrhodo.exe";
 const std::vector<std::string> GUISimulationHandler::sim_args = { sim_exe, "-fd", sim_server_pipe_name};
 
 
-
 void GUISimulationHandler::spawn_simulation(){
     extern char** environ;
 
@@ -65,16 +64,14 @@ void* GUISimulationHandler::sim_server_work(void* worker_args){
         if ( n <= 0){
             continue;
         }
-        std::bitset<8> a(recvd_signal );
-        std::cout << a << " : " << ( (recvd_signal & SIM_WORK_MASK) != SIM_WORK_MASK ? "Calculating" : "Not calculating" ) << std::endl;
+        
+        std::bitset<8> a(recvd_signal & SIM_WORK_MASK);
+        std::cout << a << std::endl;
+        args->progressbar->SetPosition(recvd_signal & SIM_WORK_MASK);
         if ( (recvd_signal & SIM_RUNNING) == 0){
             isRunning = false;
             break;
         }
-        else {
-            std::cout << 100*((float)(recvd_signal & SIM_WORK_MASK))/SIM_WORK_MASK << "% done." << std::endl;
-        }
-        recvd_signal = 0;
     }
     std::cout << "Simulation is finished" << std::endl;
     isRunning = false;
@@ -88,6 +85,7 @@ void* GUISimulationHandler::sim_server_work(void* worker_args){
 void GUISimulationHandler::spawn_server(){
     SimulationServerWorkerArgs* server_args = new SimulationServerWorkerArgs();
     server_args->pipe_name = sim_server_pipe_name;
+    server_args->progressbar = _progressbar;
     pthread_create(&worker, NULL, GUISimulationHandler::sim_server_work, (void*)server_args);
 }
 
@@ -98,6 +96,10 @@ void GUISimulationHandler::join_server(){
 
 void GUISimulationHandler::kill_server(){
     pthread_kill(worker, SIGKILL);
+}
+
+void GUISimulationHandler::set_progress_bar(TGProgressBar* progressbar){
+    _progressbar = progressbar;
 }
 
 

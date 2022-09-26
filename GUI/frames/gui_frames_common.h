@@ -41,6 +41,10 @@ namespace RhodotronSimulatorGUI::frames{
     #define CONFIG_FRAME_LINE_W 150
     #define CONFIG_FRAME_LINE_H 50
 
+
+    #define RENDER_FRAME_W 500
+    #define RENDER_FRAME_H 500
+
     static const Int_t common_padding = 2;
 
     static TGLayoutHints* center_layout = new TGLayoutHints(kLHintsCenterX, common_padding, common_padding, common_padding, common_padding); 

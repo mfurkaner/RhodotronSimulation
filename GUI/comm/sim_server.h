@@ -13,13 +13,14 @@
 #include <iostream>
 #include <iomanip>
 #include <bitset>
-
 #include <vector>
 
-
+#include "TGProgressBar.h"
+ 
 class GUISimulationHandler {
     pthread_t worker;
     pid_t _sim_pid;
+    TGProgressBar* _progressbar;
 
 public:
     const static std::string sim_server_pipe_name;
@@ -35,12 +36,15 @@ public:
     void join_server();
     void kill_server();
 
+    void set_progress_bar(TGProgressBar* progressbar);
+
     static int open_pipe(const char* path);
     static void close_pipe(const int _fd, const char* pipe_name);
 };
 
 struct SimulationServerWorkerArgs{
     std::string pipe_name;
+    TGProgressBar* progressbar;
 };
 
 #endif

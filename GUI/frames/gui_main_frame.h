@@ -34,6 +34,7 @@
 #include "subframes/gui_main_buttons.h"
 #include "subframes/gui_config_frame.h"
 #include "subframes/gui_render_frame.h"
+#include "../renderer/gui_renderer.cpp"
 
 
 namespace RhodotronSimulatorGUI::frames{

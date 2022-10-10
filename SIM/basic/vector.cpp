@@ -1,3 +1,5 @@
+#ifndef VECTOR_CPP
+#define VECTOR_CPP
 #include "vector.h"
 #include "consts.h"
 #include <math.h>
@@ -110,3 +112,27 @@ std::ostream& operator<=(std::ostream& stream, vector3d& vect){
     stream << std::setprecision(4) << vect.X() << "   " << vect.Y() << "   " << vect.Z();
     return stream;
 }
+
+
+std::istream& operator>>(std::istream& stream, vector3d& vect){
+    double x,y,z;
+    stream >> "( " >> x >> " , " >> y >> " , " >> z >> " )";
+    vect.setX(x); vect.setY(y); vect.setZ(z);
+    return stream;
+}
+
+std::istream& operator>>(std::istream &is, char const *pat) {
+    char ch;
+    while (isspace(static_cast<unsigned char>(is.peek())))
+        is.get(ch);
+    while (*pat && is && *pat == is.peek() && is.get(ch)) {
+        ++pat;
+    }
+    // if we didn't reach the end of the pattern, matching failed (mismatch, premature EOF, etc.)
+    if (*pat) {
+        is.setstate(std::ios::failbit);
+    }
+    return is;
+}
+
+#endif

@@ -61,8 +61,9 @@ public:
         log.push_back(info);
     }
     void loge(DataStorage& path){
+        path << "time(ns),E(MeV),( px , py , pz ),( vx , vy , vz )";
         for(int i = 0; i < log.size() ; i++){
-            path << log[i] << "\n";
+            path << log[i];
         }
     }
 

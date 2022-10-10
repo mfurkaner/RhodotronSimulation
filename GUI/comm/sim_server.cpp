@@ -3,6 +3,8 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 
+#include "TSystem.h"
+
 
 const std::string GUISimulationHandler::sim_server_pipe_name = "gui_pipe";
 const std::string GUISimulationHandler::sim_stdout_redirect = "newout";

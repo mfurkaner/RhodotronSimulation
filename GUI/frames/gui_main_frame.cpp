@@ -48,6 +48,9 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void MainFrame::SaveGifPressed() {
+        //render_frame->GetGif("1.gif");
+        //render_frame->DrawGif();
+        render_frame->Render();
     }
 
     void MainFrame::RunPressed(){

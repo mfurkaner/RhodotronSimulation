@@ -104,8 +104,9 @@ int CoaxialRFField::log( DataStorage& rf , double time){
         for (double j = -r2; j <= r2 ; j += 0.05){
             vector3d pos(i,j,0);
             vector3d Efield = getField(pos);
+            rf << "time(ns),( px(m) , py(m) , pz(m) ),( Ex , Ey , Ez ),|E|\n";
             if ( pos.magnitude() > r1 ){
-                rf << "t: " << time << " p: " << pos << "  E: " << Efield << "   mag: " << Efield.magnitude() <<"\n";
+                rf << time << "," << pos << "," << Efield << "," << Efield.magnitude() <<"\n";
                 count ++;
             }
         }
@@ -243,11 +244,12 @@ vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){
 }
 
 void MagneticField::log(DataStorage& magnet){
+    magnet << "posx,posy\n";
     for(double x = -2; x <= 2 ; x+=0.001){
         for(double y = -2; y <= 2; y+=0.001){
             vector3d v(x,y,0);
             if ( getField(v).Z() != 0 ){
-                magnet << x << "  " << y << "\n";
+                magnet << x << "," << y;
             }
         }
     }

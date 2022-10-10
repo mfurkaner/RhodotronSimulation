@@ -34,6 +34,45 @@ namespace RhodotronSimulatorGUI::frames{
         return progressBar;
     }
 
+/*
+    void RenderFrame::GetGif(std::string filename){
+        //dummy_image
+        TImage* image;
+        uint32_t i = 0;
+        while ( true ) {
+            if ( i == 10 ) break;
+            std::string name = filename + ".";
+            name += std::to_string(i);
+            image = TImage::Open(name.c_str());
+            //TASImage* image = new TASImage(
+            std::cout << name << " is added" << std::endl;
+            images.push_back(image);
+            i++;
+        }
+        std::cout << "There are " << images.size() << " images."<< std::endl;
+    }
+
+
+    void RenderFrame::DrawGif(){
+        
+
+        for (uint32_t i = 0; i < images.size(); i++) {
+            std::cout << "drawing " << i << std::endl;
+            canvas->GetCanvas();
+            images[i]->Draw();
+            canvas->GetCanvas()->Modified();
+            //canvas->GetCanvas()->cd(1)->Update();
+            canvas->GetCanvas()->Update();
+            sleep(1);
+        }
+    }*/
+
+
+    void RenderFrame::Render(){
+        renderer.fillLogs();
+        renderer.render(canvas);
+    }
+
 
 
 }

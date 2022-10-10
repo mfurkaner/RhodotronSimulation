@@ -2,8 +2,7 @@
 
 
 std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
-    (stream << log.time << "   " << log.energy << "   ") <= log.pos;
-    (stream << "   ") <= log.vel;
+    stream << log.time << "," << log.energy << "," << log.pos << "," << log.vel << "\n";
     return stream;
 }
  

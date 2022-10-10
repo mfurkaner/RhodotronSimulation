@@ -41,7 +41,9 @@ public:
 
 };
 
+std::istream& operator>>(std::istream &is, char const *pat);
 std::ostream& operator<<(std::ostream& stream, vector3d& vect);  
 std::ostream& operator<=(std::ostream& stream, vector3d& vect);  
+std::istream& operator>>(std::istream& stream, vector3d& vect);
 
 #endif

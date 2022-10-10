@@ -30,8 +30,8 @@
 namespace RhodotronSimulatorGUI::frames{
 
 
-    #define MAIN_FRAME_W 500
-    #define MAIN_FRAME_H 500
+    #define MAIN_FRAME_W 800
+    #define MAIN_FRAME_H 800
 
     #define MAIN_BUTTON_FRAME_W 500
     #define MAIN_BUTTON_FRAME_H 500

@@ -29,6 +29,7 @@
 #include <fstream>
 
 #include "../gui_frames_common.h"
+#include "../../renderer/gui_renderer.h"
 
 
 
@@ -38,6 +39,8 @@ namespace RhodotronSimulatorGUI::frames{
         TRootEmbeddedCanvas* canvas;
         TGHProgressBar* progressBar;
         const TGWindow* parent;
+        renderer::Renderer renderer;
+        //std::vector<TImage*> images;
         
     public:
         RenderFrame(const TGWindow* p, UInt_t w, UInt_t h);
@@ -45,6 +48,11 @@ namespace RhodotronSimulatorGUI::frames{
 
         void UpdateProgressBar(uint8_t status);
         TGProgressBar* GetProgressBar();
+
+        //void GetGif(std::string filename);
+        //void DrawGif();
+
+        void Render();
     };
 
 }

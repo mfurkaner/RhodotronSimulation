@@ -22,6 +22,8 @@
 #include "TCanvas.h"
 #include "TImage.h"
 #include "TASImage.h"
+#include "TH1D.h"
+#include "TFile.h"
 
 
 #include "comm/signal.h"
@@ -40,4 +42,13 @@ void gui_refactored(){
     //gSystem->DispatchOneEvent();
     gSystem->ProcessEvents();
     new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot(), MAIN_FRAME_W, MAIN_FRAME_W);
+}
+
+int main(){
+    gSystem->cd("..");
+    //gSystem->DispatchOneEvent();
+    gSystem->ProcessEvents();
+    new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot(), MAIN_FRAME_W, MAIN_FRAME_W);
+    TH1D* h;
+    TFile* f;
 }

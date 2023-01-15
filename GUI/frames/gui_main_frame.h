@@ -56,7 +56,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         void SaveConfigPressed();
         void LoadConfigPressed();
-        void SaveGifPressed();
+        void RenderPressed();
         void RunPressed();
         void StopPressed();
         void QuitPressed();

@@ -1,4 +1,5 @@
 #include "gui_render_frame.h"
+#include "TGNumberEntry.h"
 
 
 namespace RhodotronSimulatorGUI::frames{
@@ -11,27 +12,49 @@ namespace RhodotronSimulatorGUI::frames{
         progressBar->SetMin(0);
         progressBar->SetMax(0b00011111);
         progressBar->ShowPosition();
+        progressBar->Activate(false);
 
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
 
-        canvas->GetCanvas()->cd(1);
 
-        Draw3dRectangle(0, 100,100, 100, 100);
+        auto play_button = new TGTextButton(this, "Play");
+        play_button->Connect("Clicked()", "RhodotronSimulatorGUI::renderer::Renderer", &renderer, "run_rendered()");
 
-        canvas->GetCanvas()->Update();
+        auto go_button = new TGTextButton(this, "Go");
+        go_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RenderFrame", this, "GoClicked()");
+
+        //auto time_to_go = new TGTextEntry("0", this);
+
+        auto time_to_go = new TGNumberEntry(this,0.0,3, -1, TGNumberFormat::kNESRealOne, 
+                                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0, 29.9);
+
+        time_to_go->Resize(100, 25);
+
+        go_to_time = time_to_go;
 
 
         this->AddFrame(progressBar, center_layout);
         this->AddFrame(canvas, center_layout);
+        this->AddFrame(play_button, center_layout);
+        this->AddFrame(time_to_go, center_layout);
+        this->AddFrame(go_button, center_layout);
 
     }
 
     void RenderFrame::UpdateProgressBar(uint8_t progress){
+        if ( progressBar->IsActive() == false){
+            this->ShowFrame(progressBar);
+            progressBar->Activate(true);
+        }
         progressBar->SetPosition(progress);
     }
 
     TGProgressBar* RenderFrame::GetProgressBar(){
         return progressBar;
+    }
+
+    void RenderFrame::GoClicked(){
+        renderer.GoToTime(go_to_time->GetNumber());
     }
 
 /*
@@ -69,6 +92,8 @@ namespace RhodotronSimulatorGUI::frames{
 
 
     void RenderFrame::Render(){
+        this->HideFrame(progressBar);
+        progressBar->Activate(false);
         renderer.fillLogs();
         renderer.render(canvas);
     }

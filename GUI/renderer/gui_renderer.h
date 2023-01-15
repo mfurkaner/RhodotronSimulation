@@ -5,6 +5,7 @@
 #include <vector>
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
+#include "TEllipse.h"
 #include <iostream>
 
 namespace RhodotronSimulatorGUI::renderer{
@@ -50,9 +51,12 @@ namespace RhodotronSimulatorGUI::renderer{
         std::string _rflog_path = "xy/rf.txt";
         std::string _mlog_path = "xy/magnet.txt";
         std::vector<ElectronLog> _electrons_log;
-        std::vector<TPoint*> es;
+        std::vector<TEllipse*> es;
+        std::vector<TArrow*> rfFieldArrows;
         RFLog _rf;
         StaticMagneticFieldLog _magnets;
+        TTimer *timer;
+        bool render_ready = false;
 
         void _fillElectrons();
         void _fillRf();
@@ -61,12 +65,16 @@ namespace RhodotronSimulatorGUI::renderer{
         void _renderRF();
         void _renderMagnets();
     public:
+        Renderer(){timer = new TTimer(10);}
+        ~Renderer(){timer->TurnOff(); delete timer;}
 
         void fillLogs();
         void render(TRootEmbeddedCanvas *canvas);
 
-        void clear();
+        void GoToTime(float time);
 
+        void clear();
+        void run_rendered();
         void iterate();
     };
 }

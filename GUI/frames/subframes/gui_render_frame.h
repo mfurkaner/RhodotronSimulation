@@ -39,6 +39,7 @@ namespace RhodotronSimulatorGUI::frames{
         TRootEmbeddedCanvas* canvas;
         TGHProgressBar* progressBar;
         const TGWindow* parent;
+        TGNumberEntry* go_to_time;
         renderer::Renderer renderer;
         //std::vector<TImage*> images;
         
@@ -51,6 +52,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         //void GetGif(std::string filename);
         //void DrawGif();
+        void GoClicked();
 
         void Render();
     };

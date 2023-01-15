@@ -19,6 +19,10 @@ protected:
     std::string configPath = "xy/settings.txt";
     std::string pathsPath = "xy/paths/";
 
+    std::string EfieldLogHeader = "# time(ns),( px(m) , py(m) , pz(m) ),( Ex , Ey , Ez ),|E|";
+    std::string BfieldLogHeader = "# posx posy";
+    std::string eLogHeader = "# time(ns),E(MeV),( px , py , pz ),( vx , vy , vz )";
+
     double simulation_time = 0;
     double dummy_time = 0;
     double start_time = 0;
@@ -38,6 +42,7 @@ protected:
     MultiThreadEngine MTEngine;
     unsigned int MAX_THREAD_COUNT = 1;
     bool MULTI_THREAD = false;
+    bool DEBUG = false;
 
 public:
     Simulator(){}
@@ -105,6 +110,9 @@ public:
         }
         EfieldStorage.open();
         BfieldStorage.open();
+
+        EfieldStorage << EfieldLogHeader << "\n";
+        BfieldStorage << BfieldLogHeader << "\n";
     }
     void closeLogs(){
         EfieldStorage.close();

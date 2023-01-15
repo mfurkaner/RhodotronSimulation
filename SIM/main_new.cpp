@@ -46,16 +46,15 @@ int main(int argc, char** argv) {
     
     Configuration config("config.ini");
     config.getConfiguration();
-    config.print();
+    if ( ! isService ) config.print();
+
     RhodotronSimulator rhodotron(config);
 
-    if (isService) {
-        notifierarg.start_time = config.getSTime();
-        notifierarg.end_time = config.getETime();
-        notifierarg.simulation_time = rhodotron.getTimePtr();
-        notifierarg.state_ptr = &state;
-        pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
-    }
+    notifierarg.start_time = config.getSTime();
+    notifierarg.end_time = config.getETime();
+    notifierarg.simulation_time = rhodotron.getTimePtr();
+    notifierarg.state_ptr = &state;
+    pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
 
     rhodotron.openLogs(); 
 
@@ -67,19 +66,12 @@ int main(int argc, char** argv) {
     rhodotron.logPaths();
     rhodotron.closeLogs();
     
-    if ( isService){
-        void* a;
-        pthread_join(notifier, &a);
-    }
+    void* a;
+    pthread_join(notifier, &a);
 
-    auto sim_stop = high_resolution_clock::now();
-    auto sim_time = duration_cast<microseconds>(sim_stop - start);
-    //plot(config);
-    auto render_stop = high_resolution_clock::now();
-    auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
 
     if ( isService ){
-        std::cout << "What are you doing here?" << std::endl;
+        //std::cout << "What are you doing here?" << std::endl;
         state_lock.lock();
         state &= ~SIM_RUNNING;
         write(_fd, &state, SIGNAL_SIZE);
@@ -87,10 +79,18 @@ int main(int argc, char** argv) {
         state_lock.unlock();
     }
 
-    #ifdef DEBUG
+    else {
+        auto sim_stop = high_resolution_clock::now();
+        auto sim_time = duration_cast<microseconds>(sim_stop - start);
+
+        if (!isService) plot(config);
+
+        auto render_stop = high_resolution_clock::now();
+        auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
+
         cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
         cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
-    #endif
+    }
 
     return 0;
 }
@@ -98,9 +98,10 @@ int main(int argc, char** argv) {
 void* UIThreadWork(void* arg){
 
     int UI_WORK_PIECE = SIM_WORK_MASK;
-    #ifdef DEBUG
+    if ( !isService ) {
         UI_WORK_PIECE = 50;
-    #endif
+    }
+
 
     auto start = high_resolution_clock::now();
 
@@ -109,36 +110,36 @@ void* UIThreadWork(void* arg){
 
     //int _fd = open(sim.pipe_name, O_WRONLY | O_APPEND | O_CREAT);
 
-    #ifdef DEBUG
+    if ( !isService ) {
         std::string sim_running_msg = "...Simulation is running...";
         for(int i = 0; i < 26 - sim_running_msg.size()/2 ; i++){
             cout << " ";
         }
         cout << sim_running_msg <<"\n";
-    #endif
+    }
 
     mutex_lock.lock();
     double simtime = *(sim.simulation_time);
     mutex_lock.unlock();
 
-    #ifdef DEBUG
+    if ( !isService ) {
         cout << "V";
         for(int i = 0; i < 51; i++){
             cout << "_";
         }
         cout << "V\n[" << flush;
-    #endif
+    }
 
     int count = 0;
     while(simtime < sim.end_time || count < UI_WORK_PIECE){
         if( simtime > count * piece ){
-            #ifdef DEBUG
+            if ( !isService ) {
                 cout << "#" << flush;
-            #endif
+            }
             count++;
             state_lock.lock();
             *sim.state_ptr = (*sim.state_ptr & ~SIM_WORK_MASK) | (count & SIM_WORK_MASK);
-            write(_fd, sim.state_ptr, SIGNAL_SIZE);
+            if (isService) write(_fd, sim.state_ptr, SIGNAL_SIZE);
             state_lock.unlock();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(25));
@@ -147,14 +148,14 @@ void* UIThreadWork(void* arg){
         mutex_lock.unlock();
 
     }
-    #ifdef DEBUG
+    if ( !isService ) {
         cout << "#]\n\n" << flush;
         cout << "     ...Simulation is finished successfully...\n\n" << flush;
-    #endif
+    }
 
     state_lock.lock();
     *sim.state_ptr |= SIM_RENDERING;
-    write(_fd, sim.state_ptr, SIGNAL_SIZE);
+    if ( isService ) write(_fd, sim.state_ptr, SIGNAL_SIZE);
     state_lock.unlock();
 
     return NULL;
@@ -165,7 +166,7 @@ void plot(Configuration& config){
     Gnuplot gp;
     gp.setRange(-1.5,1.5,-1.5,1.5);
     gp.enableMinorTics();
-    gp.setCbRange(0.49, config.getTargetEnergy());
+    gp.setCbRange(config.getEin(), config.getTargetEnergy());
     gp.setCbTic(0.1);
     gp.setRatio(1);
     gp.addCommand("set isosamples 500,500");
@@ -175,11 +176,12 @@ void plot(Configuration& config){
     gp.addCommand("set output \""+ config.getOutput() + "\"");
     gp.addCommand("set key top left");
     
-    std::string plotCommand = "do for [i=1:" + to_string(config.getETime()*10 - 1) + "] {plot"/* \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 5:7:($13/15):($15/15) title \"RF Field\" with vectors lc 6 head filled,"*/;
-    plotCommand += (/*config.areThereMagnets()*/ 0 ) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
-    plotCommand +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
+    std::string plotCommand = "do for [i=1:" + to_string(config.getETime()*10 - 1) + "] ";
+    plotCommand += "{plot \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 1:2:($3/15):($4/15) '%*lf,( %lf ; %lf ; %*lf ),( %lf ; %lf ; %*lf ),%lf' title \"RF Field\" with vectors lc 6 head filled,";
+    plotCommand += (config.areThereMagnets() ) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
+    plotCommand +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 2:3:1 '%*lf,%lf,( %lf ; %lf ; %*lf ),( %*lf ; %*lf ; %*lf )' title \"bunch\" ls 7 ps 0.5 palette, ";
     for( int j = 2 ; j <= config.getNumOfE()*config.getNumOfB() ; j++){
-        plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";
+        plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 2:3:1 '%*lf,%lf,( %lf ; %lf ; %*lf ),( %*lf ; %*lf ; %*lf )' notitle ls 7 ps 0.5 palette, ";
     }
     plotCommand += "}";
     gp.setPlotCommand(plotCommand);

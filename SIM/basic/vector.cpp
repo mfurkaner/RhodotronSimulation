@@ -104,7 +104,7 @@ void vector3d::rotate(vector3d around, double angle){
 
 
 std::ostream& operator<<(std::ostream& stream, vector3d& vect){
-    stream << std::setprecision(3) << "( " << vect.X() << " , " << vect.Y() << " , " << vect.Z() << " )";
+    stream << std::setprecision(3) << "( " << vect.X() << " ; " << vect.Y() << " ; " << vect.Z() << " )";
     return stream;
 }
 
@@ -116,9 +116,32 @@ std::ostream& operator<=(std::ostream& stream, vector3d& vect){
 
 std::istream& operator>>(std::istream& stream, vector3d& vect){
     double x,y,z;
-    stream >> "( " >> x >> " , " >> y >> " , " >> z >> " )";
+    stream >> "( " >> x >> " ; " >> y >> " ; " >> z >> " )";
     vect.setX(x); vect.setY(y); vect.setZ(z);
     return stream;
+}
+
+vector3d vector3d::from_string(std::string str){
+    vector3d vect;
+    /*
+    str = str.substr(1, str.size()-2);
+    vect.setX( std::stod(str.substr(0, str.find(';'))));
+
+    str = str.substr(str.find(';') + 1);
+    vect.setY( std::stod(str.substr(0, str.find(';'))));
+    
+    str = str.substr(str.find(';') + 1);
+    vect.setZ( std::stod(str));*/
+
+    double x,y,z;
+
+    sscanf(str.c_str(), "( %lf ; %lf ; %lf )", &x, &y, &z);
+
+    vect.setX(x);
+    vect.setY(y);
+    vect.setZ(z);
+
+    return vect;
 }
 
 std::istream& operator>>(std::istream &is, char const *pat) {

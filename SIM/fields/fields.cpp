@@ -104,9 +104,8 @@ int CoaxialRFField::log( DataStorage& rf , double time){
         for (double j = -r2; j <= r2 ; j += 0.05){
             vector3d pos(i,j,0);
             vector3d Efield = getField(pos);
-            rf << "time(ns),( px(m) , py(m) , pz(m) ),( Ex , Ey , Ez ),|E|\n";
             if ( pos.magnitude() > r1 ){
-                rf << time << "," << pos << "," << Efield << "," << Efield.magnitude() <<"\n";
+                rf << time << "," << pos << "," << Efield << "," << Efield.magnitude() << "\n";
                 count ++;
             }
         }
@@ -160,7 +159,7 @@ int MagneticField::isInside(vector3d position){
 }
 
 int MagneticField::isInsideDebug(){
-    return 0;
+    return magnets.size() == 0 ? -1 : 0;
 }
 
 void MagneticField::addMagnet(double B, double r, vector3d position){
@@ -174,7 +173,7 @@ void MagneticField::addMagnet(Magnet m){
 }
 
 vector3d MagneticField::getField(vector3d position){
-    int magnet_index = isInsideDebug();
+    int magnet_index = isInside(position);
     if ( magnet_index == -1 ){
         return vector3d(0, 0, 0);
     }
@@ -187,7 +186,7 @@ vector3d MagneticField::getField(vector3d position){
 }
 
 vector3d MagneticField::actOn(Electron2D& e){
-    if (isInsideDebug() == -1){
+    if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
     }
 
@@ -198,7 +197,7 @@ vector3d MagneticField::actOn(Electron2D& e){
 }
 
 vector3d MagneticField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
-    if (isInsideDebug() == -1){
+    if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
     }
     Electron2D e_dummy;
@@ -244,12 +243,11 @@ vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){
 }
 
 void MagneticField::log(DataStorage& magnet){
-    magnet << "posx,posy\n";
     for(double x = -2; x <= 2 ; x+=0.001){
         for(double y = -2; y <= 2; y+=0.001){
             vector3d v(x,y,0);
             if ( getField(v).Z() != 0 ){
-                magnet << x << "," << y;
+                magnet << x << " " << y << "\n";
             }
         }
     }

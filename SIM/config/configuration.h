@@ -16,6 +16,7 @@ enum AvailableConfigIndex{
     addmagnet, magrotation,
     bunchnum, gunperiod,
     targeten, output,
+    debug,
 
     endofconfig
 };
@@ -30,7 +31,8 @@ private:
         "thcount", "r1", "r2", "ein", 
         "addmagnet", "magrotation",
         "bunchnum", "gunperiod",
-        "targeten", "output"
+        "targeten", "output",
+        "debug"
         };
     std::ifstream fin;
     std::string filepath;
@@ -58,6 +60,7 @@ private:
     double mag_rotation;    bool magRotIsSet = false;
     double target_energy = 2 ; bool targetEnSet = false;
     std::string _output = "out.gif" ; bool outputIsSet = false;
+    bool debug_mode = false;
 
     double magB;
     double magR;
@@ -138,6 +141,7 @@ public:
     bool isTargetEnSet(){return targetEnSet;}
     bool isOutputSet(){return outputIsSet;}
     bool areThereMagnets(){return magnets.size() != 0;}
+    bool debugMode(){return debug_mode;}
 
     void logConfiguration(std::string logpath){
         fin.open(filepath, std::ios::in);
@@ -160,7 +164,10 @@ public:
             std::getline(fin, cmd);
             int i = 0;
             for(; i < endofconfig ; i++){
-                if (cmd.find("#", 0) != std::string::npos){ i = -1; break; }
+                if (cmd.find("#", 0) != std::string::npos){ 
+                    i = -1;
+                    break; 
+                }
                 else if (cmd.find(available_config[i], 0) != std::string::npos) {
                     break;
                 }
@@ -271,6 +278,9 @@ public:
                 cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
                 _output = cmd;
                 outputIsSet = true;
+                break;
+            case debug:
+                debug_mode = true;
                 break;
             default:
                 break;

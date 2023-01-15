@@ -2,7 +2,7 @@
 
 
 std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
-    stream << log.time << "," << log.energy << "," << log.pos << "," << log.vel << "\n";
+    stream << log.time << "," << log.energy << "," << log.pos << "," << log.vel;
     return stream;
 }
  
@@ -79,7 +79,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         }
 
         #ifdef LEAP_FROG
-        vector3d acc_E = vector3d(0,0,0);//E.actOn(e[i]);
+        vector3d acc_E = E.actOn(e[i]);
         vector3d acc_B = B.actOn(e[i]);
 
         vector3d acc = acc_E + acc_B;

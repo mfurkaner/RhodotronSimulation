@@ -39,6 +39,8 @@ public:
 
     void rotate(vector3d around, double angle);   // angle is in degrees
 
+    static vector3d from_string(std::string str);
+
 };
 
 std::istream& operator>>(std::istream &is, char const *pat);

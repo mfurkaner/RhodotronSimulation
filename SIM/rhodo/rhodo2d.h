@@ -61,9 +61,8 @@ public:
         log.push_back(info);
     }
     void loge(DataStorage& path){
-        path << "time(ns),E(MeV),( px , py , pz ),( vx , vy , vz )";
         for(int i = 0; i < log.size() ; i++){
-            path << log[i];
+            path << log[i] << (i + 1 == log.size() ? "" : "\n" ) ;
         }
     }
 
@@ -135,9 +134,10 @@ public:
     void print_bunch_info();
     void print_summary();
 
-    void logPaths(vector<DataStorage>& pathStorage){
+    void logPaths(vector<DataStorage>& pathStorage, std::string header){
         for(int i = 0; i < e.size() && i < pathStorage.size(); i++){
             pathStorage[i].open();
+            pathStorage[i] << header << "\n";
             e[i].loge(pathStorage[i]);
             pathStorage[i].close();
         }
@@ -207,11 +207,13 @@ public:
         }
     }
 
-    void logPaths(vector<vector<DataStorage> >& pathsStorage, std::string pathsPath){
+    void logPaths(vector<vector<DataStorage> >& pathsStorage, std::string pathsPath, std::string header){
         std::string rmcmd = "rm " + pathsPath + "**";
         system(rmcmd.c_str());
+
+
         for(int i = 0 ; i < bunchs.size() ; i++){
-            bunchs[i].logPaths(pathsStorage.at(i));
+            bunchs[i].logPaths(pathsStorage.at(i), header);
         }
     }
 

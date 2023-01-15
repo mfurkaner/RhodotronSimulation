@@ -37,7 +37,7 @@ void Simulator::saveElectronsInfo(double time){
 }
 
 void Simulator::logPaths(){
-    gun.logPaths(pathsStorage, pathsPath);
+    gun.logPaths(pathsStorage, pathsPath, eLogHeader);
 }
 
 /*
@@ -80,7 +80,10 @@ void RhodotronSimulator::getConfig(Configuration& config){
             addMagnet(config.magnets.at(i));
         }
     }
-
+    if (config.debugMode()){
+        DEBUG = true;
+    }
+    
     config.logConfiguration(configPath);
     updateSimulation();
 }

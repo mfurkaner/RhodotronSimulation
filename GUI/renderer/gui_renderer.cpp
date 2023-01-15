@@ -103,7 +103,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
     void Renderer::_fillElectrons(){
 
-        _enum = 10;
+        _enum = 40;
         std::cout << "Filling Electrons : " << _enum << std::endl;
 
         for (uint32_t i = 0; i < _enum ; i++){

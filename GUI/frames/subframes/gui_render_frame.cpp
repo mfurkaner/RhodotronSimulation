@@ -8,6 +8,7 @@ namespace RhodotronSimulatorGUI::frames{
     RenderFrame::RenderFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
         parent = p;
 
+        // Setup the progressbar
         progressBar = new TGHProgressBar(this, 250, 50);
         progressBar->SetMin(0);
         progressBar->SetMax(0b00011111);
@@ -16,27 +17,35 @@ namespace RhodotronSimulatorGUI::frames{
 
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
 
-
+        // Setup the play button
         auto play_button = new TGTextButton(this, "Play");
         play_button->Connect("Clicked()", "RhodotronSimulatorGUI::renderer::Renderer", &renderer, "run_rendered()");
 
+        // Setup the go button
         auto go_button = new TGTextButton(this, "Go");
         go_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RenderFrame", this, "GoClicked()");
 
-        //auto time_to_go = new TGTextEntry("0", this);
-
-        auto time_to_go = new TGNumberEntry(this,0.0,3, -1, TGNumberFormat::kNESRealOne, 
+        // Setup the time entry
+        go_to_time = new TGNumberEntry(this,0.0,3, -1, TGNumberFormat::kNESRealOne, 
                                 TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0, 29.9);
+        go_to_time->Resize(100, 25);
 
-        time_to_go->Resize(100, 25);
 
-        go_to_time = time_to_go;
+        time_slider = new TGDoubleHSlider(this, 200);
+        time_slider->SetPosition(0.0, 1.0);
+
+        std::cout << "Time slider min : " << time_slider->GetMinPosition() << " max : " << time_slider->GetMaxPosition() << std::endl;
+        time_slider->SetRange(0.0, 30.9);
+        time_slider->Connect("PositionChanged()", "RhodotronSimulatorGUI::frames::RenderFrame", this, "SliderPositionChanged()");
+
+        time_slider->Draw();
 
 
         this->AddFrame(progressBar, center_layout);
         this->AddFrame(canvas, center_layout);
         this->AddFrame(play_button, center_layout);
-        this->AddFrame(time_to_go, center_layout);
+        this->AddFrame(time_slider, center_layout);
+        this->AddFrame(go_to_time, center_layout);
         this->AddFrame(go_button, center_layout);
 
     }
@@ -56,6 +65,15 @@ namespace RhodotronSimulatorGUI::frames{
     void RenderFrame::GoClicked(){
         renderer.GoToTime(go_to_time->GetNumber());
     }
+
+    void RenderFrame::SliderPositionChanged(){
+        double time, dummy;
+        time_slider->GetPosition(&time, &dummy);
+
+        // Filter the numbers smaller than the step size
+        time = ((int)(time*10))/10.0;
+        renderer.GoToTime(time);
+    };
 
 /*
     void RenderFrame::GetGif(std::string filename){

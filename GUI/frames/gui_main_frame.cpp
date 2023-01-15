@@ -58,7 +58,7 @@ namespace RhodotronSimulatorGUI::frames{
     void MainFrame::RunPressed(){
         std::cout << "Simulation started" << std::endl;
 
-        SaveConfigPressed();
+        //SaveConfigPressed();
 
         sim_handler.spawn_server();
         sim_handler.spawn_simulation();

@@ -13,6 +13,8 @@
 #include "TCanvas.h"
 #include "TImage.h"
 #include "TGProgressBar.h"
+#include "TGNumberEntry.h"
+#include "TGDoubleSlider.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -40,6 +42,7 @@ namespace RhodotronSimulatorGUI::frames{
         TGHProgressBar* progressBar;
         const TGWindow* parent;
         TGNumberEntry* go_to_time;
+        TGDoubleSlider* time_slider;
         renderer::Renderer renderer;
         //std::vector<TImage*> images;
         
@@ -53,6 +56,7 @@ namespace RhodotronSimulatorGUI::frames{
         //void GetGif(std::string filename);
         //void DrawGif();
         void GoClicked();
+        void SliderPositionChanged();
 
         void Render();
     };

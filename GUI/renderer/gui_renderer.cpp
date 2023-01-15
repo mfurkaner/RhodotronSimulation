@@ -251,7 +251,7 @@ namespace RhodotronSimulatorGUI::renderer{
         if ( i >= _electrons_log[0].time_slices.size()){
             i = 0;
             timer->TurnOff();
-            canvas->GetCanvas()->Print("gui_output.gif++");
+            //canvas->GetCanvas()->Print("gui_output.gif++");
         }
         canvas->GetCanvas()->GetPad(0)->cd();
         canvas->GetCanvas()->Clear();
@@ -292,7 +292,7 @@ namespace RhodotronSimulatorGUI::renderer{
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
         if( i % 3 == 0){
-            canvas->GetCanvas()->Print("gui_output.gif+");
+            //canvas->GetCanvas()->Print("gui_output.gif+");
         }
         
         i++;

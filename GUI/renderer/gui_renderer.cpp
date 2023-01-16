@@ -101,8 +101,8 @@
 
 namespace RhodotronSimulatorGUI::renderer{
 
+#pragma region FILL_FROM_LOGS
     void Renderer::_fillElectrons(){
-
         _enum = 40;
         std::cout << "Filling Electrons : " << _enum << std::endl;
 
@@ -131,7 +131,7 @@ namespace RhodotronSimulatorGUI::renderer{
         }
     }
 
-    void Renderer::_fillRf(){
+    void Renderer::_fillEField(){
         std::ifstream stream;
         stream.open(_rflog_path, std::ios::in);
 
@@ -158,7 +158,7 @@ namespace RhodotronSimulatorGUI::renderer{
         stream.close();
     }
 
-    void Renderer::_fillMagnets(){
+    void Renderer::_fillBField(){
         std::ifstream stream;
         stream.open(_mlog_path, std::ios::in);
 
@@ -166,17 +166,24 @@ namespace RhodotronSimulatorGUI::renderer{
         std::string filename;
         std::getline(stream, filename);
 
+        int count = 0;
         while (!stream.eof()) {
-            std::pair<float, float> position;
-            float x, y;
-            stream >> x >> "," >> y >> "\n";
+            std::string line;
+            std::getline(stream, line);
+            if ( count % 100 == 0){
+                std::pair<float, float> position;
+                float x, y;
 
-            position.first = x;
-            position.second = y;
-            
-            if ( stream.fail()) { return; }
+                sscanf(line.c_str(), "%f %f", &x, &y);
 
-            _magnets.positive_positions.push_back(position);
+                position.first = x;
+                position.second = y;
+                
+                if ( stream.fail()) { return; }
+
+                _magnets.positive_positions.push_back(position);
+            }
+            count++;
         }
         stream.close();
     }
@@ -184,8 +191,8 @@ namespace RhodotronSimulatorGUI::renderer{
     void Renderer::fillLogs(){
         auto fill_start = std::chrono::high_resolution_clock::now();
         _fillElectrons();
-        _fillRf();
-        //_fillMagnets();
+        _fillEField();
+        _fillBField();
 
         auto fill_end = std::chrono::high_resolution_clock::now();
 
@@ -193,14 +200,10 @@ namespace RhodotronSimulatorGUI::renderer{
 
         std::cout << "Fill took " << fill_time.count()/1000.0 << " s" << std::endl;
     }
+#pragma endregion FILL_FROM_LOGS
 
-    void Renderer::render(TRootEmbeddedCanvas *c){
-        canvas = c;
-        canvas->GetCanvas()->Clear();
-        canvas->DrawBorder();
-
-        // setup the electrons
-        std::cout << "log size : " << _electrons_log.size() << std::endl;
+#pragma region RENDER_FILLED
+    void Renderer::_renderElectrons(){
         for(int i = 0; i < _electrons_log.size(); i++){
             TEllipse* point = new TEllipse( 0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
                                             0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
@@ -208,38 +211,153 @@ namespace RhodotronSimulatorGUI::renderer{
             point->Draw();
             point->SetFillColor(5);
             //point->SetLineColor(5);
-            es.push_back(point);
+            electrons.push_back(point);
         }
+    }
+    
 
-        // setup E field
-        if (_rf.time_slices.size() > 0){
+    Color_t EGradient(double E){
+        int color = 0.96/E;
+        Color_t value = kOrange - 9;
+        switch (color)
+        {
+        case 8:
+            value = kOrange - 4;
+            break;
+        case 7:
+            value = kOrange - 2;
+            break;
+        case 6:
+            value = kOrange;
+            break;
+        case 5:
+            value = kRed - 9;
+            break;
+        case 4:
+            value = kRed - 7;
+            break;
+        case 3:
+            value = kRed - 4;
+            break;
+        case 2:
+            value = kRed - 3;
+            break;
+        case 1:
+            value = kRed + 1;
+            break;
+        case 0:
+            value = kRed + 2;
+            break;
+        default:
+            break;
+        }
+        return value;
+    }
+
+    void Renderer::_renderEField(){
+        if(_rf.time_slices.size() > 0){
+            double x1,y1,x2,y2;
+
             for(int i = 0; i < _rf.time_slices.at(0).field.size() ; i++){
                 auto point = _rf.time_slices.at(0).field.at(i);
+
+                x1 = 0.5 + point.position.X()/3;
+                y1 = 0.5 + point.position.Y()/3;
+                x2 = x1 + point.field.X()/30;
+                y2 = y1 + point.field.Y()/30;
+                TArrow* rfArrow = new TArrow(x1, y1, x2, y2, 0.005);
+                rfArrow->SetLineColor(EGradient(point.magnitude));
+
+                if( point.magnitude != 0.0 ){
+                    rfArrow->Draw();
+                }
+                rfFieldArrows.push_back(rfArrow);
+            }
+        }
+    }
+
+    void Renderer::_renderBField(){
+        if( _magnets.positive_positions.size() <= 0 ){
+            return;
+        }
+
+        for ( int i = 0; i < _magnets.positive_positions.size(); i++ ){
+            TEllipse* point = new TEllipse( 0.5 + _magnets.positive_positions[i].first/3,
+                                            0.5 + _magnets.positive_positions[i].second/3,
+                                            0.008, 0.008);
+            point->Draw();
+            point->SetFillColor(kBlue -9);
+            point->SetLineColor(kBlue -9);
+            posBField.push_back(point);
+        }
+
+        std::cout << "There are " << _magnets.positive_positions.size() << " positive positions" << std::endl;
+
+        // STATIC FOR NOW SO CLEAR THE LOG
+        _magnets.positive_positions.clear();
+    }
+
+    void Renderer::Render(TRootEmbeddedCanvas *c){
+        canvas = c;
+        canvas->GetCanvas()->Clear();
+        canvas->DrawBorder();
+
+        // setup the electrons
+        _renderElectrons();
+
+        // setup E field
+        _renderEField();
+
+        // setup B field
+        _renderBField();
+
+        canvas->GetCanvas()->Modified();
+        canvas->GetCanvas()->Update();
+
+        render_ready = true;
+        //gSystem->Unlink("gui_output.gif");
+    }
+#pragma endregion RENDER_FILLED
+
+
+    void Renderer::_updateElectrons(int log_index){
+        for(int j = 0; j < electrons.size(); j++){
+            electrons.at(j)->SetX1(0.5 + _electrons_log[j].time_slices.at(log_index).position.X()/3);
+            electrons.at(j)->SetY1(0.5 + _electrons_log[j].time_slices.at(log_index).position.Y()/3);
+            electrons.at(j)->Draw();
+        }
+    }
+
+    void Renderer::_updateEField(int log_index){
+        if (log_index < _rf.time_slices.size()){
+
+            for(int j = 0; j < _rf.time_slices.at(log_index).field.size() ; j++){
+                auto point = _rf.time_slices.at(log_index).field.at(j);
+
+                if( _rf.time_slices.at(log_index).field.at(j).magnitude == 0 )
+                    continue;
 
                 double x1,y1,x2,y2;
                 x1 = 0.5 + point.position.X()/3;
                 y1 = 0.5 + point.position.Y()/3;
                 x2 = x1 + point.field.X()/30;
                 y2 = y1 + point.field.Y()/30;
+                rfFieldArrows[j]->SetLineColor(EGradient(point.magnitude));
 
-                TArrow* rfArrow = new TArrow(x1, y1, x2, y2, 0.005);
-
-                if( point.magnitude != 0.0 ){
-                    rfArrow->Draw();
-                }
-
-                rfFieldArrows.push_back(rfArrow);
+                rfFieldArrows[j]->DrawArrow(x1, y1, x2, y2, 0.005);
             }
-        }
-        canvas->GetCanvas()->Modified();
-        canvas->GetCanvas()->Update();
 
-        render_ready = true;
-        gSystem->Unlink("gui_output.gif");
-        //run_rendered();
+        }
     }
 
-    void Renderer::run_rendered(){
+    void Renderer::_updateBField(int log_index){
+        // STATIC FOR NOW!!! 
+        for(int i = 0; i < posBField.size(); i++){
+            posBField[i]->Draw();
+        }
+    }
+
+    void Renderer::RunRendered(){
         if(render_ready == false || timer->IsRunning()) return;
 
         timer->Connect("Timeout()", "RhodotronSimulatorGUI::renderer::Renderer", this, "iterate()");			
@@ -248,46 +366,20 @@ namespace RhodotronSimulatorGUI::renderer{
 
     void Renderer::iterate(){
         static int i = 0;
+        static auto start = std::chrono::high_resolution_clock::now();
         if ( i >= _electrons_log[0].time_slices.size()){
             i = 0;
             timer->TurnOff();
-            //canvas->GetCanvas()->Print("gui_output.gif++");
+            auto end = std::chrono::high_resolution_clock::now();
+
+            auto dur = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+            std::cout << "Play took " << dur.count() << " s" << std::endl;
         }
-        canvas->GetCanvas()->GetPad(0)->cd();
         canvas->GetCanvas()->Clear();
 
-        auto update_start = std::chrono::high_resolution_clock::now();
-
-        // update the electrons
-        for(int j = 0; j < es.size(); j++){
-            es.at(j)->SetX1(0.5 + _electrons_log[j].time_slices.at(i).position.X()/3);
-            es.at(j)->SetY1(0.5 + _electrons_log[j].time_slices.at(i).position.Y()/3);
-            es.at(j)->Draw();
-
-        }
-        //auto e_end = std::chrono::high_resolution_clock::now();
-        //auto e_dur = std::chrono::duration_cast<std::chrono::milliseconds>(e_end - update_start);
-
-        //std::cout << "Electron update took " << e_dur.count() << " ms" << std::endl;
-
-        // update the rf field
-        if (i < _rf.time_slices.size()){
-            for(int j = 0; j < _rf.time_slices.at(i).field.size() ; j++){
-                auto point = _rf.time_slices.at(i).field.at(j);
-
-
-                if( _rf.time_slices.at(i).field.at(j).magnitude == 0 )
-                    continue;
-
-                double x1,y1,x2,y2;
-                x1 = 0.5 + point.position.X()/3;
-                y1 = 0.5 + point.position.Y()/3;
-                x2 = x1 + point.field.X()/30;
-                y2 = y1 + point.field.Y()/30;
-
-                rfFieldArrows[j]->DrawArrow(x1, y1, x2, y2, 0.005);
-            }
-        }
+        _updateEField(i);
+        _updateBField(i);
+        _updateElectrons(i);
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
@@ -305,48 +397,29 @@ namespace RhodotronSimulatorGUI::renderer{
     }
 
 
-    void Renderer::GoToTime(float time){
-        //std::cout <<"Requested time : "<<time << " first time is : " << _electrons_log[0].time_slices[0].time <<std::endl;
-        int slice_index = -1;
+    int Renderer::_indexFromTime(float time){
 
         for(int i = 0; i < _electrons_log[0].time_slices.size(); i++){
             if ( _electrons_log[0].time_slices[i].time == time ){
-                slice_index = i;
-                break;
+                return i;
             }
         }
 
-        if ( slice_index == -1){
-            std::cerr << "No such time." << std::endl;
+        std::cerr << "No such time." << std::endl;
+        return -1;
+    }
+
+    void Renderer::GoToTime(float time){
+        int slice_index = _indexFromTime(time);
+
+        if ( slice_index == -1)
             return;
-        }
 
         canvas->GetCanvas()->Clear();
 
-        for(int j = 0; j < es.size(); j++){
-            es.at(j)->SetX1(0.5 + _electrons_log[j].time_slices.at(slice_index).position.X()/3);
-            es.at(j)->SetY1(0.5 + _electrons_log[j].time_slices.at(slice_index).position.Y()/3);
-            es.at(j)->Draw();
-        }
-        
-
-        if (slice_index < _rf.time_slices.size()){
-            for(int j = 0; j < _rf.time_slices.at(slice_index).field.size() ; j++){
-                auto point = _rf.time_slices.at(slice_index).field.at(j);
-
-
-                if( _rf.time_slices.at(slice_index).field.at(j).magnitude == 0 )
-                    continue;
-
-                double x1,y1,x2,y2;
-                x1 = 0.5 + point.position.X()/3;
-                y1 = 0.5 + point.position.Y()/3;
-                x2 = x1 + point.field.X()/30;
-                y2 = y1 + point.field.Y()/30;
-
-                rfFieldArrows[j]->DrawArrow(x1, y1, x2, y2, 0.005);
-            }
-        }
+        _updateEField(slice_index);
+        _updateBField(slice_index);
+        _updateElectrons(slice_index);
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();

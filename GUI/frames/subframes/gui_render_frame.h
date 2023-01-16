@@ -14,7 +14,7 @@
 #include "TImage.h"
 #include "TGProgressBar.h"
 #include "TGNumberEntry.h"
-#include "TGDoubleSlider.h"
+#include "TGSlider.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -41,10 +41,9 @@ namespace RhodotronSimulatorGUI::frames{
         TRootEmbeddedCanvas* canvas;
         TGHProgressBar* progressBar;
         const TGWindow* parent;
-        TGNumberEntry* go_to_time;
-        TGDoubleSlider* time_slider;
+        TGNumberEntry* active_time;
+        TGSlider* time_slider;
         renderer::Renderer renderer;
-        //std::vector<TImage*> images;
         
     public:
         RenderFrame(const TGWindow* p, UInt_t w, UInt_t h);
@@ -53,10 +52,8 @@ namespace RhodotronSimulatorGUI::frames{
         void UpdateProgressBar(uint8_t status);
         TGProgressBar* GetProgressBar();
 
-        //void GetGif(std::string filename);
-        //void DrawGif();
-        void GoClicked();
-        void SliderPositionChanged();
+        void TimeChanged();
+        void SliderPositionChanged(int pos);
 
         void Render();
     };

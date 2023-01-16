@@ -17,8 +17,6 @@ namespace RhodotronSimulatorGUI::renderer{
         vector3d velocity;
     };
 
-
-
     struct ElectronLog{
         std::vector<ElectronSnapshot> time_slices;
     };
@@ -29,12 +27,10 @@ namespace RhodotronSimulatorGUI::renderer{
         double magnitude;
     };
 
-
     struct RFSnapshot{
         float time;
         std::vector<RFPoint> field;
     };
-
 
     struct RFLog{
         std::vector<RFSnapshot> time_slices;
@@ -50,35 +46,53 @@ namespace RhodotronSimulatorGUI::renderer{
         std::string _elog_path = "xy/paths/";
         std::string _rflog_path = "xy/rf.txt";
         std::string _mlog_path = "xy/magnet.txt";
+
         std::vector<ElectronLog> _electrons_log;
-        std::vector<TEllipse*> es;
-        std::vector<TArrow*> rfFieldArrows;
         RFLog _rf;
         StaticMagneticFieldLog _magnets;
+
+        std::vector<TEllipse*> electrons;
+        std::vector<TArrow*> rfFieldArrows;
+        std::vector<TEllipse*> posBField;
+
         TTimer *timer;
         bool render_ready = false;
 
         void _fillElectrons();
-        void _fillRf();
-        void _fillMagnets();
+        void _fillEField();
+        void _fillBField();
+
         void _renderElectrons();
-        void _renderRF();
-        void _renderMagnets();
+        void _renderEField();
+        void _renderBField();
+
+        void _updateElectrons(int log_index);
+        void* _updateElectronsTH(void* log_intex);
+
+        void _updateEField(int log_index);
+        void* _updateEFieldTH(void* log_intex);
+
+        void _updateBField(int log_index);
+        void* _updateBFieldTH(void* log_intex);
+
+        int _indexFromTime(float time);
     public:
         Renderer(){timer = new TTimer(10);}
         ~Renderer(){timer->TurnOff(); delete timer;}
 
         void fillLogs();
-        void render(TRootEmbeddedCanvas *canvas);
+        void Render(TRootEmbeddedCanvas *canvas);
 
         void GoToTime(float time);
 
         void clear();
-        void run_rendered();
+        void RunRendered();
         void iterate();
     };
 }
 std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::ElectronSnapshot& e_snapshot); 
 std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::RFPoint& rf_point); 
 std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::RFSnapshot& rf_snapshot); 
+
+
 #endif

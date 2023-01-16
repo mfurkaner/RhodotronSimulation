@@ -18,7 +18,7 @@
 #include "TGLabel.h"
 #include "TGTextEntry.h"
 #include "TGLViewer.h"
-#include "TRootEmbeddedCanvas.h"
+#include "TRootCanvas.h"
 #include "TCanvas.h"
 #include "TImage.h"
 #include "TASImage.h"

@@ -8,8 +8,8 @@ using namespace std;
 
 #ifndef RHODO2D_H
 #define RHODO2D_H
-//#define RUNGE_KUTTA
-#define LEAP_FROG
+#define RUNGE_KUTTA
+//#define LEAP_FROG
 
 double Eradial(double r, double time, double phase);
 

@@ -44,9 +44,13 @@ namespace RhodotronSimulatorGUI::frames{
         TGNumberEntry* active_time;
         TGSlider* time_slider;
         renderer::Renderer renderer;
+
+        double _time = 0;
         
     public:
         RenderFrame(const TGWindow* p, UInt_t w, UInt_t h);
+
+        void SetEnum(int _enum){renderer.SetEnum(_enum);}
 
 
         void UpdateProgressBar(uint8_t status);
@@ -56,6 +60,9 @@ namespace RhodotronSimulatorGUI::frames{
         void SliderPositionChanged(int pos);
 
         void Render();
+        
+        void SavePressed();
+        void PlayPressed();
     };
 
 }

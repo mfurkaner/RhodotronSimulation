@@ -31,9 +31,9 @@
 #include "../comm/signal.h"
 #include "../comm/sim_server.h"
 #include "gui_frames_common.h"
-#include "subframes/gui_main_buttons.h"
-#include "subframes/gui_config_frame.h"
-#include "subframes/gui_render_frame.h"
+#include "ribbon_frame/gui_main_buttons.h"
+#include "config_frame/gui_config_frame.h"
+#include "render_frame/gui_render_frame.h"
 #include "../renderer/gui_renderer.cpp"
 
 
@@ -49,6 +49,7 @@ namespace RhodotronSimulatorGUI::frames{
 
 
         std::string _config_file_path = "config.ini";
+        std::string _old_config_file_path = "gui_config_backup.ini";
 
     public:
         MainFrame(const TGWindow*p, UInt_t w, UInt_t h);

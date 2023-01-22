@@ -90,7 +90,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
         #endif
 
         #ifdef RUNGE_KUTTA
-        vector3d run_kut_E = vector3d(0,0,0);/*E.actOnAndGetRungeKuttaCoef(e[i], time_interval);*/
+        vector3d run_kut_E = E.actOnAndGetRungeKuttaCoef(e[i], time_interval);
         vector3d run_kut_B = B.actOnAndGetRungeKuttaCoef(e[i], time_interval);
 
         vector3d acc = run_kut_E + run_kut_B;

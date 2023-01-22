@@ -17,4 +17,16 @@ namespace RhodotronSimulatorGUI::frames{
         }
     }
 
+    void MainButtonsFrame::HideByName(const std::string& name){
+        int index = 0;
+        for(; index < button_names.size(); index++){
+            if ( button_names[index] == name ){
+                break;
+            }
+        }
+        if (index < buttons.size()){
+            this->HideFrame(buttons[index]);
+        }
+    }
+
 }

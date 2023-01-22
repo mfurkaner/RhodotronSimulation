@@ -29,9 +29,9 @@
 #include "comm/signal.h"
 #include "frames/gui_main_frame.h"
 #include "frames/gui_main_frame.cpp"
-#include "frames/subframes/gui_main_buttons.cpp"
-#include "frames/subframes/gui_config_frame.cpp"
-#include "frames/subframes/gui_render_frame.cpp"
+#include "frames/ribbon_frame/gui_main_buttons.cpp"
+#include "frames/config_frame/gui_config_frame.cpp"
+#include "frames/render_frame/gui_render_frame.cpp"
 #include "comm/sim_server.cpp"
 
 

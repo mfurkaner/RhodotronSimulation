@@ -98,6 +98,9 @@
         "source_location": "cpp",
         "stop_token": "cpp",
         "cinttypes": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "*.icc": "cpp",
+        "__bits": "cpp",
+        "__memory": "cpp"
     }
 }

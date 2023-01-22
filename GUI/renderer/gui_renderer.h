@@ -41,6 +41,7 @@ namespace RhodotronSimulatorGUI::renderer{
     };
 
     class Renderer{
+        const double* _time;
         TRootEmbeddedCanvas *canvas;
         uint32_t _enum;
         std::string _elog_path = "xy/paths/";
@@ -58,6 +59,9 @@ namespace RhodotronSimulatorGUI::renderer{
         TTimer *timer;
         bool render_ready = false;
 
+        bool _save_gif = false;
+        const char* _temp_gif_frames_path = "temp/gif_frames";
+
         void _fillElectrons();
         void _fillEField();
         void _fillBField();
@@ -67,18 +71,15 @@ namespace RhodotronSimulatorGUI::renderer{
         void _renderBField();
 
         void _updateElectrons(int log_index);
-        void* _updateElectronsTH(void* log_intex);
-
         void _updateEField(int log_index);
-        void* _updateEFieldTH(void* log_intex);
-
         void _updateBField(int log_index);
-        void* _updateBFieldTH(void* log_intex);
 
         int _indexFromTime(float time);
     public:
-        Renderer(){timer = new TTimer(10);}
+        Renderer(double* _parent_time):_time(_parent_time){timer = new TTimer(1);}
         ~Renderer(){timer->TurnOff(); delete timer;}
+
+        void SetEnum(int _enum_) {_enum = _enum_;}
 
         void fillLogs();
         void Render(TRootEmbeddedCanvas *canvas);
@@ -87,6 +88,8 @@ namespace RhodotronSimulatorGUI::renderer{
 
         void clear();
         void RunRendered();
+        void SaveGif();
+        void Save();
         void iterate();
     };
 }

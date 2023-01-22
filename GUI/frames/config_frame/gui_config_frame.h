@@ -9,6 +9,7 @@
 #include "TGTextView.h"
 #include "TGLabel.h"
 #include "TGTextEntry.h"
+#include "TGListBox.h"
 #include "TGLViewer.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
@@ -18,6 +19,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <vector>
+#include <tuple>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -31,15 +33,39 @@
 
 #include "../gui_frames_common.h"
 
-
 namespace RhodotronSimulatorGUI::frames{
+
+// TODO : DO THIS DYNAMICALLY
+    enum AvailableConfigIndex{
+        emax, frequency, phaselag,
+        epath, bpath, ppath, cpath,
+        starttime, endtime, dt,
+        guntime, _enum, multh,
+        thcount, _r1, _r2, ein,
+        addmagnet, magrotation,
+        bunchnum, gunperiod,
+        targeten, output,
+        debug,
+
+        endofconfig
+    };
+
+    enum ConfigType{
+        Text, TextList
+    };
+    struct ConfigurationCell{
+        ConfigType Type;
+        std::string Value;
+
+        ConfigurationCell(ConfigType type, std::string value) : Type(type), Value(value) {}
+    };
 
     class ConfigurationFrame : public TGVerticalFrame{
         static const std::string config_comment;
-        static const std::vector<std::string> configs;
+        static const std::vector<ConfigurationCell> configs;
         static const std::vector<std::string> label_texts;
         std::vector<TGLabel*> labels;
-        std::vector<TGTextEntry*> inputs;
+        std::vector<TGFrame*> inputs;
 
         const TGWindow* parent;
     
@@ -52,12 +78,22 @@ namespace RhodotronSimulatorGUI::frames{
 
         void LoadConfigFromFile(const std::string& configFilePath);
 
+        std::vector<TGFrame*>& GetInputs();
+
     };
 
-    const std::vector<std::string> ConfigurationFrame::configs =       {"emax", "ein", "targeten", "freq", "phaselag", "starttime",
-                                                                        "endtime", "dt", "guntime", "gunperiod", "enum", "bunchnum",
-                                                                        "r1", "r2", "epath", "bpath", "cfield", "ppath", "starttime",
-                                                                        "multh", "thcount", "magrotation", "addmagnet", "output"};
+    const std::vector<ConfigurationCell> ConfigurationFrame::configs = {ConfigurationCell(Text,"emax"),         ConfigurationCell(Text, "ein"),
+                                                                        ConfigurationCell(Text,"targeten"),     ConfigurationCell(Text, "freq"),
+                                                                        ConfigurationCell(Text,"phaselag"),     ConfigurationCell(Text,"starttime"),
+                                                                        ConfigurationCell(Text,"endtime"),      ConfigurationCell(Text,"dt"), 
+                                                                        ConfigurationCell(Text,"guntime"),      ConfigurationCell(Text,"gunperiod"), 
+                                                                        ConfigurationCell(Text,"enum"),         ConfigurationCell(Text,"bunchnum"),
+                                                                        ConfigurationCell(Text,"r1"),           ConfigurationCell(Text,"r2"), 
+                                                                        ConfigurationCell(Text,"epath"),        ConfigurationCell(Text,"bpath"), 
+                                                                        ConfigurationCell(Text,"cfield"),       ConfigurationCell(Text,"ppath"), 
+                                                                        ConfigurationCell(Text,"starttime"),    ConfigurationCell(Text,"multh"), 
+                                                                        ConfigurationCell(Text,"thcount"),      ConfigurationCell(Text,"magrotation"), 
+                                                                        ConfigurationCell(TextList,"addmagnet"),ConfigurationCell(Text,"output")};
 
     const std::vector<std::string> ConfigurationFrame::label_texts =   {"emax", "ein", "targeten", "freq", "phaselag", "starttime",
                                                                         "endtime", "dt", "guntime", "gunperiod", "enum", "bunchnum",

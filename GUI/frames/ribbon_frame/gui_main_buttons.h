@@ -10,6 +10,7 @@
 #include "TGTextEntry.h"
 #include "TGLViewer.h"
 #include "TRootEmbeddedCanvas.h"
+#include "TGButtonGroup.h"
 #include "TCanvas.h"
 #include "TImage.h"
 #include "TASImage.h"
@@ -44,7 +45,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         MainButtonsFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
-
+        void HideByName(const std::string& name);
     };
 
     const std::vector<std::string> MainButtonsFrame::button_names = {"Save Config", "Load Config",  "Render", "Run", "Stop", "Quit"};

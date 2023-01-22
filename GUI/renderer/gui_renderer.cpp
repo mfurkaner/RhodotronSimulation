@@ -103,7 +103,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
 #pragma region FILL_FROM_LOGS
     void Renderer::_fillElectrons(){
-        _enum = 40;
+        //_enum = 40;
         std::cout << "Filling Electrons : " << _enum << std::endl;
 
         for (uint32_t i = 0; i < _enum ; i++){
@@ -364,9 +364,21 @@ namespace RhodotronSimulatorGUI::renderer{
         timer->TurnOn();
     }
 
+    void Renderer::SaveGif(){
+        if(render_ready == false || timer->IsRunning()) return;
+
+        _save_gif = true;
+        gSystem->mkdir(_temp_gif_frames_path, true);
+        gSystem->Unlink("animation.gif");
+        timer->Connect("Timeout()", "RhodotronSimulatorGUI::renderer::Renderer", this, "iterate()");			
+        timer->TurnOn();
+    }
+
     void Renderer::iterate(){
         static int i = 0;
         static auto start = std::chrono::high_resolution_clock::now();
+
+        // Check if the iteration is over
         if ( i >= _electrons_log[0].time_slices.size()){
             i = 0;
             timer->TurnOff();
@@ -374,7 +386,15 @@ namespace RhodotronSimulatorGUI::renderer{
 
             auto dur = std::chrono::duration_cast<std::chrono::seconds>(end - start);
             std::cout << "Play took " << dur.count() << " s" << std::endl;
+            if (_save_gif){
+                _save_gif = false;
+                gSystem->Exec("convert -delay 10 -loop 0 temp/gif_frames/*.png animation.gif");
+                std::string rmdir_cmd = "rm -r ";
+                rmdir_cmd += _temp_gif_frames_path;
+                gSystem->Exec(rmdir_cmd.c_str());
+            }
         }
+        
         canvas->GetCanvas()->Clear();
 
         _updateEField(i);
@@ -383,8 +403,17 @@ namespace RhodotronSimulatorGUI::renderer{
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
-        if( i % 3 == 0){
-            //canvas->GetCanvas()->Print("gui_output.gif+");
+
+        if( _save_gif && i % 3 == 0 ){
+            int index = i / 3;
+            std::string filename = _temp_gif_frames_path;
+            filename += "/gui_output";
+            filename += std::to_string(index/1000 % 10);
+            filename += std::to_string(index/100 % 10);
+            filename += std::to_string(index/10 % 10);
+            filename += std::to_string(index % 10);
+            filename += ".png";
+            canvas->GetCanvas()->Print(filename.c_str());
         }
         
         i++;
@@ -395,7 +424,6 @@ namespace RhodotronSimulatorGUI::renderer{
         _rf.time_slices.clear();
         _magnets.positive_positions.clear();
     }
-
 
     int Renderer::_indexFromTime(float time){
 

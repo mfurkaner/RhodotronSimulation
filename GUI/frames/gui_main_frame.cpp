@@ -34,12 +34,24 @@ namespace RhodotronSimulatorGUI::frames{
         std::string config = config_frame->GetConfigAsString();
         std::cout << config << std::endl;
 
-        std::ofstream config_stream;
+        std::ofstream config_stream, backup_stream;
+        std::ifstream old_config_stream;
+
+        old_config_stream.open(_config_file_path, std::ios::in);
+        std::string old_config, line;
+
+        while(!old_config_stream.eof()){
+            std::getline(old_config_stream, line);
+            old_config += line + '\n';
+        }
+        old_config_stream.close();
+
+        backup_stream.open(_old_config_file_path, std::ios::out);
+        backup_stream << old_config;
+        backup_stream.close();
 
         config_stream.open(_config_file_path, std::ios::out);
-
         config_stream << config;
-
         config_stream.close();
     }
 
@@ -48,11 +60,23 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void MainFrame::RenderPressed() {
-        //render_frame->GetGif("1.gif");
-        //render_frame->DrawGif();
         this->HideFrame(config_frame);
         this->ShowFrame(render_frame);
+        auto inputs = config_frame->GetInputs();
+
+        LoadConfigPressed();
+        
+        // TODO : This is stupid and unsafe!!!!
+        int _enum = atoi(((TGTextEntry*)inputs[10])->GetText());
+        int _bnum = atoi(((TGTextEntry*)inputs[11])->GetText());
+
+        std::cout << "enum: " << _enum <<  " bnum: " << _bnum << std::endl;
+
+        render_frame->SetEnum(_enum * _bnum);
+
         render_frame->Render();
+        
+        main_buttons_frame->HideByName("Render");
     }
 
     void MainFrame::RunPressed(){

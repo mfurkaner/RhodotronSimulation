@@ -4,7 +4,7 @@
 </br>
 
 
-# GNUPlot output 
+# Command line render
 ![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/gifs/5bunch_5nsPeriod.gif)
 
 # GUI Render V01

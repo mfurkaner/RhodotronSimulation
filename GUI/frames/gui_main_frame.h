@@ -44,6 +44,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         MainButtonsFrame* main_buttons_frame;
         ConfigurationFrame* config_frame;
+        
         RenderFrame* render_frame;
 
 

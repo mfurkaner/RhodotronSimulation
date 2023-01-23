@@ -6,6 +6,7 @@
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
 #include "TEllipse.h"
+#include "TColor.h"
 #include <iostream>
 
 namespace RhodotronSimulatorGUI::renderer{
@@ -92,6 +93,7 @@ namespace RhodotronSimulatorGUI::renderer{
         void Save();
         void iterate();
     };
+
 }
 std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::ElectronSnapshot& e_snapshot); 
 std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::RFPoint& rf_point); 

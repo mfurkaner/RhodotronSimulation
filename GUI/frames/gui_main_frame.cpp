@@ -63,12 +63,10 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(config_frame);
         this->ShowFrame(render_frame);
         auto inputs = config_frame->GetInputs();
-
-        LoadConfigPressed();
         
         // TODO : This is stupid and unsafe!!!!
-        int _enum = atoi(((TGTextEntry*)inputs[10])->GetText());
-        int _bnum = atoi(((TGTextEntry*)inputs[11])->GetText());
+        int _enum = atoi(((TGTextEntry*)inputs[7])->GetText());
+        int _bnum = atoi(((TGTextEntry*)inputs[8])->GetText());
 
         std::cout << "enum: " << _enum <<  " bnum: " << _bnum << std::endl;
 
@@ -82,7 +80,7 @@ namespace RhodotronSimulatorGUI::frames{
     void MainFrame::RunPressed(){
         std::cout << "Simulation started" << std::endl;
 
-        //SaveConfigPressed();
+        SaveConfigPressed();
 
         sim_handler.spawn_server();
         sim_handler.spawn_simulation();

@@ -32,6 +32,8 @@
 #include <fstream>
 
 #include "../gui_frames_common.h"
+#include "B_config_frame/gui_B_config_frame.h"
+#include "E_config_frame/gui_E_config_frame.h"
 
 namespace RhodotronSimulatorGUI::frames{
 
@@ -51,26 +53,28 @@ namespace RhodotronSimulatorGUI::frames{
     };
 
     enum ConfigType{
-        Text, TextList
+        Text, TextList, B, E
     };
     struct ConfigurationCell{
         ConfigType Type;
         std::string Value;
+        AvailableConfigIndex Index;
 
-        ConfigurationCell(ConfigType type, std::string value) : Type(type), Value(value) {}
+        ConfigurationCell(ConfigType type, std::string value, AvailableConfigIndex index) : Type(type), Value(value), Index(index){}
     };
 
     class ConfigurationFrame : public TGVerticalFrame{
+        subframes::BConfigurationFrame* B_config_frame;
+        subframes::EConfigurationFrame* E_config_frame;
+
         static const std::string config_comment;
-        static const std::vector<ConfigurationCell> configs;
         static const std::vector<std::string> label_texts;
         std::vector<TGLabel*> labels;
         std::vector<TGFrame*> inputs;
 
         const TGWindow* parent;
-    
     public:
-
+        static const std::vector<ConfigurationCell> configs;
         ConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
 
@@ -82,22 +86,23 @@ namespace RhodotronSimulatorGUI::frames{
 
     };
 
-    const std::vector<ConfigurationCell> ConfigurationFrame::configs = {ConfigurationCell(Text,"emax"),         ConfigurationCell(Text, "ein"),
-                                                                        ConfigurationCell(Text,"targeten"),     ConfigurationCell(Text, "freq"),
-                                                                        ConfigurationCell(Text,"phaselag"),     ConfigurationCell(Text,"starttime"),
-                                                                        ConfigurationCell(Text,"endtime"),      ConfigurationCell(Text,"dt"), 
-                                                                        ConfigurationCell(Text,"guntime"),      ConfigurationCell(Text,"gunperiod"), 
-                                                                        ConfigurationCell(Text,"enum"),         ConfigurationCell(Text,"bunchnum"),
-                                                                        ConfigurationCell(Text,"r1"),           ConfigurationCell(Text,"r2"), 
-                                                                        ConfigurationCell(Text,"epath"),        ConfigurationCell(Text,"bpath"), 
-                                                                        ConfigurationCell(Text,"cfield"),       ConfigurationCell(Text,"ppath"), 
-                                                                        ConfigurationCell(Text,"starttime"),    ConfigurationCell(Text,"multh"), 
-                                                                        ConfigurationCell(Text,"thcount"),      ConfigurationCell(Text,"magrotation"), 
-                                                                        ConfigurationCell(TextList,"addmagnet"),ConfigurationCell(Text,"output")};
+    const std::vector<ConfigurationCell> ConfigurationFrame::configs = 
+       {ConfigurationCell(E,"emax", emax),              ConfigurationCell(Text, "ein", ein),
+        ConfigurationCell(Text,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
+        ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Text,"starttime", starttime),
+        ConfigurationCell(Text,"endtime", endtime),     ConfigurationCell(Text,"dt", dt), 
+        ConfigurationCell(Text,"guntime", guntime),     ConfigurationCell(Text,"gunperiod", gunperiod), 
+        ConfigurationCell(Text,"enum", _enum),          ConfigurationCell(Text,"bunchnum", bunchnum),
+        ConfigurationCell(E,"r1", _r1),                 ConfigurationCell(E,"r2", _r2), 
+        ConfigurationCell(Text,"epath", epath),         ConfigurationCell(Text,"bpath", bpath), 
+        ConfigurationCell(Text,"cpath", cpath),         ConfigurationCell(Text,"ppath", ppath), 
+        ConfigurationCell(Text,"multh",multh),          ConfigurationCell(Text,"thcount",thcount),      
+        ConfigurationCell(B,"magrotation", magrotation),ConfigurationCell(B,"addmagnet", addmagnet),    
+        ConfigurationCell(Text,"output", output)};
 
     const std::vector<std::string> ConfigurationFrame::label_texts =   {"emax", "ein", "targeten", "freq", "phaselag", "starttime",
                                                                         "endtime", "dt", "guntime", "gunperiod", "enum", "bunchnum",
-                                                                        "r1", "r2", "epath", "bpath", "cfield", "ppath", "starttime",
+                                                                        "r1", "r2", "epath", "bpath", "cpath", "ppath",
                                                                         "multh", "thcount", "magrotation", "addmagnet", "output"};
 
 
@@ -111,7 +116,7 @@ namespace RhodotronSimulatorGUI::frames{
                 "# targeten = Max energy on the output gif (MeV)\n"
                 "# freq = Frequency of the RF field (MHz)\n"
                 "# phaselag = phase lag of the first electrons (degree)\n"
-                "# starttime = ns to start the simulation (ns)\n"
+                "# starttime = time to start firing the gun (ns)\n"
                 "# endtime = ns to run the simulation (ns)\n"
                 "# dt = time interval to do the calculations (ns)\n"
                 "# guntime = how long a gun pulse is (ns)\n"
@@ -122,9 +127,8 @@ namespace RhodotronSimulatorGUI::frames{
                 "# r2 = radius of the outer cylinder (m)\n"
                 "# epath = path to store the electric field data\n"
                 "# bpath = path to store the magnetic field data\n"
-                "# cfield = path to store the settings\n"
+                "# cpath = path to store the settings\n"
                 "# ppath = path to store electron data\n"
-                "# starttime = time to start firing the gun (ns)\n"
                 "# multh = enable or disable multitheading\n"
                 "# thcount = set the maximum thread to be used\n"
                 "# magrotation = degrees of rotation to enter each magnet \n"

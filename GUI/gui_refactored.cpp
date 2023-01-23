@@ -31,6 +31,8 @@
 #include "frames/gui_main_frame.cpp"
 #include "frames/ribbon_frame/gui_main_buttons.cpp"
 #include "frames/config_frame/gui_config_frame.cpp"
+#include "frames/config_frame/B_config_frame/gui_B_config_frame.cpp"
+#include "frames/config_frame/E_config_frame/gui_E_config_frame.cpp"
 #include "frames/render_frame/gui_render_frame.cpp"
 #include "comm/sim_server.cpp"
 

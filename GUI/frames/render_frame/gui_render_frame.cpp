@@ -1,6 +1,6 @@
 #include "gui_render_frame.h"
 #include "TGNumberEntry.h"
-
+#include "TColor.h"
 
 namespace RhodotronSimulatorGUI::frames{
 
@@ -16,7 +16,9 @@ namespace RhodotronSimulatorGUI::frames{
         progressBar->ShowPosition();
         progressBar->Activate(false);
 
+        //auto color = TColor::GetColor(232, 232, 233);
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
+
 
         // Setup the play button
         auto play_button = new TGTextButton(this, "Play");

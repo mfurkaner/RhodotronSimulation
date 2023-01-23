@@ -203,57 +203,89 @@ namespace RhodotronSimulatorGUI::renderer{
 #pragma endregion FILL_FROM_LOGS
 
 #pragma region RENDER_FILLED
+
+    Color_t EnergyGradient(double E, double Emax){
+        if( E <= 0 )
+            return TColor::GetColor(10,10,10);
+
+        const static Color_t color_map[10]{
+            (Color_t)TColor::GetColor(11, 22, 103),
+            (Color_t)TColor::GetColor(67, 16, 110),
+            (Color_t)TColor::GetColor(105, 0, 112),
+            (Color_t)TColor::GetColor(139, 0, 109),
+            (Color_t)TColor::GetColor(170, 0, 102),
+            (Color_t)TColor::GetColor(197, 0, 92),
+            (Color_t)TColor::GetColor(219, 0, 78),
+            (Color_t)TColor::GetColor(236, 34, 62),
+            (Color_t)TColor::GetColor(247, 70, 41),
+            (Color_t)TColor::GetColor(253, 101, 0)
+
+/*
+            (Color_t)TColor::GetColor(252, 112, 50),
+            (Color_t)TColor::GetColor(236, 100, 52),
+            (Color_t)TColor::GetColor(219, 89, 54),
+            (Color_t)TColor::GetColor(203, 77, 56),
+            (Color_t)TColor::GetColor(187, 66, 56),
+            (Color_t)TColor::GetColor(171, 54, 57),
+            (Color_t)TColor::GetColor(156, 43, 57),
+            (Color_t)TColor::GetColor(140, 31, 56),
+            (Color_t)TColor::GetColor(125, 17, 56),
+            (Color_t)TColor::GetColor(110, 0, 55)*/
+
+        };
+        double step = Emax / 10;
+        int times = E/step;
+        int index = times >= 10 ? 9 : times;
+
+        return color_map[index];
+    }
+
+    Color_t EGradient(double E){
+        const static Color_t color_map[10]{
+            (Color_t)TColor::GetColor(27, 2, 222),
+            (Color_t)TColor::GetColor(47, 0, 205),
+            (Color_t)TColor::GetColor(57, 0, 188),
+            (Color_t)TColor::GetColor(62, 0, 172),
+            (Color_t)TColor::GetColor(65, 0, 156),
+            (Color_t)TColor::GetColor(65, 0, 141),
+            (Color_t)TColor::GetColor(64, 0, 127),
+            (Color_t)TColor::GetColor(62, 1, 113),
+            (Color_t)TColor::GetColor(59, 3, 99),
+            (Color_t)TColor::GetColor(55, 6, 86)
+            
+            /*
+            (Color_t)TColor::GetColor(252, 112, 50),
+            (Color_t)TColor::GetColor(236, 100, 52),
+            (Color_t)TColor::GetColor(219, 89, 54),
+            (Color_t)TColor::GetColor(203, 77, 56),
+            (Color_t)TColor::GetColor(187, 66, 56),
+            (Color_t)TColor::GetColor(171, 54, 57),
+            (Color_t)TColor::GetColor(156, 43, 57),
+            (Color_t)TColor::GetColor(140, 31, 56),
+            (Color_t)TColor::GetColor(125, 17, 56),
+            (Color_t)TColor::GetColor(110, 0, 55)*/
+
+        };
+        double step = 0.96 / 10;
+        int times = E/step;
+        int index = times >= 10 ? 9 : times;
+
+        return color_map[index];
+    }
+
     void Renderer::_renderElectrons(){
         for(int i = 0; i < _electrons_log.size(); i++){
             TEllipse* point = new TEllipse( 0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
                                             0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
                                             0.008, 0.008);
             point->Draw();
-            point->SetFillColor(5);
+            point->SetFillColor(EnergyGradient(_electrons_log[i].time_slices.at(0).energy, 1.5));
+            point->SetLineStyle(0);
             //point->SetLineColor(5);
             electrons.push_back(point);
         }
     }
     
-
-    Color_t EGradient(double E){
-        int color = 0.96/E;
-        Color_t value = kOrange - 9;
-        switch (color)
-        {
-        case 8:
-            value = kOrange - 4;
-            break;
-        case 7:
-            value = kOrange - 2;
-            break;
-        case 6:
-            value = kOrange;
-            break;
-        case 5:
-            value = kRed - 9;
-            break;
-        case 4:
-            value = kRed - 7;
-            break;
-        case 3:
-            value = kRed - 4;
-            break;
-        case 2:
-            value = kRed - 3;
-            break;
-        case 1:
-            value = kRed + 1;
-            break;
-        case 0:
-            value = kRed + 2;
-            break;
-        default:
-            break;
-        }
-        return value;
-    }
-
     void Renderer::_renderEField(){
         if(_rf.time_slices.size() > 0){
             double x1,y1,x2,y2;
@@ -325,6 +357,7 @@ namespace RhodotronSimulatorGUI::renderer{
             electrons.at(j)->SetX1(0.5 + _electrons_log[j].time_slices.at(log_index).position.X()/3);
             electrons.at(j)->SetY1(0.5 + _electrons_log[j].time_slices.at(log_index).position.Y()/3);
             electrons.at(j)->Draw();
+            electrons.at(j)->SetFillColor(EnergyGradient(_electrons_log[j].time_slices.at(log_index ).energy, 1.5));
         }
     }
 

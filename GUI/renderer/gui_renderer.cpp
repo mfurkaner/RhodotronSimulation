@@ -9,6 +9,7 @@
 #include "TTimer.h"
 #include "TROOT.h"
 #include "TSystem.h"
+#include "TPaveText.h"
 #include <thread>
 
     std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::ElectronSnapshot& e_snapshot){
@@ -433,6 +434,8 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateBField(i);
         _updateElectrons(i);
 
+        DrawTimeStamp(((float)i)/10);
+
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
 
@@ -481,8 +484,19 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateBField(slice_index);
         _updateElectrons(slice_index);
 
+        DrawTimeStamp(time);
+
+
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
         
+    }
+
+    void Renderer::DrawTimeStamp(float time){
+        TPaveText* pt = new TPaveText(0.05,0.05, 0.23, 0.1);
+        char temp[50];
+        snprintf(temp, 50, "t = %.1fns", time);
+        pt->AddText(temp);
+        pt->Draw();
     }
 }

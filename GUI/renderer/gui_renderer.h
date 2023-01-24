@@ -88,6 +88,7 @@ namespace RhodotronSimulatorGUI::renderer{
         void Render(TRootEmbeddedCanvas *canvas);
 
         void GoToTime(float time);
+        void DrawTimeStamp(float time);
 
         void clear();
         void RunRendered();

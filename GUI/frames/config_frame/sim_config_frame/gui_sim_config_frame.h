@@ -76,7 +76,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         void SetSimConfiguration(std::string config);
 
         const double GetStartTime(){ return (_t0_entry ? _t0_entry->GetNumber() : 0);}
-        const double GetEndTime(){ return (_tf_entry ? _t0_entry->GetNumber() : 0);}
+        const double GetEndTime(){ return (_tf_entry ? _tf_entry->GetNumber() : 0);}
     };
 }
 

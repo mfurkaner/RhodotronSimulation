@@ -81,6 +81,7 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void RenderFrame::SetTimeInterval(double starttime, double endtime){
+        std::cout << "endtime : " << endtime << std::endl;
         if ( endtime <= 0.1 )
             endtime = 0;
         else{

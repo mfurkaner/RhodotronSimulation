@@ -5,6 +5,7 @@
 namespace RhodotronSimulatorGUI::frames::subframes{
 
     TGHorizontalFrame* EConfigurationFrame::_init_cavity_desc_frame(){
+
         TGHorizontalFrame* cavity_desc_frame = new TGHorizontalFrame(this);
 
         TGVerticalFrame* input_side_frame = new TGVerticalFrame(cavity_desc_frame);
@@ -71,9 +72,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         phase_lag_frame->AddFrame(_phase_lag_entry_label, center_y_layout);
         phase_lag_frame->AddFrame(_phase_lag_entry, center_x_layout);
 
-        auto input_Emax_layout = new TGLayoutHints(kLHintsRight, 10, 10, 50, 15);
+        auto input_Emax_layout = new TGLayoutHints(kLHintsRight, 10, 10, 20, 15);
         auto input_freq_layout = new TGLayoutHints(kLHintsRight, 10, 10, 15, 15);
-        auto input_phase_lag_layout = new TGLayoutHints(kLHintsRight, 10, 10, 15, 50);
+        auto input_phase_lag_layout = new TGLayoutHints(kLHintsRight, 10, 10, 15, 20);
 
         input_side_frame->AddFrame(Emax_frame, input_Emax_layout);
         input_side_frame->AddFrame(freq_frame, input_freq_layout);
@@ -91,12 +92,29 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
     EConfigurationFrame::EConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
         parent = p;
-        
+        _frame_title = new TGLabel(this, E_configuration_title.c_str());
+        _frame_title->SetTextFont(FONT_BOLD_14);
+
+        _cavity_desc_title = new TGLabel(this, E_configuration_cavity_desc_title.c_str());
+        _cavity_desc_title->SetTextFont(FONT_BOLD_12);
+
+        _rf_desc_title = new TGLabel(this, E_configuration_rf_desc_title.c_str());
+        _rf_desc_title->SetTextFont(FONT_BOLD_12);
+
         auto cavity_frame = _init_cavity_desc_frame();
         auto rf_frame = _init_rf_desc_frame();
 
-        this->AddFrame(cavity_frame, center_x_layout);
-        this->AddFrame(rf_frame, center_x_layout);
+        auto title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 5, 10);
+        this->AddFrame(_frame_title, title_layout);
+
+        auto cavity_title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 5, 0);
+        this->AddFrame(_cavity_desc_title, cavity_title_layout);
+        auto cavity_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 0, 0);
+        this->AddFrame(cavity_frame, cavity_layout);
+
+        auto rf_title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 0);
+        this->AddFrame(_rf_desc_title, rf_title_layout);
+        this->AddFrame(rf_frame, cavity_layout);
     }
 
     std::string EConfigurationFrame::ProduceEConfiguration(){

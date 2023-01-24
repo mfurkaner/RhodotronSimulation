@@ -72,8 +72,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     BConfigurationFrame::BConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
         parent = p;
 
+        _frame_title = new TGLabel(this, B_configuration_title.c_str());
+        _frame_title->SetTextFont(FONT_BOLD_14);
+
         _magnets_listbox = new TGListBox(this, -1);
-        _magnets_listbox->Resize(250, 250);
+        _magnets_listbox->Resize(275, 250);
         _magnets_listbox->GetContainer()->Connect("DoubleClicked(TGFrame*, Int_t)", 
         "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
         this, "MagnetDoubleClicked(TGFrame*, Int_t)");
@@ -84,12 +87,14 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGHorizontalFrame* magnet_edit_buttons_frame = _init_magnet_edit_buttons_frame();
         TGHorizontalFrame* mag_rotation_edit_frame = _init_mag_rotation_edit_frame();
 
-        auto mag_line_frames_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 20, 20);
-
+        auto mag_line_frames_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 15, 15);
+        auto mag_last_line_frame_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 15, 5);
+        auto title_layout = new TGLayoutHints(kLHintsCenterX | kLHintsTop, 5, 5, 5, 20);
+        this->AddFrame(_frame_title, title_layout);
         this->AddFrame(_magnets_listbox, center_x_layout);
         this->AddFrame(magnet_edit_frame, mag_line_frames_layout);
         this->AddFrame(magnet_edit_buttons_frame, mag_line_frames_layout);
-        this->AddFrame(mag_rotation_edit_frame, mag_line_frames_layout);
+        this->AddFrame(mag_rotation_edit_frame, mag_last_line_frame_layout);
     }
 
     void BConfigurationFrame::AddPressed(){

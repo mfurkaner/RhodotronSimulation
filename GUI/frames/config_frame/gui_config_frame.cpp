@@ -17,8 +17,8 @@ namespace RhodotronSimulatorGUI::frames{
 
 
         // Setup B & E frame
-        B_E_frame->AddFrame(B_config_frame, center_y_layout);
-        B_E_frame->AddFrame(E_config_frame, center_y_layout);
+        B_E_frame->AddFrame(B_config_frame, top_layout);
+        B_E_frame->AddFrame(E_config_frame, top_layout);
 
         this->AddFrame(B_E_frame, center_x_layout);
 
@@ -26,12 +26,12 @@ namespace RhodotronSimulatorGUI::frames{
 
         // Add Gun configuration frame
         gun_config_frame = new subframes::GunConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
-        auto gun_frame_layout = new TGLayoutHints(kLHintsLeft, 10, 400, 10, 10);
-        gun_sim_frame->AddFrame(gun_config_frame, center_y_layout);
+        auto gun_frame_layout = new TGLayoutHints(kLHintsTop, 10, 50, 10, 10);
+        gun_sim_frame->AddFrame(gun_config_frame, gun_frame_layout);
 
         // Add Sim configuration frame
         sim_config_frame = new subframes::SimConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
-        gun_sim_frame->AddFrame(sim_config_frame, center_y_layout);
+        gun_sim_frame->AddFrame(sim_config_frame, top_layout);
 
         this->AddFrame(gun_sim_frame, center_x_layout);
     }

@@ -10,6 +10,7 @@
 #include "TROOT.h"
 #include "TSystem.h"
 #include "TPaveText.h"
+#include "TLegend.h"
 #include <thread>
 
     std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::ElectronSnapshot& e_snapshot){
@@ -145,7 +146,7 @@ namespace RhodotronSimulatorGUI::renderer{
         while (!stream.eof()) {
             RFSnapshot snapshot;
             stream >> snapshot;
-            
+
             if ( stream.fail())
                 continue; 
             
@@ -275,6 +276,8 @@ namespace RhodotronSimulatorGUI::renderer{
 
     void Renderer::_renderElectrons(){
         for(int i = 0; i < _electrons_log.size(); i++){
+
+
             TEllipse* point = new TEllipse( 0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
                                             0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
                                             0.008, 0.008);
@@ -293,10 +296,13 @@ namespace RhodotronSimulatorGUI::renderer{
             for(int i = 0; i < _rf.time_slices.at(0).field.size() ; i++){
                 auto point = _rf.time_slices.at(0).field.at(i);
 
-                x1 = 0.5 + point.position.X()/3;
-                y1 = 0.5 + point.position.Y()/3;
-                x2 = x1 + point.field.X()/30;
-                y2 = y1 + point.field.Y()/30;
+                point.field /= 30;
+                point.position /= 3;
+
+                x1 = 0.5 + point.position.X();
+                y1 = 0.5 + point.position.Y();
+                x2 = x1 + point.field.X();
+                y2 = y1 + point.field.Y();
                 TArrow* rfArrow = new TArrow(x1, y1, x2, y2, 0.005);
                 rfArrow->SetLineColor(EGradient(point.magnitude));
 
@@ -314,12 +320,13 @@ namespace RhodotronSimulatorGUI::renderer{
         }
 
         for ( int i = 0; i < _magnets.positive_positions.size(); i++ ){
+
             TEllipse* point = new TEllipse( 0.5 + _magnets.positive_positions[i].first/3,
                                             0.5 + _magnets.positive_positions[i].second/3,
-                                            0.008, 0.008);
+                                            SIZE_B_PIXEL, SIZE_B_PIXEL);
             point->Draw();
-            point->SetFillColor(kOrange -9);
-            point->SetLineColor(kOrange -9);
+            point->SetFillColor(COLOR_B_PIXEL_STATIC);
+            point->SetLineColor(COLOR_B_PIXEL_STATIC);
             posBField.push_back(point);
         }
 
@@ -327,6 +334,26 @@ namespace RhodotronSimulatorGUI::renderer{
 
         // STATIC FOR NOW SO CLEAR THE LOG
         _magnets.positive_positions.clear();
+    }
+
+    void Renderer::_renderLegend(){
+        _time_legend = new TPaveText(0.05,0.05, 0.23, 0.1);
+        char temp[50];
+        snprintf(temp, 50, "t = %.1fns", 0.0);
+        _time_legend->AddText(temp);
+        _time_legend->Draw();
+/*
+        TEllipse* b_sample = new TEllipse();
+        b_sample->SetR1(SIZE_B_PIXEL);
+        b_sample->SetR2(SIZE_B_PIXEL);
+        b_sample->Draw();
+        b_sample->SetFillColor(COLOR_B_PIXEL_STATIC);
+        b_sample->SetLineColor(COLOR_B_PIXEL_STATIC);
+
+        //_legend = new TLegend(0.05, 0.8, 0.23, 0.95);
+        //_legend->AddEntry(b_sample, "Magnet", "");
+        //_legend->AddEntry()
+        //_legend->Draw();*/
     }
 
     void Renderer::Render(TRootEmbeddedCanvas *c){
@@ -342,6 +369,9 @@ namespace RhodotronSimulatorGUI::renderer{
 
         // setup B field
         _renderBField();
+
+        // setup legend
+        _renderLegend();
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
@@ -370,11 +400,14 @@ namespace RhodotronSimulatorGUI::renderer{
                 if( _rf.time_slices.at(log_index).field.at(j).magnitude == 0 )
                     continue;
 
+                point.field /= 30;
+                point.position /= 3;
+
                 double x1,y1,x2,y2;
-                x1 = 0.5 + point.position.X()/3;
-                y1 = 0.5 + point.position.Y()/3;
-                x2 = x1 + point.field.X()/30;
-                y2 = y1 + point.field.Y()/30;
+                x1 = 0.5 + point.position.X();
+                y1 = 0.5 + point.position.Y();
+                x2 = x1 + point.field.X();
+                y2 = y1 + point.field.Y();
                 rfFieldArrows[j]->SetLineColor(EGradient(point.magnitude));
 
                 rfFieldArrows[j]->DrawArrow(x1, y1, x2, y2, 0.005);
@@ -388,6 +421,22 @@ namespace RhodotronSimulatorGUI::renderer{
         for(int i = 0; i < posBField.size(); i++){
             posBField[i]->Draw();
         }
+    }
+
+    void Renderer::_updateLegend(int log_index){
+        double time = 0;
+        if(_electrons_log.size() != 0 && _electrons_log[0].time_slices.size() > log_index){
+            time = _electrons_log[0].time_slices.at(log_index).time;
+        }
+        else if (_rf.time_slices.size() > log_index){
+            _rf.time_slices.at(log_index).time = time;
+        }
+
+        char temp[50];
+        snprintf(temp, 50, "t = %.1fns", time);
+        _time_legend->Clear();
+        _time_legend->AddText(temp);
+        _time_legend->Draw();
     }
 
     void Renderer::RunRendered(){
@@ -433,6 +482,7 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateEField(i);
         _updateBField(i);
         _updateElectrons(i);
+        _updateLegend(i);
 
         DrawTimeStamp(((float)i)/10);
 
@@ -483,8 +533,9 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateEField(slice_index);
         _updateBField(slice_index);
         _updateElectrons(slice_index);
+        _updateLegend(slice_index);
 
-        DrawTimeStamp(time);
+        //DrawTimeStamp(time);
 
 
         canvas->GetCanvas()->Modified();

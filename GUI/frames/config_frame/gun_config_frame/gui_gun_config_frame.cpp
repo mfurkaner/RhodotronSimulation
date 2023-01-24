@@ -29,9 +29,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         GUN_CONFIGURATION_GUN_DESC_PIC_SIZE_X, GUN_CONFIGURATION_GUN_DESC_PIC_SIZE_Y);
 
         // Setup Ein&icon frame
-        auto Ein_entry_layout = new TGLayoutHints(kLHintsCenterY, 10, 10, 15, 15);
+        auto Ein_entry_layout = new TGLayoutHints(kLHintsCenterY, 10, 10, 15, 5);
         Ein_icon_frame->AddFrame(Ein_entry_frame, Ein_entry_layout);
-        Ein_icon_frame->AddFrame(_gun_description_canvas, center_y_layout);
+    
+        auto icon_layout = new TGLayoutHints(kLHintsCenterY, 10, 10, 10, 0);
+        Ein_icon_frame->AddFrame(_gun_description_canvas, icon_layout);
 
         return Ein_icon_frame;
     }
@@ -59,7 +61,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         tg_entry_frame->AddFrame(_tg_entry, center_x_layout);
 
         // Setup the Gun Times entry frame
-        auto gun_times_frame_layout = new TGLayoutHints(kLHintsCenterY, 15, 15, 10, 10);
+        auto gun_times_frame_layout = new TGLayoutHints(kLHintsCenterY, 15, 15, 0, 0);
         gun_times_frame->AddFrame(T_entry_frame, gun_times_frame_layout);
         gun_times_frame->AddFrame(tg_entry_frame, gun_times_frame_layout);
 
@@ -89,7 +91,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         enum_entry_frame->AddFrame(_enum_entry, center_x_layout);
 
         // Setup the Gun particles entry frame
-        auto particle_samples_frame_layout = new TGLayoutHints(kLHintsCenterY, 38, 38, 10, 10);
+        auto particle_samples_frame_layout = new TGLayoutHints(kLHintsCenterY, 38, 38, 0, 5);
         particle_samples_frame->AddFrame(bnum_entry_frame, particle_samples_frame_layout);
         particle_samples_frame->AddFrame(enum_entry_frame, particle_samples_frame_layout);
 
@@ -100,13 +102,23 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     GunConfigurationFrame::GunConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
         parent = p;
 
+        _frame_title = new TGLabel(this, gun_configuration_title.c_str());
+        _frame_title->SetTextFont(FONT_BOLD_14);
+
         auto Ein_icon_frame = _init_Ein_icon_frame();
         auto gun_times_frame = _init_gun_times_frame();
         auto particle_samples_frame = _init_particle_samples_frame();
 
-        this->AddFrame(Ein_icon_frame, center_x_layout);
-        this->AddFrame(gun_times_frame, center_x_layout);
-        this->AddFrame(particle_samples_frame, center_x_layout);
+        auto title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 10);
+        this->AddFrame(_frame_title, title_layout);
+
+        auto Ein_icon_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 10, 0);
+        this->AddFrame(Ein_icon_frame, Ein_icon_layout);
+
+        auto gun_times_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 0);
+        this->AddFrame(gun_times_frame, gun_times_layout);
+        auto particle_samples_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 5);
+        this->AddFrame(particle_samples_frame, particle_samples_layout);
     }
 
 

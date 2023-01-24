@@ -35,7 +35,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         dt_entry_frame->AddFrame(_dt_entry, center_x_layout);
 
         // Setup the Sim Time entry frame
-        auto gun_times_frame_layout = new TGLayoutHints(kLHintsCenterY, 15, 15, 10, 10);
+        auto gun_times_frame_layout = new TGLayoutHints(kLHintsCenterY, 15, 15, 0, 0);
         time_entry_frame->AddFrame(t0_entry_frame, gun_times_frame_layout);
         time_entry_frame->AddFrame(tf_entry_frame, gun_times_frame_layout);
         time_entry_frame->AddFrame(dt_entry_frame, gun_times_frame_layout);
@@ -107,9 +107,15 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     SimConfigurationFrame::SimConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
         parent = p;
 
+        _frame_title = new TGLabel(this, sim_configuration_title.c_str());
+        _frame_title->SetTextFont(FONT_BOLD_14);
+
         auto time_entry_frame = _init_time_entry_frame();
         auto mt_control_frame = _init_mt_control_frame();
         auto log_path_entry_frame = _init_log_path_entry_frame();
+
+        auto title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 10);
+        this->AddFrame(_frame_title,title_layout);
 
         this->AddFrame(time_entry_frame, center_x_layout);
         this->AddFrame(mt_control_frame, center_x_layout);

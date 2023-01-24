@@ -56,27 +56,41 @@ namespace RhodotronSimulatorGUI::frames{
     static TGLayoutHints* bottom_layout = new TGLayoutHints(kLHintsBottom, common_padding, common_padding, common_padding, common_padding);
     static TGLayoutHints* top_left_layout = new TGLayoutHints(kLHintsTop | kLHintsLeft, common_padding, common_padding, common_padding, common_padding); 
 
+
+    #define FONT_BOLD_14 "-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1"
+    #define FONT_BOLD_12 "-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1"
+
+    #define FONT_MEDIUM_14 "-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1"
+    #define FONT_MEDIUM_12 "-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1"
+
+
+
     /// @brief B CONFIGURATION FRAME RESOURCES
+    static const std::string B_configuration_title = "- B Field Configuration -";
     static const std::string B_configuration_B_entry_label_text = "B (T)";
     static const std::string B_configuration_R_entry_label_text = "R (m)";
     static const std::string B_configuration_r_entry_label_text = "r (m)";
     static const std::string B_configuration_mag_rot_entry_label_text = "Rotation of each magnet (degree)";
 
     /// @brief E CONFIGURATION FRAME RESOURCES
+    static const std::string E_configuration_title = "- E Field Configuration -";
+    static const std::string E_configuration_cavity_desc_title = "Cavity Description";
+    static const std::string E_configuration_rf_desc_title = "RF Description";
     static const std::string E_configuration_R1_entry_label_text = "R1 (m)";
     static const std::string E_configuration_R2_entry_label_text = "R2 (m)";
     static const std::string E_configuration_Emax_entry_label_text = "Emax (MV/m2)";
     static const std::string E_configuration_freq_entry_label_text = "f (MHz)";
     static const std::string E_configuration_phase_lag_entry_label_text = "Phase Lag (degree)";
     static const std::string E_configuration_cavity_desc_pic_path = "resources/Cavity_desc.png";
-    #define E_CONFIGURATION_CAVITY_DESC_PIC_SIZE 200
+    #define E_CONFIGURATION_CAVITY_DESC_PIC_SIZE 175
     static const std::string E_configuration_rf_desc_pic_path = "resources/RF_desc.png";
-    #define E_CONFIGURATION_RF_DESC_PIC_SIZE 250
+    #define E_CONFIGURATION_RF_DESC_PIC_SIZE 200
 
     /// @brief GUN CONFIGURATION FRAME RESOURCES
+    static const std::string gun_configuration_title = "- Gun Configuration -";
     static const std::string gun_configuration_gun_desc_pic_path =      "resources/Gun_desc.png";
-    #define GUN_CONFIGURATION_GUN_DESC_PIC_SIZE_X 285
-    #define GUN_CONFIGURATION_GUN_DESC_PIC_SIZE_Y 150
+    #define GUN_CONFIGURATION_GUN_DESC_PIC_SIZE_X 250
+    #define GUN_CONFIGURATION_GUN_DESC_PIC_SIZE_Y 130
     static const std::string gun_configuration_Ein_entry_label_text =   "Ein (MeV)";
     static const std::string gun_configuration_targetE_entry_label_text="Target E(MeV)";
     static const std::string gun_configuration_T_entry_label_text =     "Gun Period - T(ns)";
@@ -86,6 +100,7 @@ namespace RhodotronSimulatorGUI::frames{
 
 
     /// @brief SIM CONFIGURATION FRAME RESOURCES
+    static const std::string sim_configuration_title = "- Simulation Configuration -";
     static const std::string sim_configuration_t0_entry_label_text =    "Start time (ns)";
     static const std::string sim_configuration_tf_entry_label_text =    "End time (ns)";
     static const std::string sim_configuration_dt_entry_label_text =    "Time step size (ns)";

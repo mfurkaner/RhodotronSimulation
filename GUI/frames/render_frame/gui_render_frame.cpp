@@ -6,7 +6,7 @@ namespace RhodotronSimulatorGUI::frames{
 
 
     RenderFrame::RenderFrame(const TGWindow* p, UInt_t w, UInt_t h) 
-        : TGVerticalFrame(p, w, h), renderer(renderer::Renderer(&_time)){
+        : TGVerticalFrame(p, w, h){
         parent = p;
 
         // Setup the progressbar

@@ -46,7 +46,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         std::string GetDescription() const { 
             char temp[100];
-            snprintf(temp, 100, "B=%.5lf   R=%.3lf   r=%.3lf", B, R, r);
+            snprintf(temp, 100, "B=%.5lf(T)   R=%.3lf(m)   r=%.3lf(m)", B, R, r);
             return std::string(temp); 
         };
 
@@ -57,6 +57,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
     class BConfigurationFrame : public TGVerticalFrame{
         const TGWindow* parent;
+
+        TGLabel* _frame_title;
 
         std::vector<MagnetConfigurationDetails> _magnets;
         TGListBox* _magnets_listbox;

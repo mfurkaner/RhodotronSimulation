@@ -2,6 +2,7 @@
 #define GUI_RENDERER_H
 
 #include "../../SIM/basic/vector.h"
+#include "render_settings.h"
 #include <vector>
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
@@ -42,8 +43,9 @@ namespace RhodotronSimulatorGUI::renderer{
     };
 
     class Renderer{
-        const double* _time;
         TRootEmbeddedCanvas *canvas;
+        TPaveText* _time_legend;
+        TLegend* _legend;
         uint32_t _enum;
         double _targetEnergy = 1.5;
         std::string _elog_path = "xy/paths/";
@@ -71,14 +73,16 @@ namespace RhodotronSimulatorGUI::renderer{
         void _renderElectrons();
         void _renderEField();
         void _renderBField();
+        void _renderLegend();
 
         void _updateElectrons(int log_index);
         void _updateEField(int log_index);
         void _updateBField(int log_index);
+        void _updateLegend(int log_index);
 
         int _indexFromTime(float time);
     public:
-        Renderer(double* _parent_time):_time(_parent_time){timer = new TTimer(1);}
+        Renderer(){timer = new TTimer(1);}
         ~Renderer(){timer->TurnOff(); delete timer;}
 
         void SetEnum(int _enum_) {_enum = _enum_;}

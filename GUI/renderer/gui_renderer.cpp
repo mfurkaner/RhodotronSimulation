@@ -103,7 +103,6 @@ namespace RhodotronSimulatorGUI::renderer{
 
 #pragma region FILL_FROM_LOGS
     void Renderer::_fillElectrons(){
-        //_enum = 40;
         std::cout << "Filling Electrons : " << _enum << std::endl;
 
         for (uint32_t i = 0; i < _enum ; i++){
@@ -279,7 +278,7 @@ namespace RhodotronSimulatorGUI::renderer{
                                             0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
                                             0.008, 0.008);
             point->Draw();
-            point->SetFillColor(EnergyGradient(_electrons_log[i].time_slices.at(0).energy, 1.5));
+            point->SetFillColor(EnergyGradient(_electrons_log[i].time_slices.at(0).energy, _targetEnergy));
             point->SetLineStyle(0);
             //point->SetLineColor(5);
             electrons.push_back(point);
@@ -318,8 +317,8 @@ namespace RhodotronSimulatorGUI::renderer{
                                             0.5 + _magnets.positive_positions[i].second/3,
                                             0.008, 0.008);
             point->Draw();
-            point->SetFillColor(kBlue -9);
-            point->SetLineColor(kBlue -9);
+            point->SetFillColor(kOrange -9);
+            point->SetLineColor(kOrange -9);
             posBField.push_back(point);
         }
 
@@ -466,7 +465,7 @@ namespace RhodotronSimulatorGUI::renderer{
             }
         }
 
-        std::cerr << "No such time." << std::endl;
+        std::cerr << "No such time. " <<  time << std::endl;
         return -1;
     }
 

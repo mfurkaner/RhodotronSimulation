@@ -41,11 +41,11 @@ namespace RhodotronSimulatorGUI::frames{
 
     class MainFrame : public TGMainFrame {
         GUISimulationHandler sim_handler;
-
         MainButtonsFrame* main_buttons_frame;
         ConfigurationFrame* config_frame;
-        
         RenderFrame* render_frame;
+
+        TGFrame* active_frame;
 
 
 
@@ -58,6 +58,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         void SaveConfigPressed();
         void LoadConfigPressed();
+        void ConfigurationPressed();
         void RenderPressed();
         void RunPressed();
         void StopPressed();

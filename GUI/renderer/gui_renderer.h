@@ -45,6 +45,7 @@ namespace RhodotronSimulatorGUI::renderer{
         const double* _time;
         TRootEmbeddedCanvas *canvas;
         uint32_t _enum;
+        double _targetEnergy = 1.5;
         std::string _elog_path = "xy/paths/";
         std::string _rflog_path = "xy/rf.txt";
         std::string _mlog_path = "xy/magnet.txt";
@@ -81,6 +82,7 @@ namespace RhodotronSimulatorGUI::renderer{
         ~Renderer(){timer->TurnOff(); delete timer;}
 
         void SetEnum(int _enum_) {_enum = _enum_;}
+        void SetTargetEnergy(double targetEn) { _targetEnergy = targetEn;}
 
         void fillLogs();
         void Render(TRootEmbeddedCanvas *canvas);

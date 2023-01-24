@@ -22,12 +22,12 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0, 3);
         _r_entry->Resize(75,20);
 
-        magnet_edit_frame->AddFrame(_B_entry_label, center_layout);
-        magnet_edit_frame->AddFrame(_B_entry, center_layout);
-        magnet_edit_frame->AddFrame(_R_entry_label, center_layout);
-        magnet_edit_frame->AddFrame(_R_entry, center_layout);
-        magnet_edit_frame->AddFrame(_r_entry_label, center_layout);
-        magnet_edit_frame->AddFrame(_r_entry, center_layout);
+        magnet_edit_frame->AddFrame(_B_entry_label, center_y_layout);
+        magnet_edit_frame->AddFrame(_B_entry, center_x_layout);
+        magnet_edit_frame->AddFrame(_R_entry_label, center_y_layout);
+        magnet_edit_frame->AddFrame(_R_entry, center_x_layout);
+        magnet_edit_frame->AddFrame(_r_entry_label, center_y_layout);
+        magnet_edit_frame->AddFrame(_r_entry, center_x_layout);
 
         return magnet_edit_frame;
     }
@@ -47,9 +47,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         _delete_magnet_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
             this, "DeletePressed()");
 
-        magnet_edit_buttons_frame->AddFrame(_add_magnet_button, center_layout);
-        magnet_edit_buttons_frame->AddFrame(_save_magnet_button, center_layout);
-        magnet_edit_buttons_frame->AddFrame(_delete_magnet_button, center_layout);
+        magnet_edit_buttons_frame->AddFrame(_add_magnet_button, center_x_layout);
+        magnet_edit_buttons_frame->AddFrame(_save_magnet_button, center_x_layout);
+        magnet_edit_buttons_frame->AddFrame(_delete_magnet_button, center_x_layout);
 
         return magnet_edit_buttons_frame;
     }
@@ -58,13 +58,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGHorizontalFrame* mag_rotation_edit_frame = new TGHorizontalFrame(this, CONFIG_FRAME_LINE_W, CONFIG_FRAME_LINE_H);
 
         _mag_rotation_entry_label = new TGLabel(mag_rotation_edit_frame, B_configuration_mag_rot_entry_label_text.c_str());
-        _mag_rotation_entry = new TGNumberEntry(mag_rotation_edit_frame, 0.0,0, -1, TGNumberFormat::kNESRealOne, 
+        _mag_rotation_entry = new TGNumberEntry(mag_rotation_edit_frame, DEFAULT_B_MAG_ROT,0, -1, TGNumberFormat::kNESRealOne, 
                 TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0, 30);
         _mag_rotation_entry->Resize(50,20);
 
 
-        mag_rotation_edit_frame->AddFrame(_mag_rotation_entry_label, center_layout);
-        mag_rotation_edit_frame->AddFrame(_mag_rotation_entry, center_layout);
+        mag_rotation_edit_frame->AddFrame(_mag_rotation_entry_label, center_y_layout);
+        mag_rotation_edit_frame->AddFrame(_mag_rotation_entry, center_x_layout);
         return mag_rotation_edit_frame;
     }
 #pragma endregion INIT_SUB_FRAMES
@@ -73,19 +73,23 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         parent = p;
 
         _magnets_listbox = new TGListBox(this, -1);
-        _magnets_listbox->Resize(250, 75);
+        _magnets_listbox->Resize(250, 250);
         _magnets_listbox->GetContainer()->Connect("DoubleClicked(TGFrame*, Int_t)", 
         "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
         this, "MagnetDoubleClicked(TGFrame*, Int_t)");
+
+        LoadDefaultMagnets();
 
         TGHorizontalFrame* magnet_edit_frame = _init_magnet_edit_frame();
         TGHorizontalFrame* magnet_edit_buttons_frame = _init_magnet_edit_buttons_frame();
         TGHorizontalFrame* mag_rotation_edit_frame = _init_mag_rotation_edit_frame();
 
-        this->AddFrame(_magnets_listbox, center_layout);
-        this->AddFrame(magnet_edit_frame, center_layout);
-        this->AddFrame(magnet_edit_buttons_frame, center_layout);
-        this->AddFrame(mag_rotation_edit_frame, center_layout);
+        auto mag_line_frames_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 20, 20);
+
+        this->AddFrame(_magnets_listbox, center_x_layout);
+        this->AddFrame(magnet_edit_frame, mag_line_frames_layout);
+        this->AddFrame(magnet_edit_buttons_frame, mag_line_frames_layout);
+        this->AddFrame(mag_rotation_edit_frame, mag_line_frames_layout);
     }
 
     void BConfigurationFrame::AddPressed(){
@@ -94,11 +98,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         new_magnet.R = _R_entry->GetNumber();
         new_magnet.r = _r_entry->GetNumber();
 
-        std::string new_magnet_desc = std::to_string(_magnets.size() + 1) + ") ";
-        new_magnet_desc += new_magnet.GetDescription();
-
-        _magnets_listbox->NewEntry(new_magnet_desc.c_str());
-        _magnets.push_back(new_magnet);
+        AddMagnet(new_magnet);
     }
 
     void BConfigurationFrame::SavePressed(){
@@ -165,8 +165,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     void BConfigurationFrame::SetBConfiguration(std::string config){
         // TODO : Check input
         std::stringstream config_stream(config);
-
         std::string line;
+        _magnets.clear();
+        UpdateMagnetList();
 
         while( config_stream.eof() == false ){
             std::getline(config_stream, line);
@@ -195,12 +196,23 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     void BConfigurationFrame::AddMagnet(std::string config){
         // TODO : Check input
         auto new_magnet = MagnetConfigurationDetails(config);
-
-        std::string new_magnet_desc = std::to_string(_magnets.size() + 1)+ ") ";
-        new_magnet_desc += new_magnet.GetDescription();
-
-        _magnets_listbox->NewEntry(new_magnet_desc.c_str());
         _magnets.push_back(new_magnet);
+        UpdateMagnetList();
+    }
+
+    void BConfigurationFrame::AddMagnet(MagnetConfigurationDetails new_magnet){
+        _magnets.push_back(new_magnet);
+        UpdateMagnetList();
+    }
+
+    void BConfigurationFrame::LoadDefaultMagnets(){
+        _magnets.clear();
+        for(int i = 0; i < DEFAULT_B_MAG_COUNT; i++){
+            std::string mag = std::to_string(DEFAULT_B_MAG_B[i]) + " , "
+            + std::to_string(DEFAULT_B_MAG_R[i]) + " , <" + std::to_string(DEFAULT_B_MAG_r[i]) + ">";
+            AddMagnet(mag);
+        }
+        UpdateMagnetList();
     }
 
     MagnetConfigurationDetails::MagnetConfigurationDetails(std::string config){

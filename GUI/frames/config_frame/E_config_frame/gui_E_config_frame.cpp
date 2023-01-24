@@ -13,21 +13,21 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGHorizontalFrame* r2_frame = new TGHorizontalFrame(input_side_frame);
 
         _r1_entry_label = new TGLabel(r1_frame, E_configuration_R1_entry_label_text.c_str());
-        _r1_entry = new TGNumberEntry(r1_frame, 0, 5, -1, TGNumberFormat::kNESRealThree,
+        _r1_entry = new TGNumberEntry(r1_frame, DEFAULT_E_R1, 7, -1, TGNumberFormat::kNESRealThree,
                 TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMax, 0, 3);
 
-        r1_frame->AddFrame(_r1_entry_label, center_layout);
-        r1_frame->AddFrame(_r1_entry, center_layout);
+        r1_frame->AddFrame(_r1_entry_label, bottom_layout);
+        r1_frame->AddFrame(_r1_entry, center_x_layout);
 
         _r2_entry_label = new TGLabel(r2_frame, E_configuration_R2_entry_label_text.c_str());
-        _r2_entry = new TGNumberEntry(r2_frame, 0.1, 5, -1, TGNumberFormat::kNESRealThree,
+        _r2_entry = new TGNumberEntry(r2_frame, DEFAULT_E_R2, 7, -1, TGNumberFormat::kNESRealThree,
                 TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMax, 0.01, 3);
 
-        r2_frame->AddFrame(_r2_entry_label, center_layout);
-        r2_frame->AddFrame(_r2_entry, center_layout);
+        r2_frame->AddFrame(_r2_entry_label, bottom_layout);
+        r2_frame->AddFrame(_r2_entry, center_x_layout);
 
-        auto input_r1_layout = new TGLayoutHints(kLHintsRight, 50, 30, 75, 15);
-        auto input_r2_layout = new TGLayoutHints(kLHintsRight, 50, 30, 15, 75);
+        auto input_r1_layout = new TGLayoutHints(kLHintsRight, 50, 30, 50, 15);
+        auto input_r2_layout = new TGLayoutHints(kLHintsRight, 50, 30, 15, 50);
 
         input_side_frame->AddFrame(r1_frame, input_r1_layout);
         input_side_frame->AddFrame(r2_frame, input_r2_layout);
@@ -35,8 +35,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto pic = (TGPicture*)gClient->GetPicture(E_configuration_cavity_desc_pic_path.c_str(), E_CONFIGURATION_CAVITY_DESC_PIC_SIZE, E_CONFIGURATION_CAVITY_DESC_PIC_SIZE);
         _cavity_description_canvas = new TGIcon(cavity_desc_frame, pic, E_CONFIGURATION_CAVITY_DESC_PIC_SIZE, E_CONFIGURATION_CAVITY_DESC_PIC_SIZE);
 
-        cavity_desc_frame->AddFrame(input_side_frame, center_layout);
-        cavity_desc_frame->AddFrame(_cavity_description_canvas, center_layout);
+        cavity_desc_frame->AddFrame(input_side_frame, center_x_layout);
+        cavity_desc_frame->AddFrame(_cavity_description_canvas, center_x_layout);
 
         return cavity_desc_frame;
     }
@@ -51,29 +51,29 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGHorizontalFrame* phase_lag_frame = new TGHorizontalFrame(input_side_frame);
 
         _Emax_entry_label = new TGLabel(Emax_frame, E_configuration_Emax_entry_label_text.c_str());
-        _Emax_entry = new TGNumberEntry(Emax_frame, 0, 5, -1, TGNumberFormat::kNESRealThree,
+        _Emax_entry = new TGNumberEntry(Emax_frame, DEFAULT_E_EMAX, 7, -1, TGNumberFormat::kNESRealThree,
                 TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMax, 0, 10);
 
-        Emax_frame->AddFrame(_Emax_entry_label, center_layout);
-        Emax_frame->AddFrame(_Emax_entry, center_layout);
+        Emax_frame->AddFrame(_Emax_entry_label, center_y_layout);
+        Emax_frame->AddFrame(_Emax_entry, center_x_layout);
 
         _freq_entry_label = new TGLabel(freq_frame, E_configuration_freq_entry_label_text.c_str());
-        _freq_entry = new TGNumberEntry(freq_frame, 0.1, 5, -1, TGNumberFormat::kNESRealOne,
-                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMax, 0.0, 500);
+        _freq_entry = new TGNumberEntry(freq_frame, DEFAULT_E_F, 7, -1, TGNumberFormat::kNESRealOne,
+                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMax, 0.1, 500);
 
-        freq_frame->AddFrame(_freq_entry_label, center_layout);
-        freq_frame->AddFrame(_freq_entry, center_layout);
+        freq_frame->AddFrame(_freq_entry_label, center_y_layout);
+        freq_frame->AddFrame(_freq_entry, center_x_layout);
 
         _phase_lag_entry_label = new TGLabel(phase_lag_frame, E_configuration_phase_lag_entry_label_text.c_str());
-        _phase_lag_entry = new TGNumberEntry(phase_lag_frame, 0.1, 5, -1, TGNumberFormat::kNESRealOne,
+        _phase_lag_entry = new TGNumberEntry(phase_lag_frame, DEFAULT_E_PL, 5, -1, TGNumberFormat::kNESRealOne,
                 TGNumberFormat::kNEAAnyNumber, TGNumberFormat::kNELLimitMax, -180, 180);
 
-        phase_lag_frame->AddFrame(_phase_lag_entry_label, center_layout);
-        phase_lag_frame->AddFrame(_phase_lag_entry, center_layout);
+        phase_lag_frame->AddFrame(_phase_lag_entry_label, center_y_layout);
+        phase_lag_frame->AddFrame(_phase_lag_entry, center_x_layout);
 
-        auto input_Emax_layout = new TGLayoutHints(kLHintsRight, 10, 10, 80, 15);
+        auto input_Emax_layout = new TGLayoutHints(kLHintsRight, 10, 10, 50, 15);
         auto input_freq_layout = new TGLayoutHints(kLHintsRight, 10, 10, 15, 15);
-        auto input_phase_lag_layout = new TGLayoutHints(kLHintsRight, 10, 10, 15, 80);
+        auto input_phase_lag_layout = new TGLayoutHints(kLHintsRight, 10, 10, 15, 50);
 
         input_side_frame->AddFrame(Emax_frame, input_Emax_layout);
         input_side_frame->AddFrame(freq_frame, input_freq_layout);
@@ -82,8 +82,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto pic = (TGPicture*)gClient->GetPicture(E_configuration_rf_desc_pic_path.c_str(), E_CONFIGURATION_RF_DESC_PIC_SIZE, E_CONFIGURATION_RF_DESC_PIC_SIZE);
         _rf_description_canvas = new TGIcon(rf_desc_frame, pic, E_CONFIGURATION_RF_DESC_PIC_SIZE, E_CONFIGURATION_RF_DESC_PIC_SIZE);
 
-        rf_desc_frame->AddFrame(input_side_frame, center_layout);
-        rf_desc_frame->AddFrame(_rf_description_canvas, center_layout);
+        rf_desc_frame->AddFrame(input_side_frame, center_x_layout);
+        rf_desc_frame->AddFrame(_rf_description_canvas, center_x_layout);
 
         return rf_desc_frame;
     }
@@ -95,10 +95,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto cavity_frame = _init_cavity_desc_frame();
         auto rf_frame = _init_rf_desc_frame();
 
-        this->AddFrame(cavity_frame, center_layout);
-        this->AddFrame(rf_frame, center_layout);
+        this->AddFrame(cavity_frame, center_x_layout);
+        this->AddFrame(rf_frame, center_x_layout);
     }
-
 
     std::string EConfigurationFrame::ProduceEConfiguration(){
         std::string eConfiguration;

@@ -11,9 +11,9 @@ namespace RhodotronSimulatorGUI::frames{
 
         sim_handler.set_progress_bar(render_frame->GetProgressBar());
 
-        this->AddFrame(main_buttons_frame, center_layout);
-        this->AddFrame(config_frame, center_layout);
-        this->AddFrame(render_frame, center_layout);
+        this->AddFrame(main_buttons_frame, center_x_layout);
+        this->AddFrame(config_frame, center_x_layout);
+        this->AddFrame(render_frame, center_x_layout);
 
         SetName("RhodoSim_GUI");
         SetWindowName("RhodoSim GUI");
@@ -32,8 +32,7 @@ namespace RhodotronSimulatorGUI::frames{
 
     void MainFrame::SaveConfigPressed(){
         std::string config = config_frame->GetConfigAsString();
-        std::cout << config << std::endl;
-
+        
         std::ofstream config_stream, backup_stream;
         std::ifstream old_config_stream;
 
@@ -59,18 +58,33 @@ namespace RhodotronSimulatorGUI::frames{
         config_frame->LoadConfigFromFile(_config_file_path);
     }
 
+    void MainFrame::ConfigurationPressed(){
+        this->HideFrame(active_frame);
+        this->ShowFrame(config_frame);
+        active_frame = config_frame;
+        main_buttons_frame->HideByName("Configuration");
+        main_buttons_frame->ShowByName("Save Config");
+        main_buttons_frame->ShowByName("Load Config");
+    }
+
     void MainFrame::RenderPressed() {
         this->HideFrame(config_frame);
         this->ShowFrame(render_frame);
-        auto inputs = config_frame->GetInputs();
         
-        // TODO : This is stupid and unsafe!!!!
-        int _enum = atoi(((TGTextEntry*)inputs[7])->GetText());
-        int _bnum = atoi(((TGTextEntry*)inputs[8])->GetText());
+        int _enum = config_frame->GetEnum();
+        int _bnum = config_frame->GetBnum();
+
+        // TODO : Get this from sim config frame
+        double _starttime = config_frame->GetStartTime();
+        double _endtime = config_frame->GetEndTime();
+
+        double _targetEn = config_frame->GetTargetEnergy();
 
         std::cout << "enum: " << _enum <<  " bnum: " << _bnum << std::endl;
 
         render_frame->SetEnum(_enum * _bnum);
+        render_frame->SetTargetEnergy(_targetEn);
+        render_frame->SetTimeInterval(_starttime, _endtime);
 
         render_frame->Render();
         
@@ -87,6 +101,11 @@ namespace RhodotronSimulatorGUI::frames{
 
         this->HideFrame(config_frame);
         this->ShowFrame(render_frame);
+        active_frame = render_frame;
+        main_buttons_frame->ShowByName("Stop");
+        main_buttons_frame->ShowByName("Configuration");
+        main_buttons_frame->HideByName("Save Config");
+        main_buttons_frame->HideByName("Load Config");
     }
 
     void MainFrame::StopPressed(){

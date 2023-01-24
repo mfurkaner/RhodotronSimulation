@@ -46,12 +46,14 @@ namespace RhodotronSimulatorGUI::frames{
         renderer::Renderer renderer;
 
         double _time = 0;
+        double _endtime = 40;
         
     public:
         RenderFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
         void SetEnum(int _enum){renderer.SetEnum(_enum);}
-
+        void SetTimeInterval(double starttime, double endtime);
+        void SetTargetEnergy(double targetEn){ renderer.SetTargetEnergy(targetEn);}
 
         void UpdateProgressBar(uint8_t status);
         TGProgressBar* GetProgressBar();

@@ -12,9 +12,12 @@ namespace RhodotronSimulatorGUI::frames{
             auto button = new TGTextButton(this, button_names.at(i).c_str(), i ); //= TGTextButton(this, button_names.at(i).c_str(), i );
             button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::MainFrame", (void*)parent, button_functions.at(i).c_str());
             // add to the frame and the list
-            this->AddFrame(button, center_layout);
+            this->AddFrame(button, center_x_layout);
             buttons.push_back(button);
         }
+
+        HideByName("Configuration");
+        HideByName("Stop");
     }
 
     void MainButtonsFrame::HideByName(const std::string& name){
@@ -26,6 +29,18 @@ namespace RhodotronSimulatorGUI::frames{
         }
         if (index < buttons.size()){
             this->HideFrame(buttons[index]);
+        }
+    }
+    
+    void MainButtonsFrame::ShowByName(const std::string& name){
+        int index = 0;
+        for(; index < button_names.size(); index++){
+            if ( button_names[index] == name ){
+                break;
+            }
+        }
+        if (index < buttons.size()){
+            this->ShowFrame(buttons[index]);
         }
     }
 

@@ -44,12 +44,12 @@ namespace RhodotronSimulatorGUI::frames{
                              "SliderPositionChanged(Int_t)");
 
 
-        this->AddFrame(progressBar, center_layout);
-        this->AddFrame(canvas, center_layout);
-        this->AddFrame(play_button, center_layout);
-        this->AddFrame(time_slider, center_layout);
-        this->AddFrame(active_time, center_layout);
-        this->AddFrame(save_button, center_layout);
+        this->AddFrame(progressBar, center_x_layout);
+        this->AddFrame(canvas, center_x_layout);
+        this->AddFrame(play_button, center_x_layout);
+        this->AddFrame(time_slider, center_x_layout);
+        this->AddFrame(active_time, center_x_layout);
+        this->AddFrame(save_button, center_x_layout);
 
     }
 
@@ -78,7 +78,24 @@ namespace RhodotronSimulatorGUI::frames{
             active_time->SetNumber(time);
             active_time->Modified();
         }
-    };
+    }
+
+    void RenderFrame::SetTimeInterval(double starttime, double endtime){
+        if ( endtime <= 0.1 )
+            endtime = 0;
+        else{
+            endtime -= 0.1;
+        }
+
+        std::cout << "Setting time interval to " << starttime << " : " << endtime << std::endl; 
+        time_slider->SetRange(starttime * 10, endtime * 10);
+        active_time->SetLimitValues(starttime, endtime);
+        active_time->SetNumber(starttime);
+        time_slider->SetPosition(starttime * 10);
+        //active_time->Modified();
+        std::cout << "Ended to setting time interval" << std::endl; 
+    }
+
 
     void RenderFrame::SavePressed(){
         renderer.SaveGif();

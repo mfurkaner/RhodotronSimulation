@@ -93,6 +93,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         std::string ProduceBConfiguration();
         void SetBConfiguration(const std::string config);
         void AddMagnet(std::string config);
+        void AddMagnet(MagnetConfigurationDetails new_magnet);
+        void LoadDefaultMagnets();
         void SetMagnetRotation(double degrees);
     };
 }

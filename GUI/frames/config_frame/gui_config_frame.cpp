@@ -15,65 +15,42 @@ namespace RhodotronSimulatorGUI::frames{
         // Add E configuration frame
         E_config_frame = new subframes::EConfigurationFrame(B_E_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
 
-        B_E_frame->AddFrame(B_config_frame, center_layout);
-        B_E_frame->AddFrame(E_config_frame, center_layout);
 
-        this->AddFrame(B_E_frame, center_layout);
+        // Setup B & E frame
+        B_E_frame->AddFrame(B_config_frame, center_y_layout);
+        B_E_frame->AddFrame(E_config_frame, center_y_layout);
 
-        // add the buttons
-        
-        for (int i = 0; i < configs.size(); i++){
-            
-            if(configs[i].Type != Text){
-                continue;
-            }
+        this->AddFrame(B_E_frame, center_x_layout);
 
-            TGHorizontalFrame* config_line_frame = new TGHorizontalFrame( this, CONFIG_FRAME_LINE_W, CONFIG_FRAME_LINE_H);
-            // Setup the button
-            auto label = new TGLabel(config_line_frame, label_texts[i].c_str()); 
-            TGFrame* input;
+        auto gun_sim_frame = new TGHorizontalFrame(this, CONFIG_FRAME_B_FRAME_W * 2, CONFIG_FRAME_B_FRAME_H);
 
-            input = new TGTextEntry( "", config_line_frame, i);
-            input->Resize(100, 25);
-            // add to the frame and the list
-            config_line_frame->AddFrame(label, bottom_layout);
-            config_line_frame->AddFrame(input, right_layout);
+        // Add Gun configuration frame
+        gun_config_frame = new subframes::GunConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
+        auto gun_frame_layout = new TGLayoutHints(kLHintsLeft, 10, 400, 10, 10);
+        gun_sim_frame->AddFrame(gun_config_frame, center_y_layout);
 
-            labels.push_back(label);
-            inputs.push_back(input);
+        // Add Sim configuration frame
+        sim_config_frame = new subframes::SimConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
+        gun_sim_frame->AddFrame(sim_config_frame, center_y_layout);
 
-            this->AddFrame(config_line_frame, right_layout);
-        }
+        this->AddFrame(gun_sim_frame, center_x_layout);
     }
 
 
     std::string ConfigurationFrame::GetConfigAsString(){
         std::string config = config_comment;
 
-        for (int i = 0, j=0; i < configs.size(); i++){
-            if (configs[i].Type != Text){
-                continue;
-            }
-
-            std::cout << "Exporting config text type " << i << std::endl;
-            std::string input;
-
-            input = ((TGTextEntry*)inputs.at(j))->GetText();    
-            j++;
-            if (  input.find_first_not_of(' ') == std::string::npos){
-                continue;
-            }
-            config += configs[i].Value + '=';
-            config += input + '\n';
-        }
-
-        std::cout << "End of text type export " << std::endl;
-
-        config += "# E FIELD CONFIGURATION \n";
+        config += "\n# E FIELD CONFIGURATION \n";
         config += E_config_frame->ProduceEConfiguration();
 
-        config += "# B FIELD CONFIGURATION \n";
+        config += "\n# B FIELD CONFIGURATION \n";
         config += B_config_frame->ProduceBConfiguration();
+
+        config += "\n# GUN CONFIGURATION \n";
+        config += gun_config_frame->ProduceGunConfiguration();
+
+        config += "\n# SIM CONFIGURATION \n";
+        config += sim_config_frame->ProduceSimConfiguration();
 
         return config;
     }
@@ -81,7 +58,6 @@ namespace RhodotronSimulatorGUI::frames{
 
     void ConfigurationFrame::LoadConfigFromFile(const std::string& configFilePath){
 
-        std::cout << "Inputs size: " << inputs.size() << std::endl;
         std::cout << "configs size: " << configs.size() << std::endl;
         std::ifstream configFile;   
 
@@ -90,37 +66,22 @@ namespace RhodotronSimulatorGUI::frames{
         std::string line;
         
         int magnet_count = 1;
-        std::string B_config, E_config;
+        std::string B_config, E_config, Gun_config, Sim_config;
 
         while ( !configFile.eof() ){
 
             std::getline(configFile, line);
-            int i = 0, j=0;
+            int i = 0;
             for (; i < configs.size(); i++){
                 if (line.find("#", 0) != std::string::npos){ i = -1; break; }
                 else if (line.find(configs[i].Value, 0) != std::string::npos) {
                     break;
-                }
-                else if (configs[i].Type == Text){
-                    j++;
                 }
             }
             if ( i > -1 && i < configs.size()){
                 std::string cmd = line.substr( line.find('=', 0) + 1, 50);
                 switch (configs[i].Type)
                 {
-                    case Text:{
-                        ((TGTextEntry*)inputs.at(j))->SetText(cmd.c_str());
-                        break;
-                    }
-                    case TextList:{
-                        /*
-                        auto listbox = ((TGListBox*)inputs.at(i));
-                        listbox->AddEntry(cmd.c_str(), magnet_count);
-                        listbox->Layout();
-                        magnet_count++;*/
-                        break;
-                    }
                     case B:{
                         B_config += line + '\n';
                         break;
@@ -129,21 +90,28 @@ namespace RhodotronSimulatorGUI::frames{
                         E_config += line + '\n';
                         break;
                     }
+                    case Gun:{
+                        Gun_config += line + '\n';
+                        break;
+                    }
+                    case Sim:{
+                        Sim_config += line + '\n';
+                    }
                 }
             }
         }
         if ( B_config.empty() == false ){
-            std::cout << "Getting B config " << std::endl << B_config << std::endl;
             B_config_frame->SetBConfiguration(B_config);
         }
         if ( E_config.empty() == false ){
-            std::cout << "Getting E config " << std::endl << E_config << std::endl;
             E_config_frame->SetEConfiguration(E_config);
         }
-    }
-
-    std::vector<TGFrame*>& ConfigurationFrame::GetInputs(){
-        return inputs;
+        if ( Gun_config.empty() == false ){
+            gun_config_frame->SetGunConfiguration(Gun_config);
+        }
+        if ( Sim_config.empty() == false ){
+            sim_config_frame->SetSimConfiguration(Sim_config);
+        }
     }
 
 }

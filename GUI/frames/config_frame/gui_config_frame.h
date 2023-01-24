@@ -34,6 +34,8 @@
 #include "../gui_frames_common.h"
 #include "B_config_frame/gui_B_config_frame.h"
 #include "E_config_frame/gui_E_config_frame.h"
+#include "gun_config_frame/gui_gun_config_frame.h"
+#include "sim_config_frame/gui_sim_config_frame.h"
 
 namespace RhodotronSimulatorGUI::frames{
 
@@ -53,7 +55,7 @@ namespace RhodotronSimulatorGUI::frames{
     };
 
     enum ConfigType{
-        Text, TextList, B, E
+        B, E, Gun, Sim
     };
     struct ConfigurationCell{
         ConfigType Type;
@@ -66,11 +68,10 @@ namespace RhodotronSimulatorGUI::frames{
     class ConfigurationFrame : public TGVerticalFrame{
         subframes::BConfigurationFrame* B_config_frame;
         subframes::EConfigurationFrame* E_config_frame;
+        subframes::GunConfigurationFrame* gun_config_frame;
+        subframes::SimConfigurationFrame* sim_config_frame;
 
         static const std::string config_comment;
-        static const std::vector<std::string> label_texts;
-        std::vector<TGLabel*> labels;
-        std::vector<TGFrame*> inputs;
 
         const TGWindow* parent;
     public:
@@ -84,26 +85,28 @@ namespace RhodotronSimulatorGUI::frames{
 
         std::vector<TGFrame*>& GetInputs();
 
+        int GetEnum(){ return (gun_config_frame ? gun_config_frame->GetEnum() : 0); };
+        int GetBnum(){ return (gun_config_frame ? gun_config_frame->GetBnum() : 0); };
+        // TODO : Get this from sim config frame
+        double GetStartTime(){return (sim_config_frame ? sim_config_frame->GetStartTime() : 0); }
+        double GetEndTime(){return (sim_config_frame ? sim_config_frame->GetEndTime() : 0);}
+
+        double GetTargetEnergy(){return (gun_config_frame ? gun_config_frame->GetTargetEn() : 0); }
     };
 
     const std::vector<ConfigurationCell> ConfigurationFrame::configs = 
-       {ConfigurationCell(E,"emax", emax),              ConfigurationCell(Text, "ein", ein),
-        ConfigurationCell(Text,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
-        ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Text,"starttime", starttime),
-        ConfigurationCell(Text,"endtime", endtime),     ConfigurationCell(Text,"dt", dt), 
-        ConfigurationCell(Text,"guntime", guntime),     ConfigurationCell(Text,"gunperiod", gunperiod), 
-        ConfigurationCell(Text,"enum", _enum),          ConfigurationCell(Text,"bunchnum", bunchnum),
+       {ConfigurationCell(E,"emax", emax),              ConfigurationCell(Gun, "ein", ein),
+        ConfigurationCell(Gun,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
+        ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Sim,"starttime", starttime),
+        ConfigurationCell(Sim,"endtime", endtime),     ConfigurationCell(Sim,"dt", dt), 
+        ConfigurationCell(Gun,"guntime", guntime),     ConfigurationCell(Gun,"gunperiod", gunperiod), 
+        ConfigurationCell(Gun,"enum", _enum),          ConfigurationCell(Gun,"bunchnum", bunchnum),
         ConfigurationCell(E,"r1", _r1),                 ConfigurationCell(E,"r2", _r2), 
-        ConfigurationCell(Text,"epath", epath),         ConfigurationCell(Text,"bpath", bpath), 
-        ConfigurationCell(Text,"cpath", cpath),         ConfigurationCell(Text,"ppath", ppath), 
-        ConfigurationCell(Text,"multh",multh),          ConfigurationCell(Text,"thcount",thcount),      
+        ConfigurationCell(Sim,"epath", epath),         ConfigurationCell(Sim,"bpath", bpath), 
+        ConfigurationCell(Sim,"cpath", cpath),         ConfigurationCell(Sim,"ppath", ppath), 
+        ConfigurationCell(Sim,"multh",multh),          ConfigurationCell(Sim,"thcount",thcount),      
         ConfigurationCell(B,"magrotation", magrotation),ConfigurationCell(B,"addmagnet", addmagnet),    
-        ConfigurationCell(Text,"output", output)};
-
-    const std::vector<std::string> ConfigurationFrame::label_texts =   {"emax", "ein", "targeten", "freq", "phaselag", "starttime",
-                                                                        "endtime", "dt", "guntime", "gunperiod", "enum", "bunchnum",
-                                                                        "r1", "r2", "epath", "bpath", "cpath", "ppath",
-                                                                        "multh", "thcount", "magrotation", "addmagnet", "output"};
+};
 
 
     const std::string ConfigurationFrame::config_comment = 

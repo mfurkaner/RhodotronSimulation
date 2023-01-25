@@ -147,11 +147,17 @@ namespace RhodotronSimulatorGUI::renderer{
             RFSnapshot snapshot;
             stream >> snapshot;
 
-            if ( stream.fail())
-                continue; 
+            if ( stream.fail()){
+                std::cerr << "stream failed at _fillEField() : " << snapshot.time << " err = \"" << strerror(errno)  << "\" ; Checking for severeness." << std::endl;
+
+                if ( _rf.time_slices.size() && _rf.time_slices[0].field.size() != snapshot.field.size()){
+                    std::cerr << "  Fail severity is high, ignoring time : " << snapshot.time << std::endl;
+                    continue; 
+                }
+            }
+                
             
             _rf.time_slices.push_back(snapshot);
-
         }
 
         std::cout << "Rf fill is done." << std::endl;
@@ -280,7 +286,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
             TEllipse* point = new TEllipse( 0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
                                             0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
-                                            0.008, 0.008);
+                                            0.008);
             point->Draw();
             point->SetFillColor(EnergyGradient(_electrons_log[i].time_slices.at(0).energy, _targetEnergy));
             point->SetLineStyle(0);
@@ -348,12 +354,42 @@ namespace RhodotronSimulatorGUI::renderer{
         b_sample->SetR2(SIZE_B_PIXEL);
         b_sample->Draw();
         b_sample->SetFillColor(COLOR_B_PIXEL_STATIC);
-        b_sample->SetLineColor(COLOR_B_PIXEL_STATIC);
+        b_sample->SetLineColor(COLOR_B_PIXEL_STATIC);*/
 
-        //_legend = new TLegend(0.05, 0.8, 0.23, 0.95);
-        //_legend->AddEntry(b_sample, "Magnet", "");
-        //_legend->AddEntry()
-        //_legend->Draw();*/
+        auto E_step = _targetEnergy/10;
+
+        std::string legend_energy_text = "";
+
+
+        for(int i = 0; i < 11; i++){
+            char temp[20];
+            snprintf(temp, 20, "%.1lf", E_step*(i));
+            legend_energy_text += temp;
+            if( i+1 < 11){
+                legend_energy_text += "      ";
+            }
+        }
+
+        _legend = new TPaveText(0.05, 0.86, 0.95, 0.98);
+        _legend->AddText("Electron Energy Scale (MeV)");
+        auto first_line = _legend->AddLine(.2, .66, .8, .66);
+        first_line->SetLineStyle(kDashed);
+
+        _legend->AddText("");
+        _legend->AddLine(.0, .33, 1., .33);
+
+        _legend->AddText(legend_energy_text.c_str());
+
+        _legend->Draw();
+
+        std::vector<TEllipse*> e_energy_legend_sample;
+
+        for(int i = 0; i < 11 ; i ++){
+            TEllipse* sample = new TEllipse(i*0.08 + 0.1, 0.92, 0.01);
+            sample->SetFillColor(EnergyGradient(E_step*(i), _targetEnergy));
+            _legend_electron_energy_samples.push_back(sample);
+            sample->Draw();
+        }
     }
 
     void Renderer::Render(TRootEmbeddedCanvas *c){
@@ -414,6 +450,9 @@ namespace RhodotronSimulatorGUI::renderer{
             }
 
         }
+        else{
+            std::cerr << "An index bigger than _rf.time_slices is requested : " << log_index <<  " last time was : " << _rf.time_slices[_rf.time_slices.size()-1].time << std::endl;
+        }
     }
 
     void Renderer::_updateBField(int log_index){
@@ -437,6 +476,13 @@ namespace RhodotronSimulatorGUI::renderer{
         _time_legend->Clear();
         _time_legend->AddText(temp);
         _time_legend->Draw();
+
+
+        _legend->Draw();
+
+        for(auto sample : _legend_electron_energy_samples){
+            sample->Draw();
+        }
     }
 
     void Renderer::RunRendered(){
@@ -475,6 +521,7 @@ namespace RhodotronSimulatorGUI::renderer{
                 rmdir_cmd += _temp_gif_frames_path;
                 gSystem->Exec(rmdir_cmd.c_str());
             }
+            return;
         }
         
         canvas->GetCanvas()->Clear();
@@ -483,8 +530,6 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateBField(i);
         _updateElectrons(i);
         _updateLegend(i);
-
-        DrawTimeStamp(((float)i)/10);
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();

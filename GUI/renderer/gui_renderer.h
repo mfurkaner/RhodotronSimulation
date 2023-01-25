@@ -45,8 +45,10 @@ namespace RhodotronSimulatorGUI::renderer{
     class Renderer{
         TRootEmbeddedCanvas *canvas;
         TPaveText* _time_legend;
-        TLegend* _legend;
+        TPaveText* _legend;
+        std::vector<TEllipse*> _legend_electron_energy_samples;
         uint32_t _enum;
+        double _ein = 0.04;
         double _targetEnergy = 1.5;
         std::string _elog_path = "xy/paths/";
         std::string _rflog_path = "xy/rf.txt";

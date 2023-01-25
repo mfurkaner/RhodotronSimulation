@@ -60,14 +60,13 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void MainFrame::ConfigurationPressed(){
-        NavigateTo(config_frame);
-        main_buttons_frame->HideByName("Configuration");
+        NavigateTo(config_frame, "Configuration");
         main_buttons_frame->ShowByName("Save Config");
         main_buttons_frame->ShowByName("Load Config");
     }
 
     void MainFrame::RenderPressed() {
-        NavigateTo(render_frame);
+        NavigateTo(render_frame, "Render");
         
         int _enum = config_frame->GetEnum();
         int _bnum = config_frame->GetBnum();
@@ -85,8 +84,6 @@ namespace RhodotronSimulatorGUI::frames{
         render_frame->SetTimeInterval(_starttime, _endtime);
 
         render_frame->Render();
-        
-        main_buttons_frame->HideByName("Render");
     }
 
     void MainFrame::RunPressed(){
@@ -97,7 +94,7 @@ namespace RhodotronSimulatorGUI::frames{
         sim_handler.spawn_server();
         sim_handler.spawn_simulation();
 
-        NavigateTo(render_frame);
+        NavigateTo(render_frame, "Run");
         main_buttons_frame->ShowByName("Stop");
         main_buttons_frame->ShowByName("Configuration");
         main_buttons_frame->HideByName("Save Config");
@@ -115,7 +112,7 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
 
-    void MainFrame::NavigateTo(TGFrame* childFrame){
+    void MainFrame::NavigateTo(TGFrame* childFrame, std::string hideButton = ""){
         if(childFrame->GetParent() != this || active_frame == childFrame){
             return;
         }
@@ -123,6 +120,10 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(active_frame);
         this->ShowFrame(childFrame);
         active_frame = childFrame;
+
+        if ( hideButton.empty() == false ){
+            main_buttons_frame->HideByName(hideButton);
+        }
     }
 
 

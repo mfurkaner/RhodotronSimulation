@@ -29,6 +29,7 @@ namespace RhodotronSimulatorGUI::frames{
         }
         if (index < buttons.size()){
             this->HideFrame(buttons[index]);
+            //this->Layout();
         }
     }
     
@@ -41,6 +42,7 @@ namespace RhodotronSimulatorGUI::frames{
         }
         if (index < buttons.size()){
             this->ShowFrame(buttons[index]);
+            this->Layout();
         }
     }
 

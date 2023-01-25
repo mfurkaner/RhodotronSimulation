@@ -66,7 +66,7 @@ namespace RhodotronSimulatorGUI::frames{
         void QuitPressed();
 
 
-        void NavigateTo(TGFrame* childFrame);
+        void NavigateTo(TGFrame* childFrame, std::string hideButton = "");
 
     };
 

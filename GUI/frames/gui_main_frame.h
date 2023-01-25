@@ -52,6 +52,7 @@ namespace RhodotronSimulatorGUI::frames{
         std::string _config_file_path = "config.ini";
         std::string _old_config_file_path = "gui_config_backup.ini";
 
+
     public:
         MainFrame(const TGWindow*p, UInt_t w, UInt_t h);
         ~MainFrame();
@@ -63,6 +64,9 @@ namespace RhodotronSimulatorGUI::frames{
         void RunPressed();
         void StopPressed();
         void QuitPressed();
+
+
+        void NavigateTo(TGFrame* childFrame);
 
     };
 

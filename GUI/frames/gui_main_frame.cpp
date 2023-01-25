@@ -24,6 +24,7 @@ namespace RhodotronSimulatorGUI::frames{
         MapWindow();
 
         this->HideFrame(render_frame);
+        active_frame = config_frame;
     }
 
     MainFrame::~MainFrame(){
@@ -59,17 +60,14 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void MainFrame::ConfigurationPressed(){
-        this->HideFrame(active_frame);
-        this->ShowFrame(config_frame);
-        active_frame = config_frame;
+        NavigateTo(config_frame);
         main_buttons_frame->HideByName("Configuration");
         main_buttons_frame->ShowByName("Save Config");
         main_buttons_frame->ShowByName("Load Config");
     }
 
     void MainFrame::RenderPressed() {
-        this->HideFrame(config_frame);
-        this->ShowFrame(render_frame);
+        NavigateTo(render_frame);
         
         int _enum = config_frame->GetEnum();
         int _bnum = config_frame->GetBnum();
@@ -99,9 +97,7 @@ namespace RhodotronSimulatorGUI::frames{
         sim_handler.spawn_server();
         sim_handler.spawn_simulation();
 
-        this->HideFrame(config_frame);
-        this->ShowFrame(render_frame);
-        active_frame = render_frame;
+        NavigateTo(render_frame);
         main_buttons_frame->ShowByName("Stop");
         main_buttons_frame->ShowByName("Configuration");
         main_buttons_frame->HideByName("Save Config");
@@ -119,6 +115,15 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
 
+    void MainFrame::NavigateTo(TGFrame* childFrame){
+        if(childFrame->GetParent() != this || active_frame == childFrame){
+            return;
+        }
+
+        this->HideFrame(active_frame);
+        this->ShowFrame(childFrame);
+        active_frame = childFrame;
+    }
 
 
 }

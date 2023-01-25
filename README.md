@@ -3,9 +3,11 @@
 </br>
 </br>
 
+# GUI V01
+![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/RhodoSim_GUI_V02.png)
 
 # Command line render
 ![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/gifs/5bunch_5nsPeriod.gif)
 
-# GUI Render V01
-![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/RhodoSim_GUI_V01.png)
+# GUI Render V02
+![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/RhodoSim_GUI_RenderFrame_V02.png)

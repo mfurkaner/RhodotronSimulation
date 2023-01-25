@@ -52,6 +52,7 @@ namespace RhodotronSimulatorGUI::frames{
         RenderFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
         void SetEnum(int _enum){renderer.SetEnum(_enum);}
+        void SetBnum(int _bnum){renderer.SetBnum(_bnum);}
         void SetTimeInterval(double starttime, double endtime);
         void SetTargetEnergy(double targetEn){ renderer.SetTargetEnergy(targetEn);}
 

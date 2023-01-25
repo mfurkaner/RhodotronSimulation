@@ -107,29 +107,30 @@ namespace RhodotronSimulatorGUI::renderer{
     void Renderer::_fillElectrons(){
         std::cout << "Filling Electrons : " << _enum << std::endl;
 
-        for (uint32_t i = 0; i < _enum ; i++){
+        for (uint32_t i = 0; i < _bnum ; i++){
+            for (uint32_t j = 0; j < _enum ; j++){
 
-            ElectronLog e;
-            std::ifstream stream;
-            std::string filename = _elog_path + "e" + std::to_string(i + 1) + ".txt";
+                ElectronLog e;
+                std::ifstream stream;
+                std::string filename = _elog_path + "b" + std::to_string(i + 1) + "_e" + std::to_string(j + 1) + ".dat";
 
-            stream.open(filename, std::ios::in);
+                stream.open(filename, std::ios::in);
+                if(stream.fail()) { continue; }
 
-            if(stream.fail()) { continue; }
+                std::getline(stream, filename);
 
-            std::getline(stream, filename);
+                while (!stream.eof()) {
+                    ElectronSnapshot snapshot;
+                    stream >> snapshot;
 
+                    e.time_slices.push_back(snapshot);
+                }
+                _electrons_log.push_back(e);
+                stream.close();
 
-            while (!stream.eof()) {
-                ElectronSnapshot snapshot;
-                stream >> snapshot;
-
-                e.time_slices.push_back(snapshot);
             }
-            _electrons_log.push_back(e);
-            stream.close();
-
         }
+
     }
 
     void Renderer::_fillEField(){

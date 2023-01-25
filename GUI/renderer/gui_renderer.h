@@ -48,6 +48,7 @@ namespace RhodotronSimulatorGUI::renderer{
         TPaveText* _legend;
         std::vector<TEllipse*> _legend_electron_energy_samples;
         uint32_t _enum;
+        uint32_t _bnum;
         double _ein = 0.04;
         double _targetEnergy = 1.5;
         std::string _elog_path = "xy/paths/";
@@ -88,6 +89,7 @@ namespace RhodotronSimulatorGUI::renderer{
         ~Renderer(){timer->TurnOff(); delete timer;}
 
         void SetEnum(int _enum_) {_enum = _enum_;}
+        void SetBnum(int _bnum_) {_bnum = _bnum_;}
         void SetTargetEnergy(double targetEn) { _targetEnergy = targetEn;}
 
         void fillLogs();

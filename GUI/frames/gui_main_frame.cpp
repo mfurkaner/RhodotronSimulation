@@ -79,7 +79,8 @@ namespace RhodotronSimulatorGUI::frames{
 
         std::cout << "enum: " << _enum <<  " bnum: " << _bnum << std::endl;
 
-        render_frame->SetEnum(_enum * _bnum);
+        render_frame->SetEnum(_enum);
+        render_frame->SetBnum(_bnum);
         render_frame->SetTargetEnergy(_targetEn);
         render_frame->SetTimeInterval(_starttime, _endtime);
 

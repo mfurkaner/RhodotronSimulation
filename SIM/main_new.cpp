@@ -83,7 +83,7 @@ int main(int argc, char** argv) {
         auto sim_stop = high_resolution_clock::now();
         auto sim_time = duration_cast<microseconds>(sim_stop - start);
 
-        if (!isService) plot(config);
+        //if (!isService) plot(config);
 
         auto render_stop = high_resolution_clock::now();
         auto render_time = duration_cast<microseconds>(render_stop - sim_stop);

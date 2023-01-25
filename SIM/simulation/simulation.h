@@ -103,7 +103,7 @@ public:
         for(int i = 0; i < NUM_OF_BUNCHS; i++){
             vector<DataStorage> ds;
             for(int j = 0; j < NUM_OF_ELECTRONS ; j++){
-                string path = pathsPath + "e" + to_string( j + i*NUM_OF_ELECTRONS + 1) + ".txt";
+                string path = pathsPath + "b" + to_string(i + 1) + "_e" + to_string( j + 1) + ".dat";
                 ds.push_back(DataStorage(path));
             }
             pathsStorage.push_back(ds);

@@ -516,7 +516,7 @@ namespace RhodotronSimulatorGUI::renderer{
             std::cout << "Play took " << dur.count() << " s" << std::endl;
             if (_save_gif){
                 _save_gif = false;
-                gSystem->Exec("convert -delay 10 -loop 0 temp/gif_frames/*.png animation.gif");
+                gSystem->Exec("convert -delay 3 -loop 1 temp/gif_frames/*.png animation.gif");
                 std::string rmdir_cmd = "rm -r ";
                 rmdir_cmd += _temp_gif_frames_path;
                 gSystem->Exec(rmdir_cmd.c_str());
@@ -534,8 +534,8 @@ namespace RhodotronSimulatorGUI::renderer{
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
 
-        if( _save_gif && i % 3 == 0 ){
-            int index = i / 3;
+        if( _save_gif ){
+            int index = i;
             std::string filename = _temp_gif_frames_path;
             filename += "/gui_output";
             filename += std::to_string(index/1000 % 10);
@@ -579,9 +579,6 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateBField(slice_index);
         _updateElectrons(slice_index);
         _updateLegend(slice_index);
-
-        //DrawTimeStamp(time);
-
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();

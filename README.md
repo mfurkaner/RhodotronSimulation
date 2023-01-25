@@ -6,7 +6,7 @@
 # Command line render
 ![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/gifs/5bunch_5nsPeriod.gif)
 
-# GUI Render Frame V02
+# GUI render
 ![Alt Text](https://github.com/mfurkaner/RhodotronSimulation/blob/main/resources/gifs/gui_v2_rendered.gif)
 
 # GUI V01

@@ -44,8 +44,6 @@ namespace RhodotronSimulatorGUI::renderer{
 
     class Renderer{
         TRootEmbeddedCanvas *canvas;
-        TPaveText* _time_legend;
-        TPaveText* _legend;
         std::vector<TEllipse*> _legend_electron_energy_samples;
         uint32_t _enum;
         uint32_t _bnum;
@@ -63,6 +61,12 @@ namespace RhodotronSimulatorGUI::renderer{
         std::vector<TArrow*> rfFieldArrows;
         std::vector<TEllipse*> posBField;
 
+        TPaveText* _time_legend;
+        TPaveText* _legend;
+
+        TEllipse* _cavity_r1;
+        TEllipse* _cavity_r2;
+
         TTimer *timer;
         bool render_ready = false;
 
@@ -77,11 +81,13 @@ namespace RhodotronSimulatorGUI::renderer{
         void _renderEField();
         void _renderBField();
         void _renderLegend();
+        void _renderCavity();
 
         void _updateElectrons(float time);
         void _updateEField(int log_index);
         void _updateBField(int log_index);
         void _updateLegend(int log_index);
+        void _updateCavity();
 
         int _indexFromTime(float time);
     public:

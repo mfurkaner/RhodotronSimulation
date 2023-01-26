@@ -91,6 +91,9 @@ namespace RhodotronSimulatorGUI::frames{
         float GetStartTime(){return (sim_config_frame ? sim_config_frame->GetStartTime() : 0); }
         float GetEndTime(){return (sim_config_frame ? sim_config_frame->GetEndTime() : 0);}
 
+        float GetR1(){return (E_config_frame ? E_config_frame->GetR1() : 0);}
+        float GetR2(){return (E_config_frame ? E_config_frame->GetR2() : 0);}
+
         float GetTargetEnergy(){return (gun_config_frame ? gun_config_frame->GetTargetEn() : 0); }
     };
 

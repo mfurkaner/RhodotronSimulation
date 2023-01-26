@@ -19,7 +19,6 @@ namespace RhodotronSimulatorGUI::frames{
         //auto color = TColor::GetColor(232, 232, 233);
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
 
-
         // Setup the play button
         auto play_button = new TGTextButton(this, "Play");
         play_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RenderFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
@@ -97,6 +96,9 @@ namespace RhodotronSimulatorGUI::frames{
         std::cout << "Ended to setting time interval" << std::endl; 
     }
 
+    void RenderFrame::SetR1R2(float r1, float r2){
+        canvas->GetCanvas()->Range(-r2*2, -r2*2, r2*2, r2*2);
+    }
 
     void RenderFrame::SavePressed(){
         renderer.SaveGif();

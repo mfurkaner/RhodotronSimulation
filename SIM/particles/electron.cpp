@@ -62,3 +62,62 @@ void Electron2D::interactRK(RFField& E, MagneticField& B, double time_interval){
     accelerate(acc, time_interval);
     move(acc, time_interval/2);
 }
+
+vector3d Electron2D::interactE_RK(RFField& E, double time_interval){
+    Electron2D e_dummy;
+    e_dummy.Et = Et;
+    e_dummy.pos = pos;
+    e_dummy.vel = vel;
+    double dt_halved = time_interval/2;
+    // get k1                                    // Calculate E vector
+    vector3d F_m = E.getField(e_dummy.pos)*1E6*eQMratio;                                             // Calculate F/m vector
+    vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
+    // get k2
+    e_dummy.move(dt_halved);
+    e_dummy.accelerate(k1, dt_halved);
+    F_m = E.getField(e_dummy.pos)*1E6*eQMratio;                                                      // Calculate F/m vector
+    vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
+    // get k3
+    e_dummy.vel = vel;
+    e_dummy.accelerate(k2, dt_halved);
+    vector3d k3 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
+    // get k4
+    e_dummy.vel = vel;
+    e_dummy.move(dt_halved);
+    e_dummy.accelerate(k3, time_interval);
+    F_m = E.getField(e_dummy.pos)*1E6*eQMratio;   
+    vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
+
+    return (k1 + k2*2 + k3*2 + k4)/6;
+}
+
+vector3d Electron2D::interactB_RK(MagneticField& B, double time_interval){
+    if (B.isInside(pos) == -1){
+        return vector3d(0,0,0);
+    }
+    Electron2D e_dummy;
+    e_dummy.Et = Et;
+    e_dummy.pos = pos;
+    e_dummy.vel = vel;
+    double time_halved = time_interval/2;
+    // get k1                                       
+    vector3d F_m = (e_dummy.vel % B.getField(pos))*eQMratio;                                       
+    vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();     
+    // get k2
+    e_dummy.move(time_halved);
+    e_dummy.accelerate(k1, time_halved);                                              
+    F_m = (e_dummy.vel % B.getField(pos))*eQMratio;                                               
+    vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();    
+    // get k3
+    e_dummy.vel = vel;
+    e_dummy.accelerate(k2, time_halved);
+    vector3d k3 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();   
+    // get k4
+    e_dummy.vel = vel;
+    e_dummy.move(time_halved);
+    e_dummy.accelerate(k3, time_interval);                                           
+    F_m = (e_dummy.vel % B.getField(pos))*eQMratio;  
+    vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
+
+    return (k1 + k2*2 + k3*2 + k4)/6;
+}

@@ -55,6 +55,7 @@ namespace RhodotronSimulatorGUI::frames{
         void SetBnum(int _bnum){renderer.SetBnum(_bnum);}
         void SetTimeInterval(float starttime, float endtime);
         void SetTargetEnergy(float targetEn){ renderer.SetTargetEnergy(targetEn);}
+        void SetR1R2(float r1, float r2);
 
         void UpdateProgressBar(uint8_t status);
         TGProgressBar* GetProgressBar();

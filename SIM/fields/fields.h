@@ -65,11 +65,12 @@ class Magnet{
 
 class MagneticField{
     std::vector<Magnet> magnets;
-    int isInside(vector3d position);
     int isInsideDebug();
     std::vector<bool> hasEntered;
     std::vector<double> relativeEnterDistance;
 public:
+    int isInside(vector3d position);
+
     void addMagnet(double B, double r, vector3d position);
     void addMagnet(Magnet m);
     vector3d getField(vector3d position);

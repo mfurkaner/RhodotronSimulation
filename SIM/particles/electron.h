@@ -55,6 +55,9 @@ public:
     void interactLF(RFField& E, MagneticField& B, double time_interval);
     void interactRK(RFField& E, MagneticField& B, double time_interval);
 
+    vector3d interactE_RK(RFField& E, double time_interval);
+    vector3d interactB_RK(MagneticField& B, double time_interval);
+
     void saveInfo(double t){
         ElectronLog info;
         info.time = t;

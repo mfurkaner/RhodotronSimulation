@@ -250,6 +250,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
     Color_t EGradient(float E){
         const static Color_t color_map[10]{
+            /*
             (Color_t)TColor::GetColor(27, 2, 222),
             (Color_t)TColor::GetColor(47, 0, 205),
             (Color_t)TColor::GetColor(57, 0, 188),
@@ -259,9 +260,9 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(64, 0, 127),
             (Color_t)TColor::GetColor(62, 1, 113),
             (Color_t)TColor::GetColor(59, 3, 99),
-            (Color_t)TColor::GetColor(55, 6, 86)
+            (Color_t)TColor::GetColor(55, 6, 86)*/
             
-            /*
+            
             (Color_t)TColor::GetColor(252, 112, 50),
             (Color_t)TColor::GetColor(236, 100, 52),
             (Color_t)TColor::GetColor(219, 89, 54),
@@ -271,7 +272,7 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(156, 43, 57),
             (Color_t)TColor::GetColor(140, 31, 56),
             (Color_t)TColor::GetColor(125, 17, 56),
-            (Color_t)TColor::GetColor(110, 0, 55)*/
+            (Color_t)TColor::GetColor(110, 0, 55)
 
         };
         float step = 0.96 / 10;
@@ -283,10 +284,9 @@ namespace RhodotronSimulatorGUI::renderer{
 
     void Renderer::_renderElectrons(){
         for(int i = 0; i < _electrons_log.size(); i++){
-
-            TEllipse* point = new TEllipse( 0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
-                                            0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
-                                            0.008);
+            TEllipse* point = new TEllipse( _electrons_log[i].time_slices.at(0).position.X(),//0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
+                                            _electrons_log[i].time_slices.at(0).position.Y(),//0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
+                                            SIZE_e_PIXEL);
             //point->Draw();
             point->SetFillColor(EnergyGradient(_electrons_log[i].time_slices.at(0).energy, _targetEnergy));
             point->SetLineStyle(0);
@@ -302,11 +302,11 @@ namespace RhodotronSimulatorGUI::renderer{
             for(int i = 0; i < _rf.time_slices.at(0).field.size() ; i++){
                 auto point = _rf.time_slices.at(0).field.at(i);
 
-                point.field /= 30;
-                point.position /= 3;
+                point.field *= SIZE_E_ARROW_MULTIPLIER;
+                //point.position /= 3;
 
-                x1 = 0.5 + point.position.X();
-                y1 = 0.5 + point.position.Y();
+                x1 = point.position.X();
+                y1 = point.position.Y();
                 x2 = x1 + point.field.X();
                 y2 = y1 + point.field.Y();
                 TArrow* rfArrow = new TArrow(x1, y1, x2, y2, 0.005);
@@ -327,8 +327,8 @@ namespace RhodotronSimulatorGUI::renderer{
 
         for ( int i = 0; i < _magnets.positive_positions.size(); i++ ){
 
-            TEllipse* point = new TEllipse( 0.5 + _magnets.positive_positions[i].first/3,
-                                            0.5 + _magnets.positive_positions[i].second/3,
+            TEllipse* point = new TEllipse( _magnets.positive_positions[i].first,
+                                            _magnets.positive_positions[i].second,
                                             SIZE_B_PIXEL, SIZE_B_PIXEL);
             point->Draw();
             point->SetFillColor(COLOR_B_PIXEL_STATIC);
@@ -343,7 +343,13 @@ namespace RhodotronSimulatorGUI::renderer{
     }
 
     void Renderer::_renderLegend(){
-        _time_legend = new TPaveText(0.05,0.05, 0.23, 0.1);
+        double x1, y1, x2, y2;
+        canvas->GetCanvas()->GetRange(x1, y1, x2, y2);
+        double timeX1 = x1 + (x2 - x1)*0.05;
+        double timeX2 = x1 + (x2 - x1)*0.23;
+        double timeY1 = y1 + (y2 - y1)*0.05;
+        double timeY2 = y1 + (y2 - y1)*0.1;
+        _time_legend = new TPaveText(timeX1,timeY1, timeX2, timeY2);
         char temp[50];
         snprintf(temp, 50, "t = %.1fns", 0.0);
         _time_legend->AddText(temp);
@@ -370,7 +376,12 @@ namespace RhodotronSimulatorGUI::renderer{
             }
         }
 
-        _legend = new TPaveText(0.05, 0.86, 0.95, 0.98);
+        double legendX1 = x1 + (x2 - x1)*0.05;
+        double legendX2 = x1 + (x2 - x1)*0.95;
+        double legendY1 = y1 + (y2 - y1)*0.86;
+        double legendY2 = y1 + (y2 - y1)*0.98;
+
+        _legend = new TPaveText(legendX1, legendY1, legendX2, legendY2);
         _legend->AddText("Electron Energy Scale (MeV)");
         auto first_line = _legend->AddLine(.2, .66, .8, .66);
         first_line->SetLineStyle(kDashed);
@@ -385,17 +396,41 @@ namespace RhodotronSimulatorGUI::renderer{
         std::vector<TEllipse*> e_energy_legend_sample;
 
         for(int i = 0; i < 11 ; i ++){
-            TEllipse* sample = new TEllipse(i*0.08 + 0.1, 0.92, 0.01);
+            double sampleXstep = (x2 - x1)*0.08;
+            double sampleX = x1 + (x2 - x1)*0.1;
+            double sampleY = x1 + (x2 - x1)*0.92;
+            double sampleR = (y2 - y1)*0.01;
+            TEllipse* sample = new TEllipse(i*sampleXstep + sampleX, sampleY, sampleR);
             sample->SetFillColor(EnergyGradient(E_step*(i), _targetEnergy));
             _legend_electron_energy_samples.push_back(sample);
             sample->Draw();
         }
     }
 
+    void Renderer::_renderCavity(){
+
+        double r1 = 0.188, r2 = 0.753;
+        _cavity_r1 = new TEllipse(0, 0, r1);
+        _cavity_r1->SetFillColorAlpha(canvas->GetCanvas()->GetFillColor(), 1);
+        _cavity_r1->SetLineStyle(kDashed);
+        _cavity_r1->SetLineWidth(2);
+
+        _cavity_r2 = new TEllipse(0, 0, r2);
+        _cavity_r2->SetFillColorAlpha(kBlue, 0.2);
+        _cavity_r2->SetLineStyle(kDashed);
+        _cavity_r2->SetLineWidth(2);
+        
+        _cavity_r2->Draw();
+        _cavity_r1->Draw();
+    }
+
     void Renderer::Render(TRootEmbeddedCanvas *c){
         canvas = c;
         canvas->GetCanvas()->Clear();
         canvas->DrawBorder();
+
+        // setup the cavity
+        _renderCavity();
 
         // setup the electrons
         _renderElectrons();
@@ -427,8 +462,8 @@ namespace RhodotronSimulatorGUI::renderer{
                 }
             }
             if (i < _electrons_log[j].time_slices.size()){
-                electrons[j]->SetX1(0.5 + _electrons_log[j].time_slices[i].position.X()/3);
-                electrons[j]->SetY1(0.5 + _electrons_log[j].time_slices[i].position.Y()/3);
+                electrons[j]->SetX1(_electrons_log[j].time_slices[i].position.X());
+                electrons[j]->SetY1(_electrons_log[j].time_slices[i].position.Y());
                 electrons[j]->SetFillColor(EnergyGradient(_electrons_log[j].time_slices[i].energy, 1.5));
                 electrons[j]->Draw();
             }
@@ -444,12 +479,12 @@ namespace RhodotronSimulatorGUI::renderer{
                 if( _rf.time_slices.at(log_index).field.at(j).magnitude == 0 )
                     continue;
 
-                point.field /= 30;
-                point.position /= 3;
+                point.field /= 10;
+                //point.position /= 3;
 
                 float x1,y1,x2,y2;
-                x1 = 0.5 + point.position.X();
-                y1 = 0.5 + point.position.Y();
+                x1 = point.position.X();
+                y1 = point.position.Y();
                 x2 = x1 + point.field.X();
                 y2 = y1 + point.field.Y();
                 rfFieldArrows[j]->SetLineColor(EGradient(point.magnitude));
@@ -491,6 +526,11 @@ namespace RhodotronSimulatorGUI::renderer{
         for(auto sample : _legend_electron_energy_samples){
             sample->Draw();
         }
+    }
+
+    void Renderer::_updateCavity(){
+        _cavity_r2->Draw();
+        _cavity_r1->Draw();
     }
 
     void Renderer::RunRendered(){
@@ -536,6 +576,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
         float time = (i + 1)*0.1;
 
+        _updateCavity();
         _updateEField(i);
         _updateBField(i);
         _updateElectrons(time);
@@ -584,10 +625,12 @@ namespace RhodotronSimulatorGUI::renderer{
 
         canvas->GetCanvas()->Clear();
 
+        _updateCavity();
         _updateEField(slice_index);
         _updateBField(slice_index);
         _updateElectrons(time);
         _updateLegend(slice_index);
+
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();

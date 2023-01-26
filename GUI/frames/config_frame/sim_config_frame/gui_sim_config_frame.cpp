@@ -147,7 +147,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 case dt:{
-                    snprintf(temp, 50, "%lf",_dt_entry->GetNumber());
+                    snprintf(temp, 50, "%f",_dt_entry->GetNumber());
                     line += temp;
                     break;
                 }

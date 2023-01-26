@@ -136,17 +136,17 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             switch (cell.Index)
             {
                 case ein:{
-                    snprintf(temp, 50, "%.3lf",_Ein_entry->GetNumber());
+                    snprintf(temp, 50, "%.3f",_Ein_entry->GetNumber());
                     gunConfiguration += temp;
                     break;
                 }
                 case guntime:{
-                    snprintf(temp, 50, "%.1lf",_tg_entry->GetNumber());
+                    snprintf(temp, 50, "%.1f",_tg_entry->GetNumber());
                     gunConfiguration += temp;
                     break;
                 }
                 case gunperiod:{
-                    snprintf(temp, 50, "%.1lf",_T_entry->GetNumber());
+                    snprintf(temp, 50, "%.1f",_T_entry->GetNumber());
                     gunConfiguration += temp;
                     break;
                 }
@@ -161,7 +161,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 case targeten:{
-                    snprintf(temp, 50, "%.1lf",_targetE_entry->GetNumber());
+                    snprintf(temp, 50, "%.1f",_targetE_entry->GetNumber());
                     gunConfiguration += temp;
                     break;
                 }

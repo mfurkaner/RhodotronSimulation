@@ -131,27 +131,27 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             switch (cell.Index)
             {
                 case _r1:{
-                    snprintf(temp, 50, "%.4lf",_r1_entry->GetNumber());
+                    snprintf(temp, 50, "%.4f",_r1_entry->GetNumber());
                     eConfiguration += temp;
                     break;
                 }
                 case _r2:{
-                    snprintf(temp, 50, "%.4lf",_r2_entry->GetNumber());
+                    snprintf(temp, 50, "%.4f",_r2_entry->GetNumber());
                     eConfiguration += temp;
                     break;
                 }
                 case emax:{
-                    snprintf(temp, 50, "%.3lf",_Emax_entry->GetNumber());
+                    snprintf(temp, 50, "%.3f",_Emax_entry->GetNumber());
                     eConfiguration += temp;
                     break;
                 }
                 case frequency:{
-                    snprintf(temp, 50, "%.1lf",_freq_entry->GetNumber());
+                    snprintf(temp, 50, "%.1f",_freq_entry->GetNumber());
                     eConfiguration += temp;
                     break;
                 }
                 case phaselag:{
-                    snprintf(temp, 50, "%.1lf",_phase_lag_entry->GetNumber());
+                    snprintf(temp, 50, "%.1f",_phase_lag_entry->GetNumber());
                     eConfiguration += temp;
                     break;
                 }

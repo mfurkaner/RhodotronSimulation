@@ -72,10 +72,10 @@ namespace RhodotronSimulatorGUI::frames{
         int _bnum = config_frame->GetBnum();
 
         // TODO : Get this from sim config frame
-        double _starttime = config_frame->GetStartTime();
-        double _endtime = config_frame->GetEndTime();
+        float _starttime = config_frame->GetStartTime();
+        float _endtime = config_frame->GetEndTime();
 
-        double _targetEn = config_frame->GetTargetEnergy();
+        float _targetEn = config_frame->GetTargetEnergy();
 
         std::cout << "enum: " << _enum <<  " bnum: " << _bnum << std::endl;
 

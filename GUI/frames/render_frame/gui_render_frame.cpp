@@ -65,7 +65,7 @@ namespace RhodotronSimulatorGUI::frames{
         
 
     void RenderFrame::TimeChanged(){
-        double time = active_time->GetNumber();
+        float time = active_time->GetNumber();
         renderer.GoToTime(time);
         if ( time_slider->GetPosition()/10.0 != time ){
             time_slider->SetPosition(time * 10);
@@ -73,14 +73,14 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void RenderFrame::SliderPositionChanged(int pos){
-        double time = pos/10.0;
+        float time = pos/10.0;
         if ( active_time->GetNumber() != time ){
             active_time->SetNumber(time);
             active_time->Modified();
         }
     }
 
-    void RenderFrame::SetTimeInterval(double starttime, double endtime){
+    void RenderFrame::SetTimeInterval(float starttime, float endtime){
         std::cout << "endtime : " << endtime << std::endl;
         if ( endtime <= 0.1 )
             endtime = 0;

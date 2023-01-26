@@ -113,9 +113,9 @@ namespace RhodotronSimulatorGUI::frames{
 
     /// @brief DEFAULT CONFIGURATION VALUES
     #define DEFAULT_B_MAG_COUNT 3
-        const double DEFAULT_B_MAG_B[DEFAULT_B_MAG_COUNT] {-0.0298, -0.041, -0.055};
-        const double DEFAULT_B_MAG_R[DEFAULT_B_MAG_COUNT] {0.15, 0.15, 0.15};
-        const double DEFAULT_B_MAG_r[DEFAULT_B_MAG_COUNT] {1.103, 1.1444, 1.163};
+        const float DEFAULT_B_MAG_B[DEFAULT_B_MAG_COUNT] {-0.0298, -0.041, -0.055};
+        const float DEFAULT_B_MAG_R[DEFAULT_B_MAG_COUNT] {0.15, 0.15, 0.15};
+        const float DEFAULT_B_MAG_r[DEFAULT_B_MAG_COUNT] {1.103, 1.1444, 1.163};
     #define DEFAULT_B_MAG_ROT 5.0
 
     #define DEFAULT_E_R1 0.188

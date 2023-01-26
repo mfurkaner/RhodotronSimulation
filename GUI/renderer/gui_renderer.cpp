@@ -17,9 +17,9 @@
         std::string line;
         std::getline(stream, line);
 
-        double x,y,z, vx, vy, vz;
+        float x,y,z, vx, vy, vz;
 
-        sscanf(line.c_str(), "%f,%lf,( %lf ; %lf ; %lf ),( %lf ; %lf ; %lf )", 
+        sscanf(line.c_str(), "%f,%f,( %f ; %f ; %f ),( %f ; %f ; %f )", 
                     &e_snapshot.time, &e_snapshot.energy, &x, &y, &z, &vx, &vy, &vz);
 
         e_snapshot.position = vector3d(x, y, z);
@@ -32,9 +32,9 @@
         std::string line;
         std::getline(stream, line);
 
-        double x,y,z,ex,ey,ez,E;
+        float x,y,z,ex,ey,ez,E;
 
-        sscanf(line.c_str(), "( %lf ; %lf ; %lf ),( %lf ; %lf ; %lf ),%lf",
+        sscanf(line.c_str(), "( %f ; %f ; %f ),( %f ; %f ; %f ),%f",
                                  &x, &y, &z, &ex, &ey, &ez, &E);
 
         rf_point.position = vector3d(x,y,z);
@@ -149,7 +149,7 @@ namespace RhodotronSimulatorGUI::renderer{
             stream >> snapshot;
 
             if ( stream.fail()){
-                std::cerr << "stream failed at _fillEField() : " << snapshot.time << " err = \"" << strerror(errno)  << "\" ; Checking for severeness." << std::endl;
+                std::cerr << "stream failed at Renderer::_fillEField() : " << snapshot.time << " err = \"" << strerror(errno)  << "\" ; Checking for severeness." << std::endl;
 
                 if ( _rf.time_slices.size() && _rf.time_slices[0].field.size() != snapshot.field.size()){
                     std::cerr << "  Fail severity is high, ignoring time : " << snapshot.time << std::endl;
@@ -212,7 +212,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
 #pragma region RENDER_FILLED
 
-    Color_t EnergyGradient(double E, double Emax){
+    Color_t EnergyGradient(float E, float Emax){
         if( E <= 0 )
             return TColor::GetColor(10,10,10);
 
@@ -241,14 +241,14 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(110, 0, 55)*/
 
         };
-        double step = Emax / 10;
+        float step = Emax / 10;
         int times = E/step;
         int index = times >= 10 ? 9 : times;
 
         return color_map[index];
     }
 
-    Color_t EGradient(double E){
+    Color_t EGradient(float E){
         const static Color_t color_map[10]{
             (Color_t)TColor::GetColor(27, 2, 222),
             (Color_t)TColor::GetColor(47, 0, 205),
@@ -274,7 +274,7 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(110, 0, 55)*/
 
         };
-        double step = 0.96 / 10;
+        float step = 0.96 / 10;
         int times = E/step;
         int index = times >= 10 ? 9 : times;
 
@@ -284,11 +284,10 @@ namespace RhodotronSimulatorGUI::renderer{
     void Renderer::_renderElectrons(){
         for(int i = 0; i < _electrons_log.size(); i++){
 
-
             TEllipse* point = new TEllipse( 0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
                                             0.5 + _electrons_log[i].time_slices.at(0).position.Y()/3,
                                             0.008);
-            point->Draw();
+            //point->Draw();
             point->SetFillColor(EnergyGradient(_electrons_log[i].time_slices.at(0).energy, _targetEnergy));
             point->SetLineStyle(0);
             //point->SetLineColor(5);
@@ -298,7 +297,7 @@ namespace RhodotronSimulatorGUI::renderer{
     
     void Renderer::_renderEField(){
         if(_rf.time_slices.size() > 0){
-            double x1,y1,x2,y2;
+            float x1,y1,x2,y2;
 
             for(int i = 0; i < _rf.time_slices.at(0).field.size() ; i++){
                 auto point = _rf.time_slices.at(0).field.at(i);
@@ -364,7 +363,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
         for(int i = 0; i < 11; i++){
             char temp[20];
-            snprintf(temp, 20, "%.1lf", E_step*(i));
+            snprintf(temp, 20, "%.1f", E_step*(i));
             legend_energy_text += temp;
             if( i+1 < 11){
                 legend_energy_text += "      ";
@@ -419,12 +418,20 @@ namespace RhodotronSimulatorGUI::renderer{
 #pragma endregion RENDER_FILLED
 
 
-    void Renderer::_updateElectrons(int log_index){
+    void Renderer::_updateElectrons(float time){
         for(int j = 0; j < electrons.size(); j++){
-            electrons.at(j)->SetX1(0.5 + _electrons_log[j].time_slices.at(log_index).position.X()/3);
-            electrons.at(j)->SetY1(0.5 + _electrons_log[j].time_slices.at(log_index).position.Y()/3);
-            electrons.at(j)->Draw();
-            electrons.at(j)->SetFillColor(EnergyGradient(_electrons_log[j].time_slices.at(log_index ).energy, 1.5));
+            int i = 0;
+            for( ; i < _electrons_log[j].time_slices.size(); i++){
+                if ( _electrons_log[j].time_slices[i].time == time ){
+                    break;
+                }
+            }
+            if (i < _electrons_log[j].time_slices.size()){
+                electrons[j]->SetX1(0.5 + _electrons_log[j].time_slices[i].position.X()/3);
+                electrons[j]->SetY1(0.5 + _electrons_log[j].time_slices[i].position.Y()/3);
+                electrons[j]->SetFillColor(EnergyGradient(_electrons_log[j].time_slices[i].energy, 1.5));
+                electrons[j]->Draw();
+            }
         }
     }
 
@@ -440,7 +447,7 @@ namespace RhodotronSimulatorGUI::renderer{
                 point.field /= 30;
                 point.position /= 3;
 
-                double x1,y1,x2,y2;
+                float x1,y1,x2,y2;
                 x1 = 0.5 + point.position.X();
                 y1 = 0.5 + point.position.Y();
                 x2 = x1 + point.field.X();
@@ -464,7 +471,7 @@ namespace RhodotronSimulatorGUI::renderer{
     }
 
     void Renderer::_updateLegend(int log_index){
-        double time = 0;
+        float time = 0;
         if(_electrons_log.size() != 0 && _electrons_log[0].time_slices.size() > log_index){
             time = _electrons_log[0].time_slices.at(log_index).time;
         }
@@ -527,9 +534,11 @@ namespace RhodotronSimulatorGUI::renderer{
         
         canvas->GetCanvas()->Clear();
 
+        float time = (i + 1)*0.1;
+
         _updateEField(i);
         _updateBField(i);
-        _updateElectrons(i);
+        _updateElectrons(time);
         _updateLegend(i);
 
         canvas->GetCanvas()->Modified();
@@ -557,9 +566,8 @@ namespace RhodotronSimulatorGUI::renderer{
     }
 
     int Renderer::_indexFromTime(float time){
-
-        for(int i = 0; i < _electrons_log[0].time_slices.size(); i++){
-            if ( _electrons_log[0].time_slices[i].time == time ){
+        for(int i = 0; i < _rf.time_slices.size(); i++){
+            if ( _rf.time_slices[i].time == time ){
                 return i;
             }
         }
@@ -578,7 +586,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
         _updateEField(slice_index);
         _updateBField(slice_index);
-        _updateElectrons(slice_index);
+        _updateElectrons(time);
         _updateLegend(slice_index);
 
         canvas->GetCanvas()->Modified();

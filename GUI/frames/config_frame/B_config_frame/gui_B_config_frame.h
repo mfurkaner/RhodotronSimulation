@@ -37,16 +37,16 @@
 namespace RhodotronSimulatorGUI::frames::subframes{
 
     struct MagnetConfigurationDetails{
-        double B;
-        double R;
-        double r;
+        float B;
+        float R;
+        float r;
 
         MagnetConfigurationDetails(){}
         MagnetConfigurationDetails(std::string config);
 
         std::string GetDescription() const { 
             char temp[100];
-            snprintf(temp, 100, "B=%.5lf(T)   R=%.3lf(m)   r=%.3lf(m)", B, R, r);
+            snprintf(temp, 100, "B=%.5f(T)   R=%.3f(m)   r=%.3f(m)", B, R, r);
             return std::string(temp); 
         };
 
@@ -97,7 +97,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         void AddMagnet(std::string config);
         void AddMagnet(MagnetConfigurationDetails new_magnet);
         void LoadDefaultMagnets();
-        void SetMagnetRotation(double degrees);
+        void SetMagnetRotation(float degrees);
     };
 }
 

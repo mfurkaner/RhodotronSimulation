@@ -45,16 +45,16 @@ namespace RhodotronSimulatorGUI::frames{
         TGSlider* time_slider;
         renderer::Renderer renderer;
 
-        double _time = 0;
-        double _endtime = 40;
+        float _time = 0;
+        float _endtime = 40;
         
     public:
         RenderFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
         void SetEnum(int _enum){renderer.SetEnum(_enum);}
         void SetBnum(int _bnum){renderer.SetBnum(_bnum);}
-        void SetTimeInterval(double starttime, double endtime);
-        void SetTargetEnergy(double targetEn){ renderer.SetTargetEnergy(targetEn);}
+        void SetTimeInterval(float starttime, float endtime);
+        void SetTargetEnergy(float targetEn){ renderer.SetTargetEnergy(targetEn);}
 
         void UpdateProgressBar(uint8_t status);
         TGProgressBar* GetProgressBar();

@@ -157,7 +157,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     std::string BConfigurationFrame::ProduceBConfiguration(){
         std::string bConfiguration;
         char temp[100];
-        snprintf(temp, 100, "magrotation=%.1lf\n", _mag_rotation_entry->GetNumber());
+        snprintf(temp, 100, "magrotation=%.1f\n", _mag_rotation_entry->GetNumber());
         bConfiguration = temp;
 
         for(int i = 0; i < _magnets.size(); i++){

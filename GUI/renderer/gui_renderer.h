@@ -14,7 +14,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
     struct ElectronSnapshot{
         float time;
-        double energy;
+        float energy;
         vector3d position;
         vector3d velocity;
     };
@@ -26,7 +26,7 @@ namespace RhodotronSimulatorGUI::renderer{
     struct RFPoint{
         vector3d position;
         vector3d field;
-        double magnitude;
+        float magnitude;
     };
 
     struct RFSnapshot{
@@ -49,8 +49,8 @@ namespace RhodotronSimulatorGUI::renderer{
         std::vector<TEllipse*> _legend_electron_energy_samples;
         uint32_t _enum;
         uint32_t _bnum;
-        double _ein = 0.04;
-        double _targetEnergy = 1.5;
+        float _ein = 0.04;
+        float _targetEnergy = 1.5;
         std::string _elog_path = "xy/paths/";
         std::string _rflog_path = "xy/rf.txt";
         std::string _mlog_path = "xy/magnet.txt";
@@ -78,7 +78,7 @@ namespace RhodotronSimulatorGUI::renderer{
         void _renderBField();
         void _renderLegend();
 
-        void _updateElectrons(int log_index);
+        void _updateElectrons(float time);
         void _updateEField(int log_index);
         void _updateBField(int log_index);
         void _updateLegend(int log_index);
@@ -90,7 +90,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
         void SetEnum(int _enum_) {_enum = _enum_;}
         void SetBnum(int _bnum_) {_bnum = _bnum_;}
-        void SetTargetEnergy(double targetEn) { _targetEnergy = targetEn;}
+        void SetTargetEnergy(float targetEn) { _targetEnergy = targetEn;}
 
         void fillLogs();
         void Render(TRootEmbeddedCanvas *canvas);

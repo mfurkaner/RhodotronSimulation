@@ -70,7 +70,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         const int GetEnum(){ return (_enum_entry ? (int)_enum_entry->GetNumber() : 0); }
         const int GetBnum(){ return (_bnum_entry ? (int)_bnum_entry->GetNumber() : 0); }
-        const double GetTargetEn(){ return (_targetE_entry ? _targetE_entry->GetNumber() : 0); }
+        const float GetTargetEn(){ return (_targetE_entry ? _targetE_entry->GetNumber() : 0); }
     };
 }
 

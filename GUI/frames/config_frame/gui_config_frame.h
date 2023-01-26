@@ -88,10 +88,10 @@ namespace RhodotronSimulatorGUI::frames{
         int GetEnum(){ return (gun_config_frame ? gun_config_frame->GetEnum() : 0); };
         int GetBnum(){ return (gun_config_frame ? gun_config_frame->GetBnum() : 0); };
         // TODO : Get this from sim config frame
-        double GetStartTime(){return (sim_config_frame ? sim_config_frame->GetStartTime() : 0); }
-        double GetEndTime(){return (sim_config_frame ? sim_config_frame->GetEndTime() : 0);}
+        float GetStartTime(){return (sim_config_frame ? sim_config_frame->GetStartTime() : 0); }
+        float GetEndTime(){return (sim_config_frame ? sim_config_frame->GetEndTime() : 0);}
 
-        double GetTargetEnergy(){return (gun_config_frame ? gun_config_frame->GetTargetEn() : 0); }
+        float GetTargetEnergy(){return (gun_config_frame ? gun_config_frame->GetTargetEn() : 0); }
     };
 
     const std::vector<ConfigurationCell> ConfigurationFrame::configs = 

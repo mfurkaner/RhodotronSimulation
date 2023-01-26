@@ -1,7 +1,7 @@
 #include <thread>         
 #include <vector>         
 
-#include "../rhodo/rhodo2d.h"
+#include "../particles/gun.h"
 #include "../fields/fields.h"
 #include "../gnuplot/gnuplot.h"
 

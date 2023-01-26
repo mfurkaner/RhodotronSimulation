@@ -1,4 +1,4 @@
-#include "../rhodo/rhodo2d.h"
+#include "../particles/gun.h"
 #include "../fields/fields.h"
 #include "../config/configuration.h"
 #include "../gnuplot/gnuplot.h"
@@ -119,7 +119,7 @@ public:
         BfieldStorage.close();
     }
 
-    unsigned int log_interval(){
+    const unsigned int log_interval(){
         return 0.1/time_interval;
     }
 
@@ -170,7 +170,7 @@ public:
     void updateSimulation();
     void getConfig(Configuration& config);
     void logEfield(double time){
-        E_field.log(EfieldStorage, time);
+        E_field.log(EfieldStorage, time, time == simulation_time);
     }
     void logBfield(){
         B_field.log(BfieldStorage);

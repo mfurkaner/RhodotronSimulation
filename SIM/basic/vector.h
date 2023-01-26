@@ -21,20 +21,25 @@ public:
     void setY(double y) {this->y = y;}
     void setZ(double z) {this->z = z;}
 
-    vector3d operator+(vector3d);
-    void operator+=(vector3d);
-    vector3d operator-(vector3d);
-    void operator-=(vector3d);
+    vector3d operator+(const vector3d&);
+    vector3d operator+(const vector3d&) const;
+    void operator+=(const vector3d&);
+    vector3d operator-(const vector3d&);
+    void operator-=(const vector3d&);
+
     vector3d operator*(double);  
+    vector3d operator*(double) const;
     void operator*=(double);  
     vector3d operator/(double);  
+    vector3d operator/(double) const;
     void operator/=(double);  
-    bool operator==(vector3d);
+    bool operator==(const vector3d&);
 
-    double operator*(vector3d);             // DOT PRODUCT
-    vector3d operator%(vector3d);           // CROSS PRUDUCT
+    double operator*(const vector3d&);             // DOT PRODUCT
+    vector3d operator%(const vector3d&);           // CROSS PRUDUCT
 
     double magnitude();
+    double magnitude2();
     vector3d direction();
 
     void rotate(vector3d around, double angle);   // angle is in degrees

@@ -8,7 +8,7 @@ CPPFLAGS= -std=c++11 -I=SIM/**
 LIBS= -L SIM/
 
 
-DOBJS=SIM/simulation/simulation.o SIM/rhodo/rhodo2d.o SIM/fields/fields.o SIM/basic/vector.o SIM/mt/multithreading.o
+DOBJS=SIM/simulation/simulation.o SIM/particles/electron.o SIM/particles/bunch.o SIM/particles/gun.o SIM/fields/fields.o SIM/basic/vector.o SIM/mt/multithreading.o
 
 clean_o=rm -rf *.o SIM/**/*.o
 

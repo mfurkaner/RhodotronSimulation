@@ -28,6 +28,7 @@ mutex state_lock;
 uint8_t state = 0x0;
 int _fd;
 bool isService = false;
+bool plotSet = false;
 
 void* UIThreadWork(void* simtime_struct);
 
@@ -55,14 +56,16 @@ int main(int argc, char** argv) {
     notifierarg.simulation_time = rhodotron.getTimePtr();
     notifierarg.state_ptr = &state;
     pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
-
+ 
     rhodotron.openLogs(); 
 
     state_lock.lock();
     state |= SIM_RUNNING;
     state_lock.unlock();
 
+    auto run_start = high_resolution_clock::now();
     rhodotron.run();
+    auto run_stop = high_resolution_clock::now();
     rhodotron.logPaths();
     rhodotron.closeLogs();
     
@@ -80,14 +83,17 @@ int main(int argc, char** argv) {
     }
 
     else {
+
+        auto run_time = duration_cast<microseconds>(run_stop - run_start);
         auto sim_stop = high_resolution_clock::now();
         auto sim_time = duration_cast<microseconds>(sim_stop - start);
 
-        //if (!isService) plot(config);
+        if (plotSet) plot(config);
 
         auto render_stop = high_resolution_clock::now();
         auto render_time = duration_cast<microseconds>(render_stop - sim_stop);
 
+        cout << "Run finished in : " << run_time.count() << " us    ( " << run_time.count()/1000000.0 << " s )" << endl;
         cout << "Simulation finished in : " << sim_time.count() << " us     ( "<<sim_time.count()/1000000.0 << " s )" << endl;
         cout << "Rendering finished in : " << render_time.count() << " us     ( "<<render_time.count()/1000000.0 << " s )" << endl;
     }

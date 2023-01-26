@@ -5,7 +5,7 @@
 void Simulator::run(){
     // Before starting, log the magnetic field to the mag file
     cout << "aa you are in simulator::run " << endl;
-    logBfield();      
+    //logBfield();      
     cout << "you are in simulator::run " << endl;
     /*                                    
     if(MULTI_THREAD){
@@ -14,7 +14,8 @@ void Simulator::run(){
     }*/
     while ( simulation_time < end_time ){
         E_field.update(simulation_time);
-        if ( STEPS_TAKEN%log_interval() == 0 ){
+        
+        if ( false && STEPS_TAKEN%log_interval() == 0 ){
             logEfield(simulation_time);
             // every 100th step, log the E field
             saveElectronsInfo(simulation_time);
@@ -25,7 +26,7 @@ void Simulator::run(){
             MTEngine.join();*/
         }
         else{
-            gun.interact(E_field, B_field, simulation_time, time_interval);
+            gun.interact(E_field, B_field, time_interval);
         }
         simulation_time += time_interval;
         STEPS_TAKEN++;
@@ -124,26 +125,31 @@ void RhodotronSimulator::updateSimulation(){
 
 extern mutex mutex_lock;
 
-void RhodotronSimulator::run(){                                 // TODO : implement Multithreading
+void RhodotronSimulator::run(){  // TODO : implement Multithreading
     // Before starting, log the magnetic field to the mag file
     logBfield();                           
     if(MULTI_THREAD){
         gun.bunchs[0].divide(MAX_THREAD_COUNT);
     }
-    while ( simulation_time < end_time ){
+    while ( simulation_time <= end_time ){
         E_field.update(simulation_time);
+        gun.fireIfActive(simulation_time);
+        
         if ( STEPS_TAKEN%log_interval() == 0 ){
             logEfield(simulation_time);
             // every 100th step, log the E field
             saveElectronsInfo(simulation_time);
         }
+        // Do the actual work
+        // This part is accounts for ~97% of the execution time
         if( MULTI_THREAD ){
             MTEngine.doWork(gun.bunchs[0].subBunchPtr(), E_field, B_field, simulation_time, time_interval);
             MTEngine.join();
         }
         else{
-            gun.interact(E_field, B_field, simulation_time, time_interval);
+            gun.interact(E_field, B_field, time_interval);
         }
+        // Work is finished, update UI handlers watchpoint
         simulation_time += time_interval;
         mutex_lock.lock();
         dummy_time = simulation_time;

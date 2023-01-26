@@ -4,29 +4,39 @@
 #include "consts.h"
 #include <math.h>
 
-vector3d vector3d::operator+ (vector3d other){
+vector3d vector3d::operator+ (const vector3d& other){
     vector3d new_vec(this->x + other.x, this->y + other.y, this->z + other.z);
     return new_vec;
 }
 
-void vector3d::operator+= (vector3d other){
+vector3d vector3d::operator+ (const vector3d& other) const {
+    vector3d new_vec(this->x + other.x, this->y + other.y, this->z + other.z);
+    return new_vec;
+}
+
+void vector3d::operator+= (const vector3d& other){
     this->x += other.x;
     this->y += other.y;
     this->z += other.z;
 }
 
-vector3d vector3d::operator- (vector3d other){
+vector3d vector3d::operator- (const vector3d& other){
     vector3d new_vec(this->x - other.x, this->y - other.y, this->z - other.z);
     return new_vec;
 }
 
-void vector3d::operator-= (vector3d other){
+void vector3d::operator-= (const vector3d& other){
     this->x -= other.x;
     this->y -= other.y;
     this->z -= other.z;
 }
 
 vector3d vector3d::operator* (double num){
+    vector3d new_vec(this->x * num, this->y * num, this->z * num);
+    return new_vec;
+}
+
+vector3d vector3d::operator* (double num) const{
     vector3d new_vec(this->x * num, this->y * num, this->z * num);
     return new_vec;
 }
@@ -42,6 +52,11 @@ vector3d vector3d::operator/ (double num){
     return new_vec;
 }
 
+vector3d vector3d::operator/ (double num) const{
+    vector3d new_vec(this->x / num, this->y / num, this->z / num);
+    return new_vec;
+}
+
 void vector3d::operator/= (double num){
     this->x /= num;
     this->y /= num;
@@ -49,7 +64,7 @@ void vector3d::operator/= (double num){
 }
 
 
-double vector3d::operator* (vector3d other){
+double vector3d::operator* (const vector3d& other){
     double dot = 0;
     dot += this->x * other.x;
     dot += this->y * other.y;
@@ -57,7 +72,7 @@ double vector3d::operator* (vector3d other){
     return dot;
 }
 
-vector3d vector3d::operator% (vector3d other){
+vector3d vector3d::operator% (const vector3d& other){
     double x_ = (this->y * other.z) - (this->z * other.y);
     double y_ = (this->z * other.x) - (this->x * other.z);
     double z_ = (this->x * other.y) - (this->y * other.x);
@@ -65,12 +80,16 @@ vector3d vector3d::operator% (vector3d other){
     return crossed;
 }
 
-bool vector3d::operator==(vector3d other){
+bool vector3d::operator==(const vector3d& other){
     return x == other.x && y == other.y && z == other.z;
 }
 
 double vector3d::magnitude(){
     return sqrt( x*x + y*y + z*z );
+}
+
+double vector3d::magnitude2(){
+    return x*x + y*y + z*z;
 }
 
 vector3d vector3d::direction(){
@@ -123,15 +142,6 @@ std::istream& operator>>(std::istream& stream, vector3d& vect){
 
 vector3d vector3d::from_string(std::string str){
     vector3d vect;
-    /*
-    str = str.substr(1, str.size()-2);
-    vect.setX( std::stod(str.substr(0, str.find(';'))));
-
-    str = str.substr(str.find(';') + 1);
-    vect.setY( std::stod(str.substr(0, str.find(';'))));
-    
-    str = str.substr(str.find(';') + 1);
-    vect.setZ( std::stod(str));*/
 
     double x,y,z;
 

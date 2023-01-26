@@ -50,7 +50,7 @@ public:
     vector3d actOn(Electron2D& e);
     vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);        
 
-    int log(DataStorage& rf, double time);
+    int log(DataStorage& rf, double time, bool end = false);
 };
 
 class Magnet{

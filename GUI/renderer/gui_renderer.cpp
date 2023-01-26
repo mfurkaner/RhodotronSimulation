@@ -528,6 +528,21 @@ namespace RhodotronSimulatorGUI::renderer{
         }
     }
 
+    void Renderer::_updateLegend(float time){
+        char temp[50];
+        snprintf(temp, 50, "t = %.1fns", time);
+        _time_legend->Clear();
+        _time_legend->AddText(temp);
+        _time_legend->Draw();
+
+
+        _legend->Draw();
+
+        for(auto sample : _legend_electron_energy_samples){
+            sample->Draw();
+        }
+    }
+
     void Renderer::_updateCavity(){
         _cavity_r2->Draw();
         _cavity_r1->Draw();
@@ -580,7 +595,7 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateEField(i);
         _updateBField(i);
         _updateElectrons(time);
-        _updateLegend(i);
+        _updateLegend(time);
 
         canvas->GetCanvas()->Modified();
         canvas->GetCanvas()->Update();
@@ -629,7 +644,7 @@ namespace RhodotronSimulatorGUI::renderer{
         _updateEField(slice_index);
         _updateBField(slice_index);
         _updateElectrons(time);
-        _updateLegend(slice_index);
+        _updateLegend(time);
 
 
         canvas->GetCanvas()->Modified();

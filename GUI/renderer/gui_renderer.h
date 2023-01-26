@@ -87,6 +87,7 @@ namespace RhodotronSimulatorGUI::renderer{
         void _updateEField(int log_index);
         void _updateBField(int log_index);
         void _updateLegend(int log_index);
+        void _updateLegend(float time);
         void _updateCavity();
 
         int _indexFromTime(float time);

@@ -30,7 +30,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         // Setup the time entry field
         active_time = new TGNumberEntry(this,0.0,3, -1, TGNumberFormat::kNESRealOne, 
-                                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0, 49.9);
+                                TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0.1, 49.9);
         active_time->Resize(100, 25);
         active_time->Connect("Modified()", "RhodotronSimulatorGUI::frames::RenderFrame", this, 
                              "TimeChanged()");
@@ -92,7 +92,7 @@ namespace RhodotronSimulatorGUI::frames{
         active_time->SetLimitValues(starttime, endtime);
         active_time->SetNumber(starttime);
         time_slider->SetPosition(starttime * 10);
-        //active_time->Modified();
+        active_time->Modified();
         std::cout << "Ended to setting time interval" << std::endl; 
     }
 

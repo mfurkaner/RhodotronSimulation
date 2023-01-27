@@ -113,7 +113,12 @@ int CoaxialRFField::log( DataStorage& rf , double time, bool end){
             vector3d Efield = getField(pos);
             if ( pos.magnitude() > r1 ){
                 rf << time << "," << pos << "," << Efield << "," << Efield.magnitude();
-                rf << ( (end && (j+0.05 > r2) && (i+0.05 > r2) ) ? "" : "\n" );
+                if (end){
+                    rf << ( (j+0.05 > r2) && (i+0.05 > r2)  ? "" : "\n" );
+                }
+                else{
+                    rf << '\n';
+                }
                 count ++;
             }
         }

@@ -16,7 +16,7 @@ void Simulator::run(){
         E_field.update(simulation_time);
         
         if ( false && STEPS_TAKEN%log_interval() == 0 ){
-            logEfield(simulation_time);
+            logEfield(simulation_time, simulation_time + time_interval > end_time);
             // every 100th step, log the E field
             saveElectronsInfo(simulation_time);
         }
@@ -131,12 +131,17 @@ void RhodotronSimulator::run(){  // TODO : implement Multithreading
     if(MULTI_THREAD){
         gun.bunchs[0].divide(MAX_THREAD_COUNT);
     }
-    while ( simulation_time <= end_time ){
+    while ( simulation_time < end_time + time_interval ){
         E_field.update(simulation_time);
         gun.fireIfActive(simulation_time);
+
+        if(simulation_time + time_interval > end_time + time_interval){
+            std::cout << simulation_time << std::endl;
+        }
         
         if ( STEPS_TAKEN%log_interval() == 0 ){
-            logEfield(simulation_time);
+            //std::cout << "Logging E at t=" << simulation_time << " steps=" << STEPS_TAKEN << std::endl;
+            logEfield(simulation_time, simulation_time + time_interval > end_time );
             // every 100th step, log the E field
             saveElectronsInfo(simulation_time);
         }

@@ -14,7 +14,7 @@ namespace RhodotronSimulatorGUI::frames{
         progressBar->SetMin(0);
         progressBar->SetMax(0b00011111);
         progressBar->ShowPosition();
-        progressBar->Activate(false);
+        progressBar->SetBarType(TGProgressBar::EBarType::kFancy);
 
         //auto color = TColor::GetColor(232, 232, 233);
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
@@ -30,7 +30,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         // Setup the time entry field
         active_time = new TGNumberEntry(this,0.0,3, -1, TGNumberFormat::kNESRealOne, 
-                                TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0.1, 49.9);
+                                TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0.1, 50);
         active_time->Resize(100, 25);
         active_time->Connect("Modified()", "RhodotronSimulatorGUI::frames::RenderFrame", this, 
                              "TimeChanged()");
@@ -38,7 +38,7 @@ namespace RhodotronSimulatorGUI::frames{
         // Setup the time slider
         time_slider = new TGHSlider(this, 200);
         time_slider->SetPosition(0);
-        time_slider->SetRange(0, 499);
+        time_slider->SetRange(0, 500);
         time_slider->Connect("PositionChanged(Int_t)", "RhodotronSimulatorGUI::frames::RenderFrame", this, 
                              "SliderPositionChanged(Int_t)");
 
@@ -62,7 +62,6 @@ namespace RhodotronSimulatorGUI::frames{
 
     TGProgressBar* RenderFrame::GetProgressBar() { return progressBar; }
         
-
     void RenderFrame::TimeChanged(){
         float time = active_time->GetNumber();
         renderer.GoToTime(time);
@@ -80,12 +79,8 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void RenderFrame::SetTimeInterval(float starttime, float endtime){
-        std::cout << "endtime : " << endtime << std::endl;
         if ( endtime <= 0.1 )
             endtime = 0;
-        else{
-            endtime -= 0.1;
-        }
 
         std::cout << "Setting time interval to " << starttime << " : " << endtime << std::endl; 
         time_slider->SetRange(starttime * 10, endtime * 10);
@@ -93,7 +88,6 @@ namespace RhodotronSimulatorGUI::frames{
         active_time->SetNumber(starttime);
         time_slider->SetPosition(starttime * 10);
         active_time->Modified();
-        std::cout << "Ended to setting time interval" << std::endl; 
     }
 
     void RenderFrame::SetR1R2(float r1, float r2){

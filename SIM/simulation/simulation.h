@@ -127,7 +127,7 @@ public:
     //std::vector<double> getRelativeEnterDistance(){return B_field.getRelativeEnterDistance();}
 
     virtual void getConfig(Configuration& config) = 0;
-    virtual void logEfield(double time) = 0;
+    virtual void logEfield(double time, bool) = 0;
     virtual void logBfield() = 0;
     void logPaths();
     double* getTimePtr(){return &dummy_time;}
@@ -169,8 +169,8 @@ public:
     }
     void updateSimulation();
     void getConfig(Configuration& config);
-    void logEfield(double time){
-        E_field.log(EfieldStorage, time, time == simulation_time);
+    void logEfield(double time, bool end){
+        E_field.log(EfieldStorage, time, end);
     }
     void logBfield(){
         B_field.log(BfieldStorage);

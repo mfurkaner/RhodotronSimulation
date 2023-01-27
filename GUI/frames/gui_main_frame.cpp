@@ -80,8 +80,6 @@ namespace RhodotronSimulatorGUI::frames{
         float _r1 = config_frame->GetR1();
         float _r2 = config_frame->GetR2();
 
-        std::cout << "enum: " << _enum <<  " bnum: " << _bnum << std::endl;
-
         render_frame->SetEnum(_enum);
         render_frame->SetBnum(_bnum);
         render_frame->SetTargetEnergy(_targetEn);

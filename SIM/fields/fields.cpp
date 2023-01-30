@@ -1,4 +1,5 @@
 #include "fields.h"
+#include <memory>
 #include "../particles/electron.h"
 
 
@@ -50,6 +51,12 @@ vector3d RFField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
 }
 
 /////////           Coaxial RF FIELD
+CoaxialRFField::~CoaxialRFField(){
+    for(int i = 0; i < _childs.size(); i++){
+        delete _childs[i];
+    }
+}
+
 vector3d CoaxialRFField::actOn(Electron2D& e){
     vector3d Efield = getField(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
@@ -91,17 +98,17 @@ vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
     return (k1 + k2*2 + k3*2 + k4)/6;
 }
 
-double CoaxialRFField::E_radial(double R){
+double CoaxialRFField::E_radial(double R)const{
     double E_zero = E*E_max_pos/R;
     return E_zero*((R < -r1)*(R > -r2) | (R < r2)*(R > r1));
 }
 
-vector3d CoaxialRFField::getField(vector3d position){
+vector3d CoaxialRFField::getField(vector3d position) const{
     double radial = E_radial( position.magnitude() );
     return position.direction() * radial;
 }
 
-double CoaxialRFField::getField( double R ){
+double CoaxialRFField::getField( double R )const{
     return E_radial(R);
 }
 
@@ -124,6 +131,48 @@ int CoaxialRFField::log( DataStorage& rf , double time, bool end){
         }
     }
     return count;
+}
+/*
+shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
+    auto _copy = std::make_shared<CoaxialRFField>();
+    _copy->E = E;
+    _copy->r1 = r1;
+    _copy->r2 = r2;
+    _copy->E_max = E_max;
+    _copy->E_max_pos = E_max_pos;
+    _copy->frequency = frequency;
+    _copy->phase_lag = phase_lag;
+    return _copy;
+}*/
+
+
+void CoaxialRFField::split(uint32_t amount_of_child){
+    _childs.clear();
+    _childs.reserve(amount_of_child);
+    for(uint32_t i = 0; i < amount_of_child; i++){
+        auto child = new CoaxialRFField(phase_lag);
+        
+        child->setEmax(E_max);
+        child->setR1(r1);
+        child->setR2(r2);
+        child->setEmaxPos(E_max_pos);
+        child->setFreq(frequency);
+        child->E = E;
+        _childs.push_back(child);
+    }
+}
+
+CoaxialRFField* CoaxialRFField::child(uint32_t index){
+    return _childs[index];
+}
+
+void CoaxialRFField::update(double time){
+    double w = 2 * M_PI * frequency * 0.001;
+    E = sin(w*time + phase_lag*deg_to_rad)*E_max;
+    
+    for(uint32_t i = 0; i < _childs.size();i++){
+        _childs[i]->update(time);
+    }
 }
 
 /////////           Magnet
@@ -154,6 +203,12 @@ double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
 }
 
 /////////           MAGNETIC FIELD
+MagneticField::~MagneticField(){
+    for(int i = 0; i < _childs.size(); i++){
+        delete _childs[i];
+    }
+}
+
 bool isInsideHalfSphere(vector3d e_position, double r, vector3d hs_position){
     vector3d relative = e_position - hs_position;                                       // get the relative position of electron with respect to magnet center
     if ( relative.magnitude() <= r && relative * hs_position.direction() >= -r/5){          // if the relative distance is less than r && relative doesn't have opposite direction
@@ -162,7 +217,7 @@ bool isInsideHalfSphere(vector3d e_position, double r, vector3d hs_position){
     return false;
 }
 
-int MagneticField::isInside(vector3d position){
+int MagneticField::isInside(vector3d position) const{
     for(int i = 0; i < magnets.size() ; i++){
         if ( isInsideHalfSphere(position, magnets[i].r, magnets[i].position ) ){
             return i;
@@ -177,23 +232,23 @@ int MagneticField::isInsideDebug(){
 
 void MagneticField::addMagnet(double B, double r, vector3d position){
     magnets.push_back(Magnet(B, r, position));
-    hasEntered.push_back(false);
+    //hasEntered.push_back(false);
 }
 
 void MagneticField::addMagnet(Magnet m){
     magnets.push_back(m);
-    hasEntered.push_back(false);
+    //hasEntered.push_back(false);
 }
 
-vector3d MagneticField::getField(vector3d position){
+vector3d MagneticField::getField(vector3d position)const{
     int magnet_index = isInside(position);
     if ( magnet_index == -1 ){
         return vector3d(0, 0, 0);
     }
-    if ( !hasEntered[magnet_index] ){ 
-        hasEntered[magnet_index] = true; 
-        vector3d v = position - magnets[magnet_index].position;
-        relativeEnterDistance.push_back(v.magnitude());
+    if (false && !hasEntered[magnet_index] ){ 
+        //hasEntered[magnet_index] = true; 
+        //vector3d v = position - magnets[magnet_index].position;
+        //relativeEnterDistance.push_back(v.magnitude());
     }
     return vector3d(0, 0, magnets[magnet_index].B);
 }
@@ -265,6 +320,26 @@ void MagneticField::log(DataStorage& magnet){
             }
         }
     }
+}
+
+
+shared_ptr<MagneticField> MagneticField::LightWeightCopy(){
+    auto newMagneticField = std::make_shared<MagneticField>();
+    newMagneticField->magnets = magnets;
+    return newMagneticField;
+}
+
+void MagneticField::split(uint32_t amount_of_child){
+    _childs.clear();
+    _childs.reserve(amount_of_child);
+    for(uint32_t i = 0; i < amount_of_child; i++){
+        _childs.push_back(new MagneticField());
+        _childs[i]->magnets = magnets;
+    }
+}
+
+MagneticField* MagneticField::child(uint32_t index){
+    return _childs[index];
 }
 
 

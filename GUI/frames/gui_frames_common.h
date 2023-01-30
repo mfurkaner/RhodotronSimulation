@@ -135,7 +135,7 @@ namespace RhodotronSimulatorGUI::frames{
     #define DEFAULT_SIM_TF 50
     #define DEFAULT_SIM_DT 0.0001
     #define DEFAULT_SIM_THNUM 1
-    #define DEFAULT_SIM_MULTH_STATE kButtonDisabled
+    #define DEFAULT_SIM_MULTH_STATE kButtonEngaged
     #define DEFAULT_SIM_EPATH "xy/rf.txt"
     #define DEFAULT_SIM_BPATH "xy/magnet.txt"
     #define DEFAULT_SIM_PPATH "xy/paths/"

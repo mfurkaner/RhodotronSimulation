@@ -58,7 +58,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         // Setup Sim multithreading control checkbox
         _multh_enable_button = new TGCheckButton(mt_control_frame, sim_configuration_multh_label_text.c_str());
-        _multh_enable_button->SetState(DEFAULT_SIM_MULTH_STATE);
+        //_multh_enable_button->SetState(DEFAULT_SIM_MULTH_STATE);
 
         // Setup Sim multithreading control frame
         mt_control_frame->AddFrame(thnum_entry_frame, center_x_layout);
@@ -154,13 +154,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 case thcount:{
                     snprintf(temp, 50, "%d",(int)_thnum_entry->GetNumber());
                     // Disabled
-                    line = '#' + line + temp;
+                    line = line + temp;
                     break;
                 }
                 case multh:{
                     snprintf(temp, 50, "%d",(int)_multh_enable_button->IsDown());
                     // Disabled
-                    line = '#' + line + temp;
+                    line = line + temp;
                     break;
                 }
                 case epath:{

@@ -5,14 +5,14 @@
 #include "../mt/multithreadengine.h"
 
 #include <string>
+#include <memory>
 
 #define SIMULATION_H
 
 class Simulator{        // E in MV/m,   En in MeV,   B in T,    t in
 protected:
     Gun gun;
-    RFField E_field;    double Emax; double freq = 107.5; double phase_lag = 0; 
-    MagneticField B_field;
+    double Emax; double freq = 107.5; double phase_lag = 0; 
     DataStorage EfieldStorage = DataStorage("xy/rf.txt");
     DataStorage BfieldStorage = DataStorage("xy/magnet.txt");
     vector<vector<DataStorage> > pathsStorage;
@@ -49,13 +49,14 @@ public:
     ~Simulator(){}
 
     void enableMultiThreading(unsigned int thread_count){
+        if ( thread_count == 1) return;
         this->MAX_THREAD_COUNT = thread_count;
         MULTI_THREAD = true;
-        MTEngine = MultiThreadEngine(thread_count);
+        MTEngine.setThreadCount(thread_count);
+        gun.enableMT(thread_count);
     }
 
     void setdT(double dT){time_interval = dT;}
-    void setEmax(double E_max){E_field.setEmax(E_max); Emax = E_max;}
     void setEin(double E_in){ gun.setEin(E_in); Ein = E_in;}
     void setNumberofElectrons(uint64_t num_of_electrons){
         this->NUM_OF_ELECTRONS = num_of_electrons;
@@ -67,14 +68,6 @@ public:
     }
     void setStartTime(double starttime){ simulation_time += starttime - start_time; start_time = starttime;}
     void setEndTime(double end_time){ this->end_time = end_time;}
-    void setFreq(double frequency){ 
-        freq = frequency;
-        E_field.setFreq(freq);
-    }
-    void setPhaseLag(double phase_lag){ 
-        this->phase_lag = phase_lag;
-        E_field.setPhaseLag(phase_lag);
-    }
     void setGunActiveTime(double gun_ns){
         GUN_ACTIVE_TIME = gun_ns;
         gun.setGunActiveTime(gun_ns);
@@ -83,10 +76,12 @@ public:
         GUN_PERIOD = pi;
         gun.setGunInterval(pi);
     }
-    void setGunPosition(vector3d pos){gunPosition = pos;
+    void setGunPosition(vector3d pos){
+        gunPosition = pos;
         setNumberofElectrons(NUM_OF_ELECTRONS);
     }
-    void setGunDirection(vector3d dir){gunDirection = dir;
+    void setGunDirection(vector3d dir){
+        gunDirection = dir;
         setNumberofElectrons(NUM_OF_ELECTRONS);
     }
 
@@ -95,8 +90,6 @@ public:
     void setPathsPath(std::string path){pathsPath = path;}
     void setConfigPath(std::string path){configPath = path;}
 
-    void addMagnet(double B, double r, vector3d position);
-    void addMagnet(Magnet m);
     virtual void run();
     void saveElectronsInfo(double time);
     void openLogs(){
@@ -138,10 +131,10 @@ class RhodotronSimulator : public Simulator{
 private:
     double R1;
     double R2;
-    double MAGNET_ROTATION = 5.0; //degrees
-    double MAGNET_ROTATION_R = 5*deg_to_rad;
     CoaxialRFField E_field;
+    MagneticField B_field;
 
+    void runMT();
 public:
     RhodotronSimulator(double phase_lag) : Simulator(){
         this->phase_lag = phase_lag;
@@ -158,6 +151,16 @@ public:
         setGunDirection(vector3d(1,0,0));
     }
 
+
+    void setFreq(double frequency){ 
+        freq = frequency;
+        E_field.setFreq(freq);
+    }
+    void setPhaseLag(double phase_lag){ 
+        this->phase_lag = phase_lag;
+        E_field.setPhaseLag(phase_lag);
+    }
+    void setEmax(double E_max){E_field.setEmax(E_max); Emax = E_max;}
     void setR1(double r1){
         R1 = r1;
         E_field.setR1(R1);
@@ -167,6 +170,9 @@ public:
         E_field.setR2(R2);
         setGunPosition(vector3d(-R2,0,0));
     }
+    void addMagnet(double B, double r, vector3d position);
+    void addMagnet(Magnet m);
+    
     void updateSimulation();
     void getConfig(Configuration& config);
     void logEfield(double time, bool end){

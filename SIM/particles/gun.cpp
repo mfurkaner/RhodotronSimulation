@@ -40,6 +40,14 @@
         }
     }
     
+    void Gun::enableMT(uint32_t thread_count){
+        _mt_enabled = true;
+        _child_thread_count = thread_count;
+        for(int i = 0; i < thread_count; i++){
+            thread_bunchs.push_back(make_shared<vector<shared_ptr<Electron2D>>>(vector<shared_ptr<Electron2D>>()));
+        }
+    }
+
     void Gun::saveInfo(double time){
         for(int i = 0; i< bunchs.size(); i++){
             bunchs[i].saveInfo(time);
@@ -73,5 +81,43 @@
             if (_firing == false ) _firing = true;
             bunchs[_fired_bunch].AddElectron(Ein, gunpos, gundir);
             _fired_e_in_current_bunch++;
+        }
+    }
+
+    void Gun::fireIfActiveMT(double time){
+        // GUN finished firing
+        if ( _fired_bunch == bunch_count )
+            return;
+        else if ( _fired_bunch > bunch_count ){
+            perror("Fired more than bunch_count");
+        }
+        else if ( _fired_e_in_current_bunch >= e_per_bunch ){
+            _fired_e_in_current_bunch = 0;
+            _firing = false;
+            _fired_bunch++;
+        }
+        if ( time > (ns_between_each_electron_fire * _fired_e_in_current_bunch) + _fired_bunch*gun_period){
+            if (_firing == false ) _firing = true;
+
+            auto burrowed_e = bunchs[_fired_bunch].AddElectronGiveAddress(Ein, gunpos, gundir);
+
+            if ( _next_up < thread_bunchs.size() ){
+                // TODO : Check if thread_bunchs need mutex
+                thread_bunchs[_next_up]->push_back(burrowed_e);
+                _next_up = (_next_up + 1)%_child_thread_count;
+            }
+
+            _fired_e_in_current_bunch++;
+        }
+    }
+
+    void Gun::fireIfActiveMT_workerInterface(double time, int worker_index){
+        if ( worker_index == _next_up){
+            _gun_mutex.lock();
+            
+            // This method modifies the gun but only modifies the worker electron vector that called this function
+            fireIfActiveMT(time);
+            
+            _gun_mutex.unlock();
         }
     }

@@ -26,7 +26,7 @@ private:
     vector3d _LEGACY_gun_dir;
 public:
     vector<Bunch2D> subBunchs;
-    vector<Electron2D> e;
+    vector<shared_ptr<Electron2D>> e;
     Bunch2D(unsigned int num_of_electrons, double Ein, vector3d gunpos, vector3d gundir, double gun_ns){
         E_in = Ein;
         e_count = num_of_electrons;
@@ -34,8 +34,8 @@ public:
         _LEGACY_gun_pos = gunpos;
         _LEGACY_gun_dir = gundir;
         for(int i = 0 ; i < num_of_electrons ; i++){
-            e.push_back(Electron2D(Ein, gunpos, gundir));
-            e.back().setLogSize(1000);
+            e.push_back(make_shared<Electron2D>(Electron2D(Ein, gunpos, gundir)));
+            e.back()->setLogSize(1000);
         }
         _LEGACY_ns_between = initial_length_ns/(e_count - 1);
     }
@@ -49,21 +49,26 @@ public:
     }*/
 
     void saveInfo(double time){
-        for(Electron2D& i : e){
-            i.saveInfo(time);
+        for(auto i : e){
+            i->saveInfo(time);
         }
     }
 
     Electron2D& getFastest();
 
     void AddElectron(double Ein, const vector3d& gunpos, const vector3d& gundir){
-        e.push_back(Electron2D(Ein, gunpos, gundir));
-        e.back().setLogSize(1000);
+        e.push_back(make_shared<Electron2D>(Ein, gunpos, gundir));
+        e.back()->setLogSize(1000);
         e_count = e.size();
     }
 
+    shared_ptr<Electron2D> AddElectronGiveAddress(double Ein, const vector3d& gunpos, const vector3d& gundir){
+        AddElectron(Ein, gunpos, gundir);
+        return e.back();
+    }
+
     void setEntryTime(double entry_time){this->entry_time = entry_time;}
-    void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i].setEin(E_in);}}
+    void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i]->setEin(E_in);}}
     void setNSLen(double len){ initial_length_ns = len; _LEGACY_ns_between = initial_length_ns/(e_count - 1);}
     double getEin(){ return E_in;}
     void interact(RFField& E, MagneticField& B, double time_interval);
@@ -83,7 +88,7 @@ public:
         for(int i = 0; i < e.size() && i < pathStorage.size(); i++){
             pathStorage[i].open();
             pathStorage[i] << header << "\n";
-            e[i].loge(pathStorage[i]);
+            e[i]->loge(pathStorage[i]);
             pathStorage[i].close();
         }
     }

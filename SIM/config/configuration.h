@@ -36,7 +36,7 @@ private:
         };
     std::ifstream fin;
     std::string filepath;
-    bool fileIsOpen = false;
+    //bool fileIsOpen = false;
 
     double Emax;            bool EmaxIsSet = false;
     double freq;            bool freqIsSet = false;

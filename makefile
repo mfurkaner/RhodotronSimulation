@@ -3,11 +3,9 @@ LINUX  = Linux
 MAC    = Darwin
 
 CPP=clang++
-DEBUGFLAG= -g
-CPPFLAGS= -std=c++11 -I=SIM/** 
+DEBUGFLAG= -g -pthread
+CPPFLAGS= -std=c++17 -I=SIM/** -Wall -pedantic
 LIBS= -L SIM/
-
-DEBUG_ENABLED=0
 
 
 DOBJS=SIM/simulation/simulation.o SIM/particles/electron.o SIM/particles/bunch.o SIM/particles/gun.o SIM/fields/fields.o SIM/basic/vector.o SIM/mt/multithreading.o
@@ -34,6 +32,8 @@ simrhodo_debug.exe: SIM/main_new.cpp $(DOBJS_DBG)
 release: simrhodo.exe
 
 debug: simrhodo_debug.exe
+
+all: release debug
 
 clean: 
 	rm -rf *.o SIM/**/*.o *.exe

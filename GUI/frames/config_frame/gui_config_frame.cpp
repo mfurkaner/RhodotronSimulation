@@ -1,7 +1,59 @@
 #include "gui_config_frame.h"
 
+/* #include "B_config_frame/gui_B_config_frame.cpp"
+#include "E_config_frame/gui_E_config_frame.cpp"
+#include "gun_config_frame/gui_gun_config_frame.cpp"
+#include "sim_config_frame/gui_sim_config_frame.cpp" */
+
+
 
 namespace RhodotronSimulatorGUI::frames{ 
+
+const std::string ConfigurationFrame::config_comment = 
+           {"#                  RhodoSim Configuration File\n"
+            "# ================================================================\n"
+            "#    M.Furkan Er                                     22/09/2022   \n"
+            "# ================================================================\n#\n"
+            "# emax = Maximum electric field strength (MV/m)\n"
+            "# ein = Energy of electrons coming out of the gun (MeV)\n" 
+            "# targeten = Max energy on the output gif (MeV)\n"
+            "# freq = Frequency of the RF field (MHz)\n"
+            "# phaselag = phase lag of the first electrons (degree)\n"
+            "# starttime = time to start firing the gun (ns)\n"
+            "# endtime = ns to run the simulation (ns)\n"
+            "# dt = time interval to do the calculations (ns)\n"
+            "# guntime = how long a gun pulse is (ns)\n"
+            "# gunperiod = time between two gun pulses (ns)\n"
+            "# enum = number of electrons to simulate in a bunch\n"
+            "# bunchnum = number of times the gun fires\n"
+            "# r1 = radius of the inner cylinder (m)\n"
+            "# r2 = radius of the outer cylinder (m)\n"
+            "# epath = path to store the electric field data\n"
+            "# bpath = path to store the magnetic field data\n"
+            "# cpath = path to store the settings\n"
+            "# ppath = path to store electron data\n"
+            "# multh = enable or disable multitheading\n"
+            "# thcount = set the maximum thread to be used\n"
+            "# magrotation = degrees of rotation to enter each magnet \n"
+            "# addmagnet = takes 3 input. (B , R, < Radial distance of center >)\n"
+            "# output = output file name \n\n"};
+
+    const std::vector<ConfigurationCell> ConfigurationFrame::configs = std::vector<ConfigurationCell>(
+        {   ConfigurationCell(E,"emax", emax),              ConfigurationCell(Gun, "ein", ein),
+            ConfigurationCell(Gun,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
+            ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Sim,"starttime", starttime),
+            ConfigurationCell(Sim,"endtime", endtime),     ConfigurationCell(Sim,"dt", dt), 
+            ConfigurationCell(Gun,"guntime", guntime),     ConfigurationCell(Gun,"gunperiod", gunperiod), 
+            ConfigurationCell(Gun,"enum", _enum),          ConfigurationCell(Gun,"bunchnum", bunchnum),
+            ConfigurationCell(E,"r1", _r1),                 ConfigurationCell(E,"r2", _r2), 
+            ConfigurationCell(Sim,"epath", epath),         ConfigurationCell(Sim,"bpath", bpath), 
+            ConfigurationCell(Sim,"cpath", cpath),         ConfigurationCell(Sim,"ppath", ppath), 
+            ConfigurationCell(Sim,"multh",multh),          ConfigurationCell(Sim,"thcount",thcount),      
+            ConfigurationCell(B,"magrotation", magrotation),ConfigurationCell(B,"addmagnet", addmagnet),    
+
+        });
+
+
 
     ConfigurationFrame::ConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
         parent = p;
@@ -58,7 +110,6 @@ namespace RhodotronSimulatorGUI::frames{
 
     void ConfigurationFrame::LoadConfigFromFile(const std::string& configFilePath){
 
-        std::cout << "configs size: " << configs.size() << std::endl;
         std::ifstream configFile;   
 
         configFile.open(configFilePath, std::ios::in);

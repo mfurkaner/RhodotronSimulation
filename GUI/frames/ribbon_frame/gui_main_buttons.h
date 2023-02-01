@@ -73,10 +73,7 @@ namespace RhodotronSimulatorGUI::frames{
         void ShowByName(const std::string& name);
     };
 
-    const std::vector<std::string> MainButtonsFrame::button_names = {"Save Config", "Load Config", "Configuration",  "Render", "Run", "Stop", "Quit"};
 
-    const std::vector<std::string> MainButtonsFrame::button_functions = {"SaveConfigPressed()", "LoadConfigPressed()", "ConfigurationPressed()", "RenderPressed()",
-                                                                         "RunPressed()", "StopPressed()", "QuitPressed()"};
 }
 
 

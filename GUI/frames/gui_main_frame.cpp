@@ -7,7 +7,9 @@ namespace RhodotronSimulatorGUI::frames{
         SetCleanup(kDeepCleanup);
         main_buttons_frame = new MainButtonsFrame(this, MAIN_BUTTON_FRAME_W, MAIN_BUTTON_FRAME_H);
         config_frame = new ConfigurationFrame(this, CONFIG_FRAME_W, CONFIG_FRAME_H);
-        render_frame = new RenderFrame(this, RENDER_FRAME_W, RENDER_FRAME_H);
+        render_frame = new RenderFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &renderer);
+
+        renderer.SetDataProvider(&dataProvider);
 
         sim_handler.set_progress_bar(render_frame->GetProgressBar());
 
@@ -67,26 +69,28 @@ namespace RhodotronSimulatorGUI::frames{
 
     void MainFrame::RenderPressed() {
         NavigateTo(render_frame, "Render");
-        
-        int _enum = config_frame->GetEnum();
-        int _bnum = config_frame->GetBnum();
 
-        // TODO : Get this from sim config frame
         float _starttime = config_frame->GetStartTime();
         float _endtime = config_frame->GetEndTime();
-
         float _targetEn = config_frame->GetTargetEnergy();
-
         float _r1 = config_frame->GetR1();
         float _r2 = config_frame->GetR2();
 
-        render_frame->SetEnum(_enum);
-        render_frame->SetBnum(_bnum);
+        if ( dataProvider.isDataFilled() == false){
+
+            dataProvider.SetEnum(config_frame->GetEnum());
+            dataProvider.SetBnum(config_frame->GetBnum());
+            dataProvider.SetElogPath(config_frame->GetPPath());
+            dataProvider.SetRflogPath(config_frame->GetEPath());
+            dataProvider.SetStaticBfieldlogPath(config_frame->GetBPath());
+            dataProvider.fillLogs();
+        }
+
+        render_frame->SetupRenderer();
         render_frame->SetTargetEnergy(_targetEn);
         render_frame->SetTimeInterval(_starttime, _endtime);
         render_frame->SetR1R2(_r1, _r2);
-
-        render_frame->Render();
+        renderer.Render();
     }
 
     void MainFrame::RunPressed(){
@@ -115,7 +119,7 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
 
-    void MainFrame::NavigateTo(TGFrame* childFrame, std::string hideButton = ""){
+    void MainFrame::NavigateTo(TGFrame* childFrame, std::string hideButton){
         if(childFrame->GetParent() != this || active_frame == childFrame){
             return;
         }

@@ -34,7 +34,7 @@
 #include "ribbon_frame/gui_main_buttons.h"
 #include "config_frame/gui_config_frame.h"
 #include "render_frame/gui_render_frame.h"
-#include "../renderer/gui_renderer.cpp"
+#include "../data/gui_sim_dataprovider.h"
 
 
 namespace RhodotronSimulatorGUI::frames{
@@ -44,6 +44,8 @@ namespace RhodotronSimulatorGUI::frames{
         MainButtonsFrame* main_buttons_frame;
         ConfigurationFrame* config_frame;
         RenderFrame* render_frame;
+        renderer::Renderer renderer;
+        data::DataProvider dataProvider;
 
         TGFrame* active_frame;
 

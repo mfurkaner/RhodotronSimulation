@@ -5,16 +5,19 @@
 namespace RhodotronSimulatorGUI::frames{
 
 
-    RenderFrame::RenderFrame(const TGWindow* p, UInt_t w, UInt_t h) 
+    RenderFrame::RenderFrame(const TGWindow* p, UInt_t w, UInt_t h, renderer::Renderer* renderer_) 
         : TGVerticalFrame(p, w, h){
         parent = p;
+        renderer = renderer_;
 
         // Setup the progressbar
-        progressBar = new TGHProgressBar(this, 250, 50);
+        progressBar = new TGHProgressBar(this, TGProgressBar::EBarType::kFancy, 250);
+        progressBar->SetHeight(100);
         progressBar->SetMin(0);
         progressBar->SetMax(0b00011111);
         progressBar->ShowPosition();
-        progressBar->SetBarType(TGProgressBar::EBarType::kFancy);
+        progressBar->SetBarColor("lightblue");
+        //progressBar->SetBarType(TGProgressBar::EBarType::kFancy);
 
         //auto color = TColor::GetColor(232, 232, 233);
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
@@ -64,7 +67,7 @@ namespace RhodotronSimulatorGUI::frames{
         
     void RenderFrame::TimeChanged(){
         float time = active_time->GetNumber();
-        renderer.GoToTime(time);
+        renderer->GoToTime(time);
         if ( time_slider->GetPosition()/10.0 != time ){
             time_slider->SetPosition(time * 10);
         }
@@ -82,7 +85,6 @@ namespace RhodotronSimulatorGUI::frames{
         if ( endtime <= 0.1 )
             endtime = 0;
 
-        std::cout << "Setting time interval to " << starttime << " : " << endtime << std::endl; 
         time_slider->SetRange(starttime * 10, endtime * 10);
         active_time->SetLimitValues(starttime, endtime);
         active_time->SetNumber(starttime);
@@ -95,19 +97,18 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void RenderFrame::SavePressed(){
-        renderer.SaveGif();
+        renderer->SaveGif();
     }
 
     void RenderFrame::PlayPressed(){
-        renderer.RunRendered();
+        renderer->RunRendered();
     }
 
 
-    void RenderFrame::Render(){
+    void RenderFrame::SetupRenderer(){
         this->HideFrame(progressBar);
         progressBar->Activate(false);
-        renderer.fillLogs();
-        renderer.Render(canvas);
+        renderer->SetCanvasToRender(canvas);
     }
 
 

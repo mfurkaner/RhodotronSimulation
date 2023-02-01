@@ -77,6 +77,10 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         const float GetStartTime(){ return (_t0_entry ? _t0_entry->GetNumber() : 0);}
         const float GetEndTime(){ return (_tf_entry ? _tf_entry->GetNumber() : 0);}
+        const std::string GetEPath(){ return (_epath_entry ? _epath_entry->GetText(): "xy/rf.txt");}
+        const std::string GetBPath(){ return (_bpath_entry ? _bpath_entry->GetText(): "xy/magnet.txt");}
+        const std::string GetPPath(){ return (_ppath_entry ? _ppath_entry->GetText(): "xy/paths/");}
+        const std::string GetCPath(){ return (_cpath_entry ? _cpath_entry->GetText(): "xy/settings.txt");}
     };
 }
 

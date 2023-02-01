@@ -2,12 +2,15 @@
 #define GUI_RENDERER_H
 
 #include "../../SIM/basic/vector.h"
+#include "../data/gui_sim_dataprovider.h"
 #include "render_settings.h"
 #include <vector>
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
 #include "TEllipse.h"
 #include "TColor.h"
+#include "TPaveText.h"
+#include "TTimer.h"
 #include <iostream>
 
 namespace RhodotronSimulatorGUI::renderer{
@@ -43,19 +46,12 @@ namespace RhodotronSimulatorGUI::renderer{
     };
 
     class Renderer{
-        TRootEmbeddedCanvas *canvas;
-        std::vector<TEllipse*> _legend_electron_energy_samples;
-        uint32_t _enum;
-        uint32_t _bnum;
+
+        data::DataProvider* _dataProvider; 
+        TRootEmbeddedCanvas *canvas_to_render_in;
+
         float _ein = 0.04;
         float _targetEnergy = 1.5;
-        std::string _elog_path = "xy/paths/";
-        std::string _rflog_path = "xy/rf.txt";
-        std::string _mlog_path = "xy/magnet.txt";
-
-        std::vector<ElectronLog> _electrons_log;
-        RFLog _rf;
-        StaticMagneticFieldLog _magnets;
 
         std::vector<TEllipse*> electrons;
         std::vector<TArrow*> rfFieldArrows;
@@ -63,6 +59,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
         TPaveText* _time_legend;
         TPaveText* _legend;
+        std::vector<TEllipse*> _legend_electron_energy_samples;
 
         TEllipse* _cavity_r1;
         TEllipse* _cavity_r2;
@@ -72,10 +69,6 @@ namespace RhodotronSimulatorGUI::renderer{
 
         bool _save_gif = false;
         const char* _temp_gif_frames_path = "temp/gif_frames";
-
-        void _fillElectrons();
-        void _fillEField();
-        void _fillBField();
 
         void _renderElectrons();
         void _renderEField();
@@ -95,12 +88,11 @@ namespace RhodotronSimulatorGUI::renderer{
         Renderer(){timer = new TTimer(1);}
         ~Renderer(){timer->TurnOff(); delete timer;}
 
-        void SetEnum(int _enum_) {_enum = _enum_;}
-        void SetBnum(int _bnum_) {_bnum = _bnum_;}
+        void SetDataProvider(data::DataProvider* dp){_dataProvider = dp;}
         void SetTargetEnergy(float targetEn) { _targetEnergy = targetEn;}
+        void SetCanvasToRender(TRootEmbeddedCanvas* canvas){ canvas_to_render_in = canvas;}
 
-        void fillLogs();
-        void Render(TRootEmbeddedCanvas *canvas);
+        void Render();
 
         void GoToTime(float time);
         void DrawTimeStamp(float time);
@@ -113,9 +105,4 @@ namespace RhodotronSimulatorGUI::renderer{
     };
 
 }
-std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::ElectronSnapshot& e_snapshot); 
-std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::RFPoint& rf_point); 
-std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::renderer::RFSnapshot& rf_snapshot); 
-
-
 #endif

@@ -1,5 +1,9 @@
 #include "gui_sim_config_frame.h"
 
+#include "../gui_config_frame.h"
+
+#include <sstream>
+
 
 namespace RhodotronSimulatorGUI::frames::subframes{
 
@@ -153,13 +157,17 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 }
                 case thcount:{
                     snprintf(temp, 50, "%d",(int)_thnum_entry->GetNumber());
-                    // Disabled
+                    if (!_multh_enable_button->IsDown()){
+                        line = '#' + line;
+                    }
                     line = line + temp;
                     break;
                 }
                 case multh:{
                     snprintf(temp, 50, "%d",(int)_multh_enable_button->IsDown());
-                    // Disabled
+                    if (!_multh_enable_button->IsDown()){
+                        line = '#' + line;
+                    }
                     line = line + temp;
                     break;
                 }
@@ -237,10 +245,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 }
                 case thcount:{
                     _thnum_entry->SetNumber(atoi(value.c_str()));
+                    _multh_enable_button->SetDown(true);
                     break;
                 }
                 case multh:{
-                    // TODO : Add multh functionality here
+                    if (atoi(value.c_str())){
+                        _multh_enable_button->SetDown(true);
+                    }
                     break;
                 }
                 case epath:{

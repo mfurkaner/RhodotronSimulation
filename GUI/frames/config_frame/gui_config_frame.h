@@ -71,11 +71,16 @@ namespace RhodotronSimulatorGUI::frames{
         subframes::GunConfigurationFrame* gun_config_frame;
         subframes::SimConfigurationFrame* sim_config_frame;
 
-        static const std::string config_comment;
+        
 
         const TGWindow* parent;
     public:
+        
         static const std::vector<ConfigurationCell> configs;
+
+
+        static const std::string config_comment;
+        
         ConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
 
@@ -95,51 +100,15 @@ namespace RhodotronSimulatorGUI::frames{
         float GetR2(){return (E_config_frame ? E_config_frame->GetR2() : 0);}
 
         float GetTargetEnergy(){return (gun_config_frame ? gun_config_frame->GetTargetEn() : 0); }
+
+        const std::string GetPPath(){return (sim_config_frame ? sim_config_frame->GetPPath() : "xy/paths/");}
+        const std::string GetEPath(){return (sim_config_frame ? sim_config_frame->GetEPath() : "xy/rf.txt");}
+        const std::string GetBPath(){return (sim_config_frame ? sim_config_frame->GetBPath() : "xy/magnet.txt");}
+        const std::string GetCPath(){return (sim_config_frame ? sim_config_frame->GetCPath() : "xy/settings.txt");}
     };
 
-    const std::vector<ConfigurationCell> ConfigurationFrame::configs = 
-       {ConfigurationCell(E,"emax", emax),              ConfigurationCell(Gun, "ein", ein),
-        ConfigurationCell(Gun,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
-        ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Sim,"starttime", starttime),
-        ConfigurationCell(Sim,"endtime", endtime),     ConfigurationCell(Sim,"dt", dt), 
-        ConfigurationCell(Gun,"guntime", guntime),     ConfigurationCell(Gun,"gunperiod", gunperiod), 
-        ConfigurationCell(Gun,"enum", _enum),          ConfigurationCell(Gun,"bunchnum", bunchnum),
-        ConfigurationCell(E,"r1", _r1),                 ConfigurationCell(E,"r2", _r2), 
-        ConfigurationCell(Sim,"epath", epath),         ConfigurationCell(Sim,"bpath", bpath), 
-        ConfigurationCell(Sim,"cpath", cpath),         ConfigurationCell(Sim,"ppath", ppath), 
-        ConfigurationCell(Sim,"multh",multh),          ConfigurationCell(Sim,"thcount",thcount),      
-        ConfigurationCell(B,"magrotation", magrotation),ConfigurationCell(B,"addmagnet", addmagnet),    
-};
 
-
-    const std::string ConfigurationFrame::config_comment = 
-               {"#                  RhodoSim Configuration File\n"
-                "# ================================================================\n"
-                "#    M.Furkan Er                                     22/09/2022   \n"
-                "# ================================================================\n#\n"
-                "# emax = Maximum electric field strength (MV/m)\n"
-                "# ein = Energy of electrons coming out of the gun (MeV)\n" 
-                "# targeten = Max energy on the output gif (MeV)\n"
-                "# freq = Frequency of the RF field (MHz)\n"
-                "# phaselag = phase lag of the first electrons (degree)\n"
-                "# starttime = time to start firing the gun (ns)\n"
-                "# endtime = ns to run the simulation (ns)\n"
-                "# dt = time interval to do the calculations (ns)\n"
-                "# guntime = how long a gun pulse is (ns)\n"
-                "# gunperiod = time between two gun pulses (ns)\n"
-                "# enum = number of electrons to simulate in a bunch\n"
-                "# bunchnum = number of times the gun fires\n"
-                "# r1 = radius of the inner cylinder (m)\n"
-                "# r2 = radius of the outer cylinder (m)\n"
-                "# epath = path to store the electric field data\n"
-                "# bpath = path to store the magnetic field data\n"
-                "# cpath = path to store the settings\n"
-                "# ppath = path to store electron data\n"
-                "# multh = enable or disable multitheading\n"
-                "# thcount = set the maximum thread to be used\n"
-                "# magrotation = degrees of rotation to enter each magnet \n"
-                "# addmagnet = takes 3 input. (B , R, < Radial distance of center >)\n"
-                "# output = output file name \n\n"};
 }
+
 
 #endif

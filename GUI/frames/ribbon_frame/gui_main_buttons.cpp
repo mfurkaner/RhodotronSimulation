@@ -4,6 +4,12 @@
 
 namespace RhodotronSimulatorGUI::frames{
 
+
+    const std::vector<std::string> MainButtonsFrame::button_names = {"Save Config", "Load Config", "Configuration",  "Render", "Run", "Stop", "Quit"};
+
+    const std::vector<std::string> MainButtonsFrame::button_functions = {"SaveConfigPressed()", "LoadConfigPressed()", "ConfigurationPressed()", "RenderPressed()",
+                                                                         "RunPressed()", "StopPressed()", "QuitPressed()"};
+
     MainButtonsFrame::MainButtonsFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGHorizontalFrame(p, w, h){
         parent = p;
         // add the buttons

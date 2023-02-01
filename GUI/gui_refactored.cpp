@@ -11,20 +11,6 @@
 #include <bitset>
 #include <fstream>
 
-#include "TSystem.h"
-#include "TGFrame.h"
-#include "TGButton.h"
-#include "TGTextView.h"
-#include "TGLabel.h"
-#include "TGTextEntry.h"
-#include "TGLViewer.h"
-#include "TRootCanvas.h"
-#include "TCanvas.h"
-#include "TImage.h"
-#include "TASImage.h"
-#include "TH1D.h"
-#include "TFile.h"
-
 
 #include "comm/signal.h"
 #include "frames/gui_main_frame.h"
@@ -37,6 +23,8 @@
 #include "frames/config_frame/sim_config_frame/gui_sim_config_frame.cpp"
 #include "frames/render_frame/gui_render_frame.cpp"
 #include "comm/sim_server.cpp"
+#include "renderer/gui_renderer.cpp"
+#include "data/gui_sim_dataprovider.cpp"
 
 
 
@@ -53,6 +41,4 @@ int main(){
     //gSystem->DispatchOneEvent();
     gSystem->ProcessEvents();
     new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot(), MAIN_FRAME_W, MAIN_FRAME_W);
-    TH1D* h;
-    TFile* f;
 }

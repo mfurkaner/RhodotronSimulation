@@ -1,6 +1,9 @@
 #include "gui_gun_config_frame.h"
 
 
+#include "../gui_config_frame.h"
+#include <sstream>
+
 namespace RhodotronSimulatorGUI::frames::subframes{
 
     TGHorizontalFrame* GunConfigurationFrame::_init_Ein_icon_frame(){
@@ -226,7 +229,6 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 case targeten:{
-                    std::cout << "Setting target E to " << value << std::endl;
                     _targetE_entry->SetNumber(atof(value.c_str()));
                     break;
                 }

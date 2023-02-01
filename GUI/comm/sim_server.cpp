@@ -67,7 +67,7 @@ void* GUISimulationHandler::sim_server_work(void* worker_args){
             continue;
         }
         
-        std::bitset<8> a(recvd_signal & SIM_WORK_MASK);
+        std::bitset<8> a(recvd_signal /* & SIM_WORK_MASK */);
         std::cout << a << std::endl;
         args->progressbar->SetPosition(recvd_signal & SIM_WORK_MASK);
         if ( (recvd_signal & SIM_RUNNING) == 0){

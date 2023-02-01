@@ -1,11 +1,14 @@
-#include <iostream>
-#include <fstream>
-
-#include "../gnuplot/gnuplot.h" 
-
 
 #ifndef CONFIGURATION_H
 #define CONFIGURATION_H
+
+#include <iostream>
+#include <fstream>
+#include "../basic/vector.h"
+#include "../fields/fields.h"
+
+using namespace std;
+
 
 enum AvailableConfigIndex{
     emax, frequency, phaselag,

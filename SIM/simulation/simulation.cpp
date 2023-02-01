@@ -110,12 +110,19 @@ void RhodotronSimulator::updateSimulation(){
 
 void RhodotronSimulator::run(){ 
     // B field is static -> log before starting the simulation
+    state_mutex->lock();
+    state |= SIM_RUNNING;
+    state_mutex->unlock();
     logBfield();     
 
     if (MULTI_THREAD)
         _runMT();
     else
         _runST();
+
+    state_mutex->lock();
+    state &= ~SIM_RUNNING;
+    state_mutex->unlock();
 
 }
 

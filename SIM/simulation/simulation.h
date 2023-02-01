@@ -3,6 +3,8 @@
 #include "../config/configuration.h"
 #include "../gnuplot/gnuplot.h"
 #include "../mt/multithreadengine.h"
+#include "../uihandler/ui_handler.h"
+#include "../../GUI/comm/signal.h"
 
 #include <string>
 #include <memory>
@@ -40,13 +42,18 @@ protected:
     vector3d gunDirection = vector3d(1,0,0);
 
     shared_ptr<mutex> ui_mutex;
+    UIHandler ui_handler;
+
+    shared_ptr<mutex> state_mutex;
+    uint8_t state = 0x0;
+
     MultiThreadEngine MTEngine;
     unsigned int MAX_THREAD_COUNT = 1;
     bool MULTI_THREAD = false;
     bool DEBUG = false;
 
 public:
-    Simulator():ui_mutex(make_shared<mutex>()){}
+    Simulator():ui_mutex(make_shared<mutex>()), state_mutex(make_shared<mutex>()){}
     ~Simulator(){}
 
     void enableMultiThreading(unsigned int thread_count){
@@ -152,8 +159,25 @@ public:
         E_field = CoaxialRFField(phase_lag);
         getConfig(config);
         setGunDirection(vector3d(1,0,0));
+        UIThreadArgs uha;
+        uha.start_time = start_time;
+        uha.end_time = end_time;
+        uha.simulation_time = &dummy_time;
+        uha.ui_mutex = ui_mutex;
+        uha.state_ptr = &state;
+        uha.state_mutex = state_mutex;
+        ui_handler.SetUIThreadArgs(uha);
     }
 
+    void StartUIHandler(){
+        ui_handler.StartUIHandler();
+    }
+    void StopUIHandler(){
+        ui_handler.StopUIHandler();
+    }
+    void DeclareService(std::string pipe_name){
+        ui_handler.DeclareService(pipe_name);
+    }
 
     void setFreq(double frequency){ 
         freq = frequency;
@@ -187,4 +211,6 @@ public:
 
     void run();
     void notifyUI(double time);
+
+    void setState(uint8_t state_);
 };

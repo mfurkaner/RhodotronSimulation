@@ -21,9 +21,9 @@ struct simtime{
     double end_time;
     uint8_t* state_ptr;
     char* pipe_name;
+    shared_ptr<mutex> ui_mutex;
 };
 
-mutex mutex_lock;
 mutex state_lock;
 uint8_t state = 0x0;
 int _fd;
@@ -42,6 +42,8 @@ int main(int argc, char** argv) {
         notifierarg.pipe_name = argv[2];
         _fd = open(argv[2], O_WRONLY | O_CREAT | O_TRUNC, 0666);
         isService = true;
+    }else if(argc > 1 && strcmp(argv[1],"-r") == 0 ){
+        plotSet = true;
     }
     auto start = high_resolution_clock::now();
     
@@ -54,6 +56,7 @@ int main(int argc, char** argv) {
     notifierarg.start_time = config.getSTime();
     notifierarg.end_time = config.getETime();
     notifierarg.simulation_time = rhodotron.getTimePtr();
+    notifierarg.ui_mutex = rhodotron.getUIMutex();
     notifierarg.state_ptr = &state;
     pthread_create(&notifier, NULL, UIThreadWork, &notifierarg);
  
@@ -109,7 +112,7 @@ void* UIThreadWork(void* arg){
     }
 
 
-    auto start = high_resolution_clock::now();
+   //auto start = high_resolution_clock::now();
 
     simtime sim = *(simtime*)arg;
     double piece = (sim.end_time - sim.start_time)/UI_WORK_PIECE;
@@ -124,9 +127,9 @@ void* UIThreadWork(void* arg){
         cout << sim_running_msg <<"\n";
     }
 
-    mutex_lock.lock();
+    sim.ui_mutex->lock();
     double simtime = *(sim.simulation_time);
-    mutex_lock.unlock();
+    sim.ui_mutex->unlock();
 
     if ( !isService ) {
         cout << "V";
@@ -149,9 +152,9 @@ void* UIThreadWork(void* arg){
             state_lock.unlock();
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(25));
-        mutex_lock.lock();
+        sim.ui_mutex->lock();
         simtime = *(sim.simulation_time);
-        mutex_lock.unlock();
+        sim.ui_mutex->unlock();
 
     }
     if ( !isService ) {
@@ -185,9 +188,9 @@ void plot(Configuration& config){
     std::string plotCommand = "do for [i=1:" + to_string(config.getETime()*10 - 1) + "] ";
     plotCommand += "{plot \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 1:2:($3/15):($4/15) '%*lf,( %lf ; %lf ; %*lf ),( %lf ; %lf ; %*lf ),%lf' title \"RF Field\" with vectors lc 6 head filled,";
     plotCommand += (config.areThereMagnets() ) ? "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, " : "";                    // 4=sari
-    plotCommand +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 2:3:1 '%*lf,%lf,( %lf ; %lf ; %*lf ),( %*lf ; %*lf ; %*lf )' title \"bunch\" ls 7 ps 0.5 palette, ";
-    for( int j = 2 ; j <= config.getNumOfE()*config.getNumOfB() ; j++){
-        plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 2:3:1 '%*lf,%lf,( %lf ; %lf ; %*lf ),( %*lf ; %*lf ; %*lf )' notitle ls 7 ps 0.5 palette, ";
+    for( int j = 1 ; j <= config.getNumOfB() ; j++){
+        for ( int i = 1 ; i <= config.getNumOfE(); i++)
+        plotCommand +=  "\"xy/paths/b" + to_string(j) + "_e" + to_string(i) +".dat\" every ::i::i u 2:3:1 '%*lf,%lf,( %lf ; %lf ; %*lf ),( %*lf ; %*lf ; %*lf )' " + (j==1 && i == 1 ? "title \"bunch\"" : "notitle") + " ls 7 ps 0.5 palette, ";
     }
     plotCommand += "}";
     gp.setPlotCommand(plotCommand);

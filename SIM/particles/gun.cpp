@@ -79,11 +79,11 @@
         }
         if ( time > (ns_between_each_electron_fire * _fired_e_in_current_bunch) + _fired_bunch*gun_period){
             if (_firing == false ) _firing = true;
-            bunchs[_fired_bunch].AddElectron(Ein, gunpos, gundir);
+            bunchs[_fired_bunch].AddElectron(Ein, gunpos, gundir, 0);
             _fired_e_in_current_bunch++;
         }
     }
-
+/*
     void Gun::fireIfActiveMT(double time){
         // GUN finished firing
         if ( _fired_bunch == bunch_count )
@@ -109,15 +109,46 @@
 
             _fired_e_in_current_bunch++;
         }
-    }
+    }*/
+/*
+    void Gun::fireIfActiveMT(double time, int worker_index){
+        // GUN finished firing
+        if ( _fired_bunch == bunch_count )
+            return;
+        else if ( _fired_bunch > bunch_count ){
+            perror("Fired more than bunch_count");
+        }
+        else if ( _fired_e_in_current_bunch >= e_per_bunch ){
+            _fired_e_in_current_bunch = 0;
+            _firing = false;
+            _fired_bunch++;
+        }
+        if ( time > (ns_between_each_electron_fire * _fired_e_in_current_bunch) + _fired_bunch*gun_period){
+            if (_firing == false ) _firing = true;
 
-    void Gun::fireIfActiveMT_workerInterface(double time, int worker_index){
-        if ( worker_index == _next_up){
-            _gun_mutex.lock();
-            
-            // This method modifies the gun but only modifies the worker electron vector that called this function
-            fireIfActiveMT(time);
-            
-            _gun_mutex.unlock();
+            auto burrowed_e = bunchs[_fired_bunch].AddElectronGiveAddress(Ein, gunpos, gundir, time);
+
+            if ( _next_up < thread_bunchs.size() ){
+                // TODO : Check if thread_bunchs need mutex
+                thread_bunchs[worker_index]->push_back(burrowed_e);
+                _next_up = (_next_up + 1)%_child_thread_count;
+            }
+
+            _fired_e_in_current_bunch++;
+        }
+    }*/
+
+    void Gun::fireAllWithFireTimesMT(){
+        for(_fired_bunch= 0; _fired_bunch < bunch_count; _fired_bunch++){
+            for(_fired_e_in_current_bunch= 0; _fired_e_in_current_bunch < e_per_bunch; _fired_e_in_current_bunch++){
+
+                double fire_time = (ns_between_each_electron_fire * _fired_e_in_current_bunch) + _fired_bunch*gun_period;
+
+                auto burrowed_e = bunchs[_fired_bunch].AddElectronGiveAddress(Ein, gunpos, gundir, fire_time);
+
+                int thread_index = (_fired_e_in_current_bunch + _fired_bunch*e_per_bunch)%thread_bunchs.size();
+
+                thread_bunchs[thread_index]->push_back(burrowed_e);
+            }
         }
     }

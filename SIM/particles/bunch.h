@@ -56,14 +56,14 @@ public:
 
     Electron2D& getFastest();
 
-    void AddElectron(double Ein, const vector3d& gunpos, const vector3d& gundir){
-        e.push_back(make_shared<Electron2D>(Ein, gunpos, gundir));
+    void AddElectron(double Ein, const vector3d& gunpos, const vector3d& gundir, double fire_time){
+        e.push_back(make_shared<Electron2D>(Ein, gunpos, gundir, fire_time));
         e.back()->setLogSize(1000);
         e_count = e.size();
     }
 
-    shared_ptr<Electron2D> AddElectronGiveAddress(double Ein, const vector3d& gunpos, const vector3d& gundir){
-        AddElectron(Ein, gunpos, gundir);
+    shared_ptr<Electron2D> AddElectronGiveAddress(double Ein, const vector3d& gunpos, const vector3d& gundir, double fire_time){
+        AddElectron(Ein, gunpos, gundir, fire_time);
         return e.back();
     }
 

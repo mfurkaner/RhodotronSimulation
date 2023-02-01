@@ -118,21 +118,24 @@ int CoaxialRFField::log( DataStorage& rf , double time, bool end){
         for (double j = -r2; j <= r2 ; j += 0.05){
             vector3d pos(i,j,0);
             vector3d Efield = getField(pos);
-            if ( pos.magnitude() > r1 ){
-                rf << time << "," << pos << "," << Efield << "," << Efield.magnitude();
+            if ( pos.magnitude() > r1 && Efield.magnitude() > 0){
+                char temp[10];
+                snprintf(temp, 10, "\n%.1lf", time);
+                rf << temp << "," << pos << "," << Efield << "," << Efield.magnitude();
+                /*
                 if (end){
-                    rf << ( (j+0.05 > r2) && (i+0.05 > r2)  ? "" : "\n" );
+                    rf << ( (j+0.05 > r2) && (i+0.05 > r2)  ? "" :  );
                 }
                 else{
                     rf << '\n';
-                }
+                }*/
                 count ++;
             }
         }
     }
     return count;
 }
-/*
+
 shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
     auto _copy = std::make_shared<CoaxialRFField>();
     _copy->E = E;
@@ -143,7 +146,7 @@ shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
     _copy->frequency = frequency;
     _copy->phase_lag = phase_lag;
     return _copy;
-}*/
+}
 
 
 void CoaxialRFField::split(uint32_t amount_of_child){

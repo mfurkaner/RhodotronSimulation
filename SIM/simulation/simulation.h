@@ -39,13 +39,14 @@ protected:
     vector3d gunPosition;
     vector3d gunDirection = vector3d(1,0,0);
 
+    shared_ptr<mutex> ui_mutex;
     MultiThreadEngine MTEngine;
     unsigned int MAX_THREAD_COUNT = 1;
     bool MULTI_THREAD = false;
     bool DEBUG = false;
 
 public:
-    Simulator(){}
+    Simulator():ui_mutex(make_shared<mutex>()){}
     ~Simulator(){}
 
     void enableMultiThreading(unsigned int thread_count){
@@ -124,6 +125,7 @@ public:
     virtual void logBfield() = 0;
     void logPaths();
     double* getTimePtr(){return &dummy_time;}
+    shared_ptr<mutex> getUIMutex() {return ui_mutex;}
 };
 
 
@@ -134,7 +136,8 @@ private:
     CoaxialRFField E_field;
     MagneticField B_field;
 
-    void runMT();
+    void _runMT();
+    void _runST();
 public:
     RhodotronSimulator(double phase_lag) : Simulator(){
         this->phase_lag = phase_lag;
@@ -183,4 +186,5 @@ public:
     }
 
     void run();
+    void notifyUI(double time);
 };

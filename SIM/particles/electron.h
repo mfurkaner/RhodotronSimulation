@@ -32,15 +32,14 @@ public:
     double Et = E0;
     vector3d pos;
     vector3d vel;
-    //vector< double > enerjiler;
-    //vector< giris_cikis_tpair > t_giris_cikis;
-    //bool isinside = true;
+    double fire_time;
     Electron2D(){}
-    Electron2D(double Ein, vector3d position, vector3d direction){
+    Electron2D(double Ein, vector3d position, vector3d direction, double _fire_time = 0){
         Et = E0 + Ein;
         //t_giris_cikis.push_back(giris_cikis_tpair(0,0));
         pos = position;
         vel = direction*get_vel();
+        fire_time = _fire_time;
     }
     
     double get_vel();
@@ -58,11 +57,6 @@ public:
 
     vector3d interactE_RK(const RFField& E, double time_interval);
     vector3d interactB_RK(const MagneticField& B, double time_interval);
-
-    void interactRK_ActorE(const RFField& E, const MagneticField& B, double time_interval, shared_ptr<mutex>& E_mutex, shared_ptr<mutex>& B_mutex);
-
-    vector3d interactE_RK(const RFField& E, double time_interval, shared_ptr<mutex>& E_mutex);
-    vector3d interactB_RK(const MagneticField& B, double time_interval, shared_ptr<mutex>& B_mutex);
 
     void saveInfo(double t){
         ElectronLog info;

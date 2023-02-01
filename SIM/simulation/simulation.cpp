@@ -108,23 +108,48 @@ void RhodotronSimulator::updateSimulation(){
     setNumberofElectrons(NUM_OF_ELECTRONS);
 }
 
-extern mutex mutex_lock;
-
-void RhodotronSimulator::run(){  // TODO : implement Multithreading
-    // Before starting, log the magnetic field to the mag file
+void RhodotronSimulator::run(){ 
+    // B field is static -> log before starting the simulation
     logBfield();     
-    if (MULTI_THREAD){
-        E_field.split(MAX_THREAD_COUNT);
-        B_field.split(MAX_THREAD_COUNT);
-        MTEngine.setupPool(gun.thread_bunchs, E_field, B_field, time_interval); 
-    }
 
-    while ( simulation_time < end_time + time_interval ){
-        //auto wait_start = std::chrono::high_resolution_clock::now();
-        if (MULTI_THREAD){
-            MTEngine.waitPool();
+    if (MULTI_THREAD)
+        _runMT();
+    else
+        _runST();
+
+}
+
+void RhodotronSimulator::_runMT(){
+
+    gun.fireAllWithFireTimesMT();
+
+    MTEngine.setupPool(time_interval, start_time, end_time, gun, E_field, B_field, gun.thread_bunchs);
+
+    STEPS_TAKEN = 0;
+    while (simulation_time < end_time + time_interval ){
+        if (STEPS_TAKEN % log_interval() == 0){
+            E_field.update(simulation_time);
+            logEfield(simulation_time, simulation_time + time_interval > end_time);
+            notifyUI(MTEngine.getAverageTime());
         }
-        //auto wait_end = std::chrono::high_resolution_clock::now();
+        simulation_time+=time_interval;
+        STEPS_TAKEN++;
+    }
+    bool end = false;
+    while (!end){
+        double time = MTEngine.getAverageTime();
+        notifyUI(time);
+        if ( time >= end_time ){
+            end = true;
+        }
+        this_thread::yield();
+    }
+    MTEngine.join();
+    
+}
+
+void RhodotronSimulator::_runST(){
+    while ( simulation_time < end_time + time_interval ){   
         E_field.update(simulation_time);
         
         if ( STEPS_TAKEN%log_interval() == 0 ){
@@ -134,37 +159,17 @@ void RhodotronSimulator::run(){  // TODO : implement Multithreading
         }
         // Do the actual work
         // This part is accounts for ~97% of the execution time
-        //auto fire_run_start = std::chrono::high_resolution_clock::now();
-        if( MULTI_THREAD ){
-            gun.fireIfActiveMT(simulation_time);
-            //MTEngine.doWork(gun.thread_bunchs, E_field, B_field, simulation_time, time_interval);
-            //MTEngine.join();
-            MTEngine.runPool(simulation_time);
-        }
-        else{
-            gun.fireIfActive(simulation_time);
-            gun.interact(E_field, B_field, time_interval);
-        }
+        gun.fireIfActive(simulation_time);
+        gun.interact(E_field, B_field, time_interval);
         // Work is finished, update UI handlers watchpoint
         simulation_time += time_interval;
-        mutex_lock.lock();
-        dummy_time = simulation_time;
-        mutex_lock.unlock();
+        notifyUI(simulation_time);
         STEPS_TAKEN++;
-        //auto end = std::chrono::high_resolution_clock::now();
-
-        //auto wait = chrono::duration_cast<chrono::nanoseconds>(wait_end - wait_start);
-        //auto fire_run = chrono::duration_cast<chrono::nanoseconds>(end - fire_run_start);
-        //auto all = std::chrono::duration_cast<chrono::nanoseconds>(end- wait_start);
-
-        //std::cout << "all : "<< all.count() <<" , wait : " << ((double)wait.count())/all.count() << " , fire_run : " << ((double)fire_run.count())/all.count() << std::endl;
-    }
-    if (MULTI_THREAD){
-        MTEngine.joinPool();
     }
 }
 
-void RhodotronSimulator::runMT(){
-
-    
-}
+ void RhodotronSimulator::notifyUI(double time){
+    ui_mutex->lock();
+    dummy_time = time;
+    ui_mutex->unlock();
+ }

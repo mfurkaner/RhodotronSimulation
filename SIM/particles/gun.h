@@ -32,14 +32,12 @@ class Gun{
 
     bool _mt_enabled = false;
     uint32_t _child_thread_count = 0;
-    uint32_t _next_up = 0;
-    mutex _gun_mutex; 
 
     void setNSLen(double len){ for (int i = 0; i < bunchs.size() ; i++){  bunchs[i].setNSLen(len); }}
 public:
     vector<Bunch2D> bunchs;
 
-    //mutex mutex_thread_bunchs;
+    mutex _gun_mutex; 
     vector<shared_ptr<vector<shared_ptr<Electron2D>>>> thread_bunchs;
 
     Gun();
@@ -47,8 +45,7 @@ public:
     void interact(RFField& E, MagneticField& B, double time_interval);
 
     void fireIfActive(double time);
-    void fireIfActiveMT(double time);
-    void fireIfActiveMT_workerInterface(double time, int worker_index);
+    void fireAllWithFireTimesMT();
     
     void addBunch(unsigned int num_of_electrons, double Ein);
 
@@ -62,7 +59,6 @@ public:
     void enableMT(uint32_t thread_count);
     
     void saveInfo(double time);
-
     void logPaths(vector<vector<DataStorage> >& pathsStorage, std::string pathsPath, std::string header);
 
 };

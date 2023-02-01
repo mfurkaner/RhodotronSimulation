@@ -18,6 +18,7 @@ protected:
 public:
     RFField() { update(0);};
     RFField(double phase_lag) : phase_lag(phase_lag) { update(0); }
+    virtual ~RFField() {}
 
     virtual vector3d getField(vector3d position) const {return vector3d(0,0,0);}              // FIX
     virtual double getField(double R)const{ return 0;}                         // FIX
@@ -43,7 +44,7 @@ private:
 public:
     CoaxialRFField() { update(0); /*_childs.reserve(0);*/}
     CoaxialRFField(double phase_lag){ this->phase_lag = phase_lag; update(0); }
-    ~CoaxialRFField();
+    ~CoaxialRFField() override;
     void setR1(double r1) {this->r1 = r1;}
     void setR2(double r2) {this->r2 = r2;}
     void setEmaxPos(double Emaxpos) {E_max_pos = Emaxpos;}     // m
@@ -56,7 +57,7 @@ public:
 
     int log(DataStorage& rf, double time, bool end = false) override;
 
-    //std::shared_ptr<CoaxialRFField> Copy();
+    std::shared_ptr<CoaxialRFField> Copy();
     void split(uint32_t amount_of_child);
     CoaxialRFField* child(uint32_t index);
 };

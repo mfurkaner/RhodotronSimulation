@@ -22,8 +22,13 @@ namespace RhodotronSimulatorGUI::Analysis{
     class Analyzer{
         data::DataProvider* _dataProvider;
         TRootEmbeddedCanvas* _canvas;
+
         TH1I* hist;
+        TPaveText* _time_legend;
+
         TGraph* graph;
+        void _renderLegend();
+        void _updateLegend(float time);
 
     public:
 
@@ -42,6 +47,28 @@ namespace RhodotronSimulatorGUI::Analysis{
     Analyzer::Analyzer(){
         hist = new TH1I("Electron Energies", "Electron Energy Distribution", 100, 0, 3);
         graph = new TGraph(1);
+    }
+
+    void Analyzer::_renderLegend(){
+        double x1, y1, x2, y2;
+        _canvas->GetCanvas()->GetRange(x1, y1, x2, y2);
+        double timeX1 = x1 + (x2 - x1)*0.05;
+        double timeX2 = x1 + (x2 - x1)*0.23;
+        double timeY1 = y1 + (y2 - y1)*0.05;
+        double timeY2 = y1 + (y2 - y1)*0.1;
+        _time_legend = new TPaveText(timeX1,timeY1, timeX2, timeY2);
+        char temp[50];
+        snprintf(temp, 50, "t = %.1fns", 0.0);
+        _time_legend->AddText(temp);
+        _time_legend->Draw();
+    }
+
+    void Analyzer::_updateLegend(float time){
+        char temp[50];
+        snprintf(temp, 50, "t = %.1fns", time);
+        _time_legend->Clear();
+        _time_legend->AddText(temp);
+        _time_legend->Draw();  
     }
         
 
@@ -83,9 +110,21 @@ namespace RhodotronSimulatorGUI::Analysis{
         _canvas->GetCanvas()->cd();
 
         hist->GetXaxis()->SetRange(minbin/2, maxbin + 1);
+        char t[10];
+        snprintf(t, 10, "%.1fns", time);
+        std::string title = "Electron Energy Distribution at t = ";
+        title += t;
+        hist->SetTitle(title.c_str());
+        hist->GetXaxis()->SetTitle("E(MeV)");
+        hist->GetXaxis()->CenterTitle();
+        hist->GetYaxis()->SetTitle("Count");
+        hist->GetYaxis()->CenterTitle();
         hist->SetEntries(count);
         hist->SetFillColor(TColor::GetColor(132, 193, 163));
         hist->Draw("BAR2");
+
+        //_renderLegend();
+        //_updateLegend(time);
 
         _canvas->GetCanvas()->Modified();
         _canvas->GetCanvas()->Update();

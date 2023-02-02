@@ -32,6 +32,7 @@
 
 #include "../gui_frames_common.h"
 #include "../../renderer/gui_renderer.h"
+#include "../../analyzer/definitions.h"
 
 
 
@@ -65,6 +66,7 @@ namespace RhodotronSimulatorGUI::frames{
         
         void SavePressed();
         void PlayPressed();
+
     };
 
 }

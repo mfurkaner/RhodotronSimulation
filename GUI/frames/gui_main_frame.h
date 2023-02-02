@@ -34,43 +34,55 @@
 #include "ribbon_frame/gui_main_buttons.h"
 #include "config_frame/gui_config_frame.h"
 #include "render_frame/gui_render_frame.h"
+#include "run_frame/gui_run_frame.h"
+#include "analysis_frame/gui_analysis_frame.h"
 #include "../data/gui_sim_dataprovider.h"
+#include "../analyzer/definitions.h"
 
 
 namespace RhodotronSimulatorGUI::frames{
 
     class MainFrame : public TGMainFrame {
         GUISimulationHandler sim_handler;
-        MainButtonsFrame* main_buttons_frame;
-        ConfigurationFrame* config_frame;
-        RenderFrame* render_frame;
         renderer::Renderer renderer;
         data::DataProvider dataProvider;
+        Analysis::Analyzer analyzer;
+
+
+        MainButtonsFrame* main_buttons_frame;
+
+        ConfigurationFrame* config_frame;
+        RunFrame* run_frame;
+        RenderFrame* render_frame;
+        AnalysisFrame* analysis_frame;
 
         TGFrame* active_frame;
-
 
 
         std::string _config_file_path = "config.ini";
         std::string _old_config_file_path = "gui_config_backup.ini";
 
+        UInt_t w = MAIN_FRAME_W;
+        UInt_t h = MAIN_FRAME_H;
+
 
     public:
-        MainFrame(const TGWindow*p, UInt_t w, UInt_t h);
+        MainFrame(const TGWindow*p);
         ~MainFrame();
-
-        void SaveConfigPressed();
-        void LoadConfigPressed();
+        
+        void ClearData();
+        
         void ConfigurationPressed();
         void RenderPressed();
-        void RunPressed();
-        void StopPressed();
+        void AnalyzePressed();
+        void SimulatePressed();
         void QuitPressed();
 
-        void SimulationFinished();
-
-
-        void NavigateTo(TGFrame* childFrame, std::string hideButton = "");
+        void NavigateTo(TGFrame* childFrame);
+        void NavigateToConfigFrame();
+        void NavigateToRenderFrame();
+        void NavigateToAnalysisFrame();
+        void NavigateToSimalateFrame();
 
     };
 

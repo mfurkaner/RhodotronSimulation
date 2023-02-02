@@ -75,8 +75,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         _frame_title = new TGLabel(this, B_configuration_title.c_str());
         _frame_title->SetTextFont(FONT_BOLD_14);
 
+
+        auto pic = (TGPicture*)gClient->GetPicture(B_configuration_magnet_desc_pic_path.c_str(), B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_X, B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_Y);
+        _magnet_description_canvas = new TGIcon(this, pic, B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_X, B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_Y);
+
+
         _magnets_listbox = new TGListBox(this, -1);
-        _magnets_listbox->Resize(275, 250);
+        _magnets_listbox->Resize(B_CONFIGURATION_MAGNETS_LISTBOX_SIZE_X, B_CONFIGURATION_MAGNETS_LISTBOX_SIZE_Y);
         _magnets_listbox->GetContainer()->Connect("DoubleClicked(TGFrame*, Int_t)", 
         "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
         this, "MagnetDoubleClicked(TGFrame*, Int_t)");
@@ -90,7 +95,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto mag_line_frames_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 15, 15);
         auto mag_last_line_frame_layout = new TGLayoutHints(kLHintsCenterX, 10, 10, 15, 5);
         auto title_layout = new TGLayoutHints(kLHintsCenterX | kLHintsTop, 5, 5, 5, 20);
+
         this->AddFrame(_frame_title, title_layout);
+        this->AddFrame(_magnet_description_canvas, center_x_layout);
         this->AddFrame(_magnets_listbox, center_x_layout);
         this->AddFrame(magnet_edit_frame, mag_line_frames_layout);
         this->AddFrame(magnet_edit_buttons_frame, mag_line_frames_layout);

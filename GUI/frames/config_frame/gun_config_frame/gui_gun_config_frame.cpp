@@ -112,7 +112,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto gun_times_frame = _init_gun_times_frame();
         auto particle_samples_frame = _init_particle_samples_frame();
 
-        auto title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 10);
+        auto title_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 0, 0);
         this->AddFrame(_frame_title, title_layout);
 
         auto Ein_icon_layout = new TGLayoutHints(kLHintsCenterX, 5, 5, 10, 0);

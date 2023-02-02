@@ -14,8 +14,7 @@
 #include "TGLViewer.h"
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
-#include "TImage.h"
-#include "TASImage.h"
+#include "TGIcon.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -76,6 +75,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGLabel* _R_entry_label;
         TGLabel* _r_entry_label;
         TGLabel* _mag_rotation_entry_label;
+
+        TGIcon* _magnet_description_canvas;
 
         TGHorizontalFrame* _init_magnet_edit_frame();
         TGHorizontalFrame* _init_magnet_edit_buttons_frame();

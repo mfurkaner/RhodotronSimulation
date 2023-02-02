@@ -22,9 +22,12 @@
 #include "frames/config_frame/gun_config_frame/gui_gun_config_frame.cpp"
 #include "frames/config_frame/sim_config_frame/gui_sim_config_frame.cpp"
 #include "frames/render_frame/gui_render_frame.cpp"
+#include "frames/analysis_frame/gui_analysis_frame.cpp"
+#include "frames/run_frame/gui_run_frame.cpp"
 #include "comm/sim_server.cpp"
 #include "renderer/gui_renderer.cpp"
 #include "data/gui_sim_dataprovider.cpp"
+
 
 
 
@@ -33,12 +36,12 @@ void gui_refactored(){
     gSystem->cd("..");
     //gSystem->DispatchOneEvent();
     gSystem->ProcessEvents();
-    new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot(), MAIN_FRAME_W, MAIN_FRAME_W);
+    new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot());
 }
 
 int main(){
     gSystem->cd("..");
     //gSystem->DispatchOneEvent();
     gSystem->ProcessEvents();
-    new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot(), MAIN_FRAME_W, MAIN_FRAME_W);
+    new RhodotronSimulatorGUI::frames::MainFrame( gClient->GetRoot());
 }

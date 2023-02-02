@@ -109,6 +109,8 @@ namespace RhodotronSimulatorGUI::data{
                 ElectronLog e;
                 std::ifstream stream;
                 std::string filename = _elog_path + "b" + std::to_string(i + 1) + "_e" + std::to_string(j + 1) + ".dat";
+                e.b_index = i + 1;
+                e.e_index = j + 1;
 
                 stream.open(filename, std::ios::in);
                 if(stream.fail()) { continue; }
@@ -186,6 +188,13 @@ namespace RhodotronSimulatorGUI::data{
             count++;
         }
         stream.close(); 
+    }
+
+    void DataProvider::clearLogs(){
+        _electrons_log.clear();
+        _rf.time_slices.clear();
+        _magnets.non_zero_positions.clear();
+        _data_filled = false;
     }
 
 

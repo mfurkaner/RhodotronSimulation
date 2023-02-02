@@ -30,24 +30,31 @@
 namespace RhodotronSimulatorGUI::frames{
 
 
-    #define MAIN_FRAME_W 800
-    #define MAIN_FRAME_H 800
+    #define MAIN_FRAME_W 900
+    #define MAIN_FRAME_H 900
 
-    #define MAIN_BUTTON_FRAME_W 500
-    #define MAIN_BUTTON_FRAME_H 500
+    #define MAIN_BUTTON_FRAME_W 800
+    #define MAIN_BUTTON_FRAME_H 75
 
-    #define CONFIG_FRAME_W 500
-    #define CONFIG_FRAME_H 500
+    #define CONFIG_FRAME_W MAIN_FRAME_W
+    #define CONFIG_FRAME_H MAIN_FRAME_H - MAIN_BUTTON_FRAME_H
     #define CONFIG_FRAME_LINE_W 150
     #define CONFIG_FRAME_LINE_H 50
     #define CONFIG_FRAME_B_FRAME_W 250
     #define CONFIG_FRAME_B_FRAME_H 250
 
-    #define RENDER_FRAME_W 500
-    #define RENDER_FRAME_H 500
+    #define RENDER_FRAME_W 600
+    #define RENDER_FRAME_H 650
+
+    #define ANALYSIS_FRAME_W 600
+    #define ANALYSIS_FRAME_H 700
+
+    #define SIM_FRAME_W 600
+    #define SIM_FRAME_H 650
 
     static const Int_t common_padding = 5;
 
+    static TGLayoutHints* center_layout = new TGLayoutHints(kLHintsCenterX | kLHintsCenterY, common_padding, common_padding, common_padding, common_padding); 
     static TGLayoutHints* center_x_layout = new TGLayoutHints(kLHintsCenterX, common_padding, common_padding, common_padding, common_padding); 
     static TGLayoutHints* center_y_layout = new TGLayoutHints(kLHintsCenterY, common_padding, common_padding, common_padding, common_padding); 
     static TGLayoutHints* left_layout = new TGLayoutHints(kLHintsLeft, common_padding, common_padding, common_padding, common_padding); 
@@ -60,10 +67,23 @@ namespace RhodotronSimulatorGUI::frames{
     #define FONT_BOLD_14 "-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1"
     #define FONT_BOLD_12 "-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1"
 
-    #define FONT_MEDIUM_14 "-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1"
-    #define FONT_MEDIUM_12 "-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1"
+    #define FONT_MEDIUM_14 "-adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-iso8859-1"
+    #define FONT_MEDIUM_12 "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"
 
 
+    static const std::string Run_frame_title = " ~ Simulation ~";
+    static const std::string Run_frame_status_title_not_running = "Simulation not running";
+    static const std::string Run_frame_status_title_starting = "Starting simulation";
+    static const std::string Run_frame_status_title_logging = "Logging the simulation results";
+    static const std::string Run_frame_status_title_running = "Simulation is running";
+    static const std::string Run_frame_status_title_finished = "Simulation is finished";
+
+    /// @brief ANALYSIS FRAME RESOURCES
+    static const std::string Analysis_select_time_label_text = "Select time (ns)";
+    static const std::string Analysis_tvsE_e_index_label_text = "e index";
+    static const std::string Analysis_tvsE_b_index_label_text = "bunch index";
+    static const std::string Analysis_type_energy_distribution_description_text = "Energy Distribution";
+    static const std::string Analysis_type_sing_e_TvsE_description_text = "E(t) graph of each electron";
 
     /// @brief B CONFIGURATION FRAME RESOURCES
     static const std::string B_configuration_title = "- B Field Configuration -";
@@ -71,6 +91,11 @@ namespace RhodotronSimulatorGUI::frames{
     static const std::string B_configuration_R_entry_label_text = "R (m)";
     static const std::string B_configuration_r_entry_label_text = "r (m)";
     static const std::string B_configuration_mag_rot_entry_label_text = "Rotation of each magnet (degree)";
+    static const std::string B_configuration_magnet_desc_pic_path = "resources/magnet_desc.png";
+    #define B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_X 275
+    #define B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_Y 150
+    #define B_CONFIGURATION_MAGNETS_LISTBOX_SIZE_X 275
+    #define B_CONFIGURATION_MAGNETS_LISTBOX_SIZE_Y 100
 
     /// @brief E CONFIGURATION FRAME RESOURCES
     static const std::string E_configuration_title = "- E Field Configuration -";
@@ -133,9 +158,9 @@ namespace RhodotronSimulatorGUI::frames{
 
     #define DEFAULT_SIM_T0 0
     #define DEFAULT_SIM_TF 50
-    #define DEFAULT_SIM_DT 0.0001
-    #define DEFAULT_SIM_THNUM 1
-    #define DEFAULT_SIM_MULTH_STATE kButtonEngaged
+    #define DEFAULT_SIM_DT 1.0E-5
+    #define DEFAULT_SIM_THNUM 10
+    #define DEFAULT_SIM_MULTH_STATE true
     #define DEFAULT_SIM_EPATH "xy/rf.txt"
     #define DEFAULT_SIM_BPATH "xy/magnet.txt"
     #define DEFAULT_SIM_PPATH "xy/paths/"

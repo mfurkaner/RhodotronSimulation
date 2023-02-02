@@ -82,7 +82,7 @@ const std::string ConfigurationFrame::config_comment =
         gun_sim_frame->AddFrame(gun_config_frame, gun_frame_layout);
 
         // Add Sim configuration frame
-        sim_config_frame = new subframes::SimConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
+        sim_config_frame = new subframes::SimConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H, this);
         gun_sim_frame->AddFrame(sim_config_frame, top_layout);
 
         this->AddFrame(gun_sim_frame, center_x_layout);
@@ -163,6 +163,33 @@ const std::string ConfigurationFrame::config_comment =
         if ( Sim_config.empty() == false ){
             sim_config_frame->SetSimConfiguration(Sim_config);
         }
+    }
+
+    void ConfigurationFrame::SaveConfigPressed(){
+        std::string config = GetConfigAsString();
+        std::ofstream config_stream, backup_stream;
+        std::ifstream old_config_stream;
+
+        old_config_stream.open(_config_file_path, std::ios::in);
+        std::string old_config, line;
+
+        while(!old_config_stream.eof()){
+            std::getline(old_config_stream, line);
+            old_config += line + '\n';
+        }
+        old_config_stream.close();
+
+        backup_stream.open(_old_config_file_path, std::ios::out);
+        backup_stream << old_config;
+        backup_stream.close();
+
+        config_stream.open(_config_file_path, std::ios::out);
+        config_stream << config;
+        config_stream.close();
+    }
+
+    void ConfigurationFrame::LoadConfigPressed(){
+        LoadConfigFromFile(_config_file_path);
     }
 
 }

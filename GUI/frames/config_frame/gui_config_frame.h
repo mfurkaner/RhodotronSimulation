@@ -32,6 +32,7 @@
 #include <fstream>
 
 #include "../gui_frames_common.h"
+#include "../gui_main_frame.h"
 #include "B_config_frame/gui_B_config_frame.h"
 #include "E_config_frame/gui_E_config_frame.h"
 #include "gun_config_frame/gui_gun_config_frame.h"
@@ -71,7 +72,8 @@ namespace RhodotronSimulatorGUI::frames{
         subframes::GunConfigurationFrame* gun_config_frame;
         subframes::SimConfigurationFrame* sim_config_frame;
 
-        
+        std::string _config_file_path = "config.ini";
+        std::string _old_config_file_path = "gui_config_backup.ini";
 
         const TGWindow* parent;
     public:
@@ -85,7 +87,6 @@ namespace RhodotronSimulatorGUI::frames{
 
 
         std::string GetConfigAsString();
-
         void LoadConfigFromFile(const std::string& configFilePath);
 
         std::vector<TGFrame*>& GetInputs();
@@ -105,6 +106,10 @@ namespace RhodotronSimulatorGUI::frames{
         const std::string GetEPath(){return (sim_config_frame ? sim_config_frame->GetEPath() : "xy/rf.txt");}
         const std::string GetBPath(){return (sim_config_frame ? sim_config_frame->GetBPath() : "xy/magnet.txt");}
         const std::string GetCPath(){return (sim_config_frame ? sim_config_frame->GetCPath() : "xy/settings.txt");}
+
+
+        void SaveConfigPressed();
+        void LoadConfigPressed();
     };
 
 

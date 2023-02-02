@@ -4,6 +4,7 @@
 #include <sys/types.h>
 
 #include "TSystem.h"
+#include "../frames/gui_frames_common.h"
 
 
 const std::string GUISimulationHandler::sim_server_pipe_name = "gui_pipe";
@@ -13,6 +14,9 @@ const std::vector<std::string> GUISimulationHandler::sim_args = { sim_exe, "-fd"
 
 
 void GUISimulationHandler::spawn_simulation(){
+    if( isRunning )return;
+    _status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_starting.c_str());
+    isRunning = true;
     extern char** environ;
 
     char* args[] = {(char*)sim_args[0].c_str(), (char*)sim_args[1].c_str(), (char*)sim_args[2].c_str(), nullptr};
@@ -68,14 +72,15 @@ void* GUISimulationHandler::sim_server_work(void* worker_args){
         }
         
         std::bitset<8> a(recvd_signal /* & SIM_WORK_MASK */);
-        std::cout << a << std::endl;
+        args->status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_running.c_str());
         args->progressbar->SetPosition(recvd_signal & SIM_WORK_MASK);
         if ( (recvd_signal & SIM_RUNNING) == 0){
             isRunning = false;
+            args->owner->isRunning = false;
             break;
         }
     }
-    std::cout << "Simulation is finished" << std::endl;
+    args->status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_finished.c_str());
     isRunning = false;
 
     close_pipe(_fd, args->pipe_name.c_str());
@@ -88,6 +93,8 @@ void GUISimulationHandler::spawn_server(){
     SimulationServerWorkerArgs* server_args = new SimulationServerWorkerArgs();
     server_args->pipe_name = sim_server_pipe_name;
     server_args->progressbar = _progressbar;
+    server_args->status = _status;
+    server_args->owner = this;
     pthread_create(&worker, NULL, GUISimulationHandler::sim_server_work, (void*)server_args);
 }
 
@@ -102,6 +109,10 @@ void GUISimulationHandler::kill_server(){
 
 void GUISimulationHandler::set_progress_bar(TGProgressBar* progressbar){
     _progressbar = progressbar;
+}
+
+void GUISimulationHandler::set_status_label(TGLabel* status){
+    _status = status;
 }
 
 

@@ -19,6 +19,8 @@ namespace RhodotronSimulatorGUI::data{
     /// @brief Description of single electron over some time
     struct ElectronLog{
         std::vector<ElectronSnapshot> time_slices;
+        int e_index;
+        int b_index;
     };
 
     /// @brief Description of the E vector at the point RFPoint.position, with constant time

@@ -33,7 +33,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         // Setup Sim time step size entry frame
         _dt_entry_label = new TGLabel(dt_entry_frame, sim_configuration_dt_entry_label_text.c_str());
         _dt_entry = new TGNumberEntry(dt_entry_frame, DEFAULT_SIM_DT, 7, -1, TGNumberFormat::kNESReal,
-                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0, 0.1);
+                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 1.0E-9, 0.1);
+        
 
         dt_entry_frame->AddFrame(_dt_entry_label, center_x_layout);
         dt_entry_frame->AddFrame(_dt_entry, center_x_layout);
@@ -62,7 +63,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         // Setup Sim multithreading control checkbox
         _multh_enable_button = new TGCheckButton(mt_control_frame, sim_configuration_multh_label_text.c_str());
-        //_multh_enable_button->SetState(DEFAULT_SIM_MULTH_STATE);
+        _multh_enable_button->SetDown(DEFAULT_SIM_MULTH_STATE);
 
         // Setup Sim multithreading control frame
         mt_control_frame->AddFrame(thnum_entry_frame, center_x_layout);
@@ -108,8 +109,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         return log_path_entry_frame;
     }
 
-    SimConfigurationFrame::SimConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
-        parent = p;
+    SimConfigurationFrame::SimConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h, const TGWindow* realParent) : TGVerticalFrame(p, w, h){
+        parent = realParent;
 
         _frame_title = new TGLabel(this, sim_configuration_title.c_str());
         _frame_title->SetTextFont(FONT_BOLD_14);
@@ -123,7 +124,24 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         this->AddFrame(time_entry_frame, center_x_layout);
         this->AddFrame(mt_control_frame, center_x_layout);
-        this->AddFrame(log_path_entry_frame, center_x_layout);
+        //this->AddFrame(log_path_entry_frame, center_x_layout);
+        //this->HideFrame(log_path_entry_frame);
+        //this->DoRedraw();
+        auto _frame_save_load = new TGHorizontalFrame(this);
+
+        _loadConfig_button = new TGTextButton(_frame_save_load, "Load Configuration");
+        _loadConfig_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::ConfigurationFrame", (void*)parent, "LoadConfigPressed()");
+
+         _saveConfig_button = new TGTextButton(_frame_save_load, "Save Configuration");
+        _saveConfig_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::ConfigurationFrame", (void*)parent, "SaveConfigPressed()");
+
+        auto save_layout = new TGLayoutHints(kLHintsCenterY, 5, 20, 10, 10);
+        auto load_layout = new TGLayoutHints(kLHintsCenterY, 20, 5, 10, 10);
+
+        _frame_save_load->AddFrame(_saveConfig_button, save_layout);
+        _frame_save_load->AddFrame(_loadConfig_button, load_layout);
+
+        this->AddFrame(_frame_save_load, center_x_layout);
     }
 
 
@@ -151,7 +169,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 case dt:{
-                    snprintf(temp, 50, "%f",_dt_entry->GetNumber());
+                    snprintf(temp, 50, "%.10f",_dt_entry->GetNumber());
                     line += temp;
                     break;
                 }
@@ -203,8 +221,10 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
 
-        void SimConfigurationFrame::SetSimConfiguration(std::string config){
-       // TODO : Check input
+    void SimConfigurationFrame::SetSimConfiguration(std::string config){
+        // TODO : Check input
+
+        SetDefaultConfiguration();
         std::stringstream config_stream(config);
 
         std::string line;
@@ -275,5 +295,20 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
             }
         }
+    }
+
+
+    void SimConfigurationFrame::SetDefaultConfiguration(){
+        _epath_entry->SetText(DEFAULT_SIM_EPATH);
+        _ppath_entry->SetText(DEFAULT_SIM_PPATH);
+        _bpath_entry->SetText(DEFAULT_SIM_BPATH);
+        _cpath_entry->SetText(DEFAULT_SIM_CPATH);
+
+        _t0_entry->SetNumber(DEFAULT_SIM_T0);
+        _tf_entry->SetNumber(DEFAULT_SIM_TF);
+        _dt_entry->SetNumber(DEFAULT_SIM_DT);
+
+        _thnum_entry->SetNumber(DEFAULT_SIM_THNUM);
+        _multh_enable_button->SetDown(DEFAULT_SIM_MULTH_STATE);
     }
 }

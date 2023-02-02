@@ -9,7 +9,6 @@ namespace RhodotronSimulatorGUI::frames{
         : TGVerticalFrame(p, w, h){
         parent = p;
         renderer = renderer_;
-
         // Setup the progressbar
         progressBar = new TGHProgressBar(this, TGProgressBar::EBarType::kFancy, 250);
         progressBar->SetHeight(100);
@@ -109,6 +108,7 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(progressBar);
         progressBar->Activate(false);
         renderer->SetCanvasToRender(canvas);
+        renderer->clear();
     }
 
 

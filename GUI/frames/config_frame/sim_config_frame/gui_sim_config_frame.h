@@ -64,13 +64,16 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGLabel* _ppath_entry_label;
         TGLabel* _cpath_entry_label;
 
+        TGTextButton* _saveConfig_button;
+        TGTextButton* _loadConfig_button;
+
         TGHorizontalFrame* _init_time_entry_frame();
         TGVerticalFrame* _init_mt_control_frame();
         TGHorizontalFrame* _init_log_path_entry_frame();
 
     public:
 
-        SimConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h);
+        SimConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h, const TGWindow* realParent);
 
         std::string ProduceSimConfiguration();
         void SetSimConfiguration(std::string config);
@@ -81,6 +84,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         const std::string GetBPath(){ return (_bpath_entry ? _bpath_entry->GetText(): "xy/magnet.txt");}
         const std::string GetPPath(){ return (_ppath_entry ? _ppath_entry->GetText(): "xy/paths/");}
         const std::string GetCPath(){ return (_cpath_entry ? _cpath_entry->GetText(): "xy/settings.txt");}
+
+        void SetDefaultConfiguration();
     };
 }
 

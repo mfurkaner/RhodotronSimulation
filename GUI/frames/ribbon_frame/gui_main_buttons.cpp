@@ -5,10 +5,10 @@
 namespace RhodotronSimulatorGUI::frames{
 
 
-    const std::vector<std::string> MainButtonsFrame::button_names = {"Save Config", "Load Config", "Configuration",  "Render", "Run", "Stop", "Quit"};
+    const std::vector<std::string> MainButtonsFrame::button_names = {"Simulate", "Configuration",  "Render", "Analyze", "Quit"};
 
-    const std::vector<std::string> MainButtonsFrame::button_functions = {"SaveConfigPressed()", "LoadConfigPressed()", "ConfigurationPressed()", "RenderPressed()",
-                                                                         "RunPressed()", "StopPressed()", "QuitPressed()"};
+    const std::vector<std::string> MainButtonsFrame::button_functions = {"SimulatePressed()", "ConfigurationPressed()", "RenderPressed()",
+                                                                         "AnalyzePressed()",  "QuitPressed()"};
 
     MainButtonsFrame::MainButtonsFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGHorizontalFrame(p, w, h){
         parent = p;
@@ -22,8 +22,6 @@ namespace RhodotronSimulatorGUI::frames{
             buttons.push_back(button);
         }
 
-        HideByName("Configuration");
-        HideByName("Stop");
     }
 
     void MainButtonsFrame::HideByName(const std::string& name){
@@ -35,7 +33,7 @@ namespace RhodotronSimulatorGUI::frames{
         }
         if (index < buttons.size()){
             this->HideFrame(buttons[index]);
-            //this->Layout();
+            this->Layout();
         }
     }
     
@@ -49,6 +47,29 @@ namespace RhodotronSimulatorGUI::frames{
         if (index < buttons.size()){
             this->ShowFrame(buttons[index]);
             this->Layout();
+        }
+    }
+
+    void MainButtonsFrame::DisableByName(const std::string& name){ 
+        EnableByName(name, false);
+    }
+
+    void MainButtonsFrame::EnableByName(const std::string& name, bool enable){
+        int index = 0;
+        for(; index < button_names.size(); index++){
+            if ( button_names[index] == name ){
+                break;
+            }
+        }
+        if (index < buttons.size()){
+            buttons[index]->SetEnabled(enable);
+            this->Layout();
+        }
+    }
+
+    void MainButtonsFrame::EnableAll(){
+        for(int index = 0; index < button_names.size(); index++){
+            buttons[index]->SetEnabled(true);
         }
     }
 

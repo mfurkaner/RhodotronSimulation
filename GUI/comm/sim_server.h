@@ -16,11 +16,15 @@
 #include <vector>
 
 #include "TGProgressBar.h"
+#include "TGLabel.h"
  
 class GUISimulationHandler {
     pthread_t worker;
     pid_t _sim_pid;
     TGProgressBar* _progressbar;
+    TGLabel* _status;
+
+    bool isRunning = false;
 
 public:
     const static std::string sim_server_pipe_name;
@@ -37,6 +41,7 @@ public:
     void kill_server();
 
     void set_progress_bar(TGProgressBar* progressbar);
+    void set_status_label(TGLabel* status);
 
     static int open_pipe(const char* path);
     static void close_pipe(const int _fd, const char* pipe_name);
@@ -45,6 +50,8 @@ public:
 struct SimulationServerWorkerArgs{
     std::string pipe_name;
     TGProgressBar* progressbar;
+    TGLabel* status;
+    GUISimulationHandler* owner;
 };
 
 #endif

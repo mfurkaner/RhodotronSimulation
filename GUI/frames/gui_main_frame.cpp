@@ -3,19 +3,24 @@
 namespace RhodotronSimulatorGUI::frames{
 
 
-    MainFrame::MainFrame(const TGWindow*p, UInt_t w, UInt_t h) : TGMainFrame(p, w, h){
+    MainFrame::MainFrame(const TGWindow*p) : TGMainFrame(p, MAIN_FRAME_W, MAIN_FRAME_H){
         SetCleanup(kDeepCleanup);
         main_buttons_frame = new MainButtonsFrame(this, MAIN_BUTTON_FRAME_W, MAIN_BUTTON_FRAME_H);
         config_frame = new ConfigurationFrame(this, CONFIG_FRAME_W, CONFIG_FRAME_H);
         render_frame = new RenderFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &renderer);
+        analysis_frame = new AnalysisFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &analyzer);
+        run_frame = new RunFrame(this, RENDER_FRAME_W, RENDER_FRAME_H);
 
         renderer.SetDataProvider(&dataProvider);
+        analyzer.SetDataProvider(&dataProvider);
 
-        sim_handler.set_progress_bar(render_frame->GetProgressBar());
+        run_frame->SetSimulationHandler(&sim_handler);
 
         this->AddFrame(main_buttons_frame, center_x_layout);
         this->AddFrame(config_frame, center_x_layout);
+        this->AddFrame(run_frame, center_layout);
         this->AddFrame(render_frame, center_x_layout);
+        this->AddFrame(analysis_frame, center_x_layout);
 
         SetName("RhodoSim_GUI");
         SetWindowName("RhodoSim GUI");
@@ -26,49 +31,31 @@ namespace RhodotronSimulatorGUI::frames{
         MapWindow();
 
         this->HideFrame(render_frame);
-        active_frame = config_frame;
+        this->HideFrame(analysis_frame);
+        this->HideFrame(run_frame);
+        this->HideFrame(config_frame);
+        this->Resize(w,h);
+        this->SetWMSizeHints(900, 900, 1100, 1100, 50, 50);
+
+        NavigateToConfigFrame();
     }
 
     MainFrame::~MainFrame(){
         DeleteWindow();
     }
 
-    void MainFrame::SaveConfigPressed(){
-        std::string config = config_frame->GetConfigAsString();
-        
-        std::ofstream config_stream, backup_stream;
-        std::ifstream old_config_stream;
-
-        old_config_stream.open(_config_file_path, std::ios::in);
-        std::string old_config, line;
-
-        while(!old_config_stream.eof()){
-            std::getline(old_config_stream, line);
-            old_config += line + '\n';
-        }
-        old_config_stream.close();
-
-        backup_stream.open(_old_config_file_path, std::ios::out);
-        backup_stream << old_config;
-        backup_stream.close();
-
-        config_stream.open(_config_file_path, std::ios::out);
-        config_stream << config;
-        config_stream.close();
-    }
-
-    void MainFrame::LoadConfigPressed(){
-        config_frame->LoadConfigFromFile(_config_file_path);
+    void MainFrame::ClearData(){
+        renderer.clear();
+        dataProvider.clearLogs();
     }
 
     void MainFrame::ConfigurationPressed(){
-        NavigateTo(config_frame, "Configuration");
-        main_buttons_frame->ShowByName("Save Config");
-        main_buttons_frame->ShowByName("Load Config");
+        NavigateToConfigFrame();
     }
 
     void MainFrame::RenderPressed() {
-        NavigateTo(render_frame, "Render");
+        NavigateToRenderFrame();
+        // TODO : remove these by add-ing configuration to mainframe and giving the address to render frame
 
         float _starttime = config_frame->GetStartTime();
         float _endtime = config_frame->GetEndTime();
@@ -77,7 +64,7 @@ namespace RhodotronSimulatorGUI::frames{
         float _r2 = config_frame->GetR2();
 
         if ( dataProvider.isDataFilled() == false){
-
+            dataProvider.clearLogs();
             dataProvider.SetEnum(config_frame->GetEnum());
             dataProvider.SetBnum(config_frame->GetBnum());
             dataProvider.SetElogPath(config_frame->GetPPath());
@@ -93,24 +80,29 @@ namespace RhodotronSimulatorGUI::frames{
         renderer.Render();
     }
 
-    void MainFrame::RunPressed(){
-        std::cout << "Simulation started" << std::endl;
-
-        SaveConfigPressed();
-
-        sim_handler.spawn_server();
-        sim_handler.spawn_simulation();
-
-        NavigateTo(render_frame, "Run");
-        main_buttons_frame->ShowByName("Stop");
-        main_buttons_frame->ShowByName("Configuration");
-        main_buttons_frame->HideByName("Save Config");
-        main_buttons_frame->HideByName("Load Config");
+    void MainFrame::AnalyzePressed(){
+        NavigateToAnalysisFrame();
+        float _starttime = config_frame->GetStartTime();
+        float _endtime = config_frame->GetEndTime();
+        int _enum = config_frame->GetEnum();
+        int _bnum = config_frame->GetBnum();
+        if ( dataProvider.isDataFilled() == false){
+            dataProvider.clearLogs();
+            dataProvider.SetEnum(config_frame->GetEnum());
+            dataProvider.SetBnum(config_frame->GetBnum());
+            dataProvider.SetElogPath(config_frame->GetPPath());
+            dataProvider.SetRflogPath(config_frame->GetEPath());
+            dataProvider.SetStaticBfieldlogPath(config_frame->GetBPath());
+            dataProvider.fillLogs();
+        }
+        analysis_frame->SetTimeInterval(_starttime, _endtime);
+        analysis_frame->SetEnumBnum(_enum, _bnum);
+        analysis_frame->SetupAnalyzer();
     }
 
-    void MainFrame::StopPressed(){
-        sim_handler.kill_simulation();
-        sim_handler.kill_server();
+    void MainFrame::SimulatePressed(){
+        config_frame->SaveConfigPressed();
+        NavigateToSimalateFrame();
     }
 
     void MainFrame::QuitPressed(){
@@ -118,8 +110,7 @@ namespace RhodotronSimulatorGUI::frames{
         DeleteWindow();
     }
 
-
-    void MainFrame::NavigateTo(TGFrame* childFrame, std::string hideButton){
+    void MainFrame::NavigateTo(TGFrame* childFrame){
         if(childFrame->GetParent() != this || active_frame == childFrame){
             return;
         }
@@ -127,11 +118,36 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(active_frame);
         this->ShowFrame(childFrame);
         active_frame = childFrame;
-
-        if ( hideButton.empty() == false ){
-            main_buttons_frame->HideByName(hideButton);
-        }
     }
 
+
+    void MainFrame::NavigateToConfigFrame(){
+        this->Resize(w, h);
+        main_buttons_frame->EnableAll();
+        main_buttons_frame->DisableByName("Configuration");
+        NavigateTo(config_frame);
+    }
+
+    void MainFrame::NavigateToSimalateFrame(){
+        this->Resize(SIM_FRAME_W, SIM_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
+        main_buttons_frame->EnableAll();
+        main_buttons_frame->DisableByName("Simalate");
+        NavigateTo(run_frame);
+    }
+
+    void MainFrame::NavigateToAnalysisFrame(){
+        this->Resize(ANALYSIS_FRAME_W, ANALYSIS_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
+        main_buttons_frame->EnableAll();
+        main_buttons_frame->DisableByName("Analyze");
+        NavigateTo(analysis_frame);
+        analysis_frame->OnNavigatedTo();
+    }
+
+    void MainFrame::NavigateToRenderFrame(){
+        this->Resize(RENDER_FRAME_W, RENDER_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
+        main_buttons_frame->EnableAll();
+        main_buttons_frame->DisableByName("Render");
+        NavigateTo(render_frame);
+    }
 
 }

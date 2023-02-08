@@ -7,6 +7,7 @@
 #include "TRootEmbeddedCanvas.h"
 #include "TCanvas.h"
 #include "TColor.h"
+#include "TPaveText.h"
 #include <vector>
 
 
@@ -39,6 +40,9 @@ namespace RhodotronSimulatorGUI::Analysis{
 
         void DrawEnergyDistribution(float time = -1);
         void DrawEvsT(int b_index, int e_intex, double tmin, double tmax = -1);
+
+        float GetAverageE(float time = -1);
+        float GetStdDevE(float time = -1);
 
         int TimeIndexFromTime(int e_index, float time);
     };
@@ -168,6 +172,53 @@ namespace RhodotronSimulatorGUI::Analysis{
 
         _canvas->GetCanvas()->Modified();
         _canvas->GetCanvas()->Update();
+    }
+
+    float Analyzer::GetAverageE(float time){
+        auto e_logs = _dataProvider->GetElectrons();
+
+        float average = 0.0f;
+        int count = 0;
+
+        for(int i = 0; i < e_logs.size(); i++){
+            int bin = 1;
+            int t = TimeIndexFromTime(i, time);
+            if( t == -1){
+                continue;
+            }
+            average += e_logs[i].time_slices[t].energy;
+            count++;
+        }
+        
+        return average/count;
+    }
+
+    float Analyzer::GetStdDevE(float time){
+        auto e_logs = _dataProvider->GetElectrons();
+
+        float average = GetAverageE(time);
+
+        float sum_dev = 0.0f;
+        int count = 0;
+
+        for(int i = 0; i < e_logs.size(); i++){
+            int bin = 1;
+            int t = TimeIndexFromTime(i, time);
+            if( t == -1){
+                continue;
+            }
+            float deviation = e_logs[i].time_slices[t].energy - average;
+            sum_dev += deviation * deviation;
+            count++;
+        }
+        if ( count > 1){
+            sum_dev = sqrtf(sum_dev/(count - 1));
+        }
+        else{
+            sum_dev = sqrtf(sum_dev);
+        }
+        
+        return sum_dev;
     }
 
 

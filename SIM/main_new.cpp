@@ -27,7 +27,6 @@ int main(int argc, char** argv) {
 
     // Is the simulation a service of GUI?
     if ( argc > 1  && strcmp(argv[1],"-fd") == 0 ) {
-        std::cout << argv[1] << " " << argv[2] << " recieved" << std::endl;
         rhodotron.DeclareService(argv[2]);
         isService = true;
     }else if(argc > 1 && strcmp(argv[1],"-r") == 0 ){

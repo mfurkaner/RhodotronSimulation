@@ -16,6 +16,7 @@ using namespace std;
 
 class Gun{
     double Ein;
+    double sEin;
     double gun_period;
     double gun_active_time;
     double ns_between_each_electron_fire;
@@ -54,6 +55,7 @@ public:
     void setGunPos(vector3d gun_pos);
     void setGunDir(vector3d gun_dir);
     void setEin(double Ein) ;
+    void setEinStd(double EinStd) ;
     void setNumberOfElectrons(uint64_t e_num);
     void setNumberOfBunchs(uint64_t b_num);
     void enableMT(uint32_t thread_count);

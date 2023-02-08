@@ -1,4 +1,5 @@
 #include "gun.h"
+#include <random>
 
 
     Gun::Gun(){}
@@ -25,6 +26,7 @@
     void Gun::setGunPos(vector3d gun_pos){gunpos = gun_pos;}
     void Gun::setGunDir(vector3d gun_dir){gundir = gun_dir;}
     void Gun::setEin(double Ein) {this->Ein = Ein ; for (int i = 0; i < bunchs.size() ; i++){ bunchs[i].setEin(Ein);}; }
+    void Gun::setEinStd(double EinStd) {this->sEin = EinStd ;}
     void Gun::setNumberOfElectrons(uint64_t e_num){ 
         e_per_bunch = e_num;
         ns_between_each_electron_fire = gun_active_time/e_per_bunch;
@@ -139,12 +141,18 @@
     }*/
 
     void Gun::fireAllWithFireTimesMT(){
+        std::random_device rd;
+        std::mt19937 e2(rd());
+        std::normal_distribution<double> Edist(Ein, sEin);
+
         for(_fired_bunch= 0; _fired_bunch < bunch_count; _fired_bunch++){
             for(_fired_e_in_current_bunch= 0; _fired_e_in_current_bunch < e_per_bunch; _fired_e_in_current_bunch++){
 
+                double E = (sEin == 0 ) ? Ein : Edist(e2);
+
                 double fire_time = (ns_between_each_electron_fire * _fired_e_in_current_bunch) + _fired_bunch*gun_period;
 
-                auto burrowed_e = bunchs[_fired_bunch].AddElectronGiveAddress(Ein, gunpos, gundir, fire_time);
+                auto burrowed_e = bunchs[_fired_bunch].AddElectronGiveAddress(E, gunpos, gundir, fire_time);
 
                 int thread_index = (_fired_e_in_current_bunch + _fired_bunch*e_per_bunch)%thread_bunchs.size();
 

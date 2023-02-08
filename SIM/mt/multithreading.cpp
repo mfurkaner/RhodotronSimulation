@@ -5,32 +5,8 @@ extern mutex mutex_lock;
 
 void threadLoop(ThreadArguments thread_arguments){
     uint64_t count = 0;
-    /*
-    //thread_arguments.run_authorization->unlock();
-    std::shared_lock<shared_mutex> lock(*thread_arguments.run_authorization, defer_lock);
-    while (!end){
 
-        //pthread_mutex_lock(thread_arguments.run_authorization.get());
-        if (lock.try_lock()){
-            if( *thread_arguments.end ){
-                end = true;
-            }
-            else if ( *thread_arguments.run )
-            {
-                //thread_arguments.run_authorization->lock();
-                thread_arguments.i_args.E = thread_arguments.E;
-                thread_arguments.i_args.B = thread_arguments.B;
-                interactForSingleThread(thread_arguments.i_args);
-                // run for once
-                *thread_arguments.run = false;
-            }
-            lock.unlock();
-            //thread_arguments.run_authorization->unlock();
-        }
-        std::this_thread::yield();    
-    }*/
     double sim_time = thread_arguments.start_time;
-    //auto gun_lock = unique_lock(thread_arguments.gun->_gun_mutex);
 
     while(sim_time < thread_arguments.end_time + thread_arguments.time_interval){
         thread_arguments.E->update(sim_time);
@@ -50,7 +26,6 @@ void threadLoop(ThreadArguments thread_arguments){
         sim_time+= thread_arguments.time_interval;
         count++;
     }
-    //std::cout << "Thread " << thread_arguments.index << " finished the job" << std::endl;
     thread_arguments.parent_notifier_mutex->lock();
     *thread_arguments.current_thread_time = sim_time;
     thread_arguments.parent_notifier_mutex->unlock();

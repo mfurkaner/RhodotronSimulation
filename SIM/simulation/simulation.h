@@ -37,6 +37,7 @@ protected:
     uint64_t NUM_OF_ELECTRONS = 1;
     uint64_t NUM_OF_BUNCHS = 1;
     double Ein = 0.04;
+    double EinStd = 0;
 
     vector3d gunPosition;
     vector3d gunDirection = vector3d(1,0,0);
@@ -66,6 +67,7 @@ public:
 
     void setdT(double dT){time_interval = dT;}
     void setEin(double E_in){ gun.setEin(E_in); Ein = E_in;}
+    void setEinStd(double Ein_Std){ gun.setEinStd(Ein_Std); EinStd = Ein_Std;}
     void setNumberofElectrons(uint64_t num_of_electrons){
         this->NUM_OF_ELECTRONS = num_of_electrons;
         gun.setNumberOfElectrons(NUM_OF_ELECTRONS);

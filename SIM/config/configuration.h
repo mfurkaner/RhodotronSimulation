@@ -15,7 +15,8 @@ enum AvailableConfigIndex{
     epath, bpath, ppath, cpath,
     starttime, endtime, dt,
     guntime, _enum, multh,
-    thcount, _r1, _r2, ein,
+    thcount, _r1, _r2, 
+    ein, ein_std,
     addmagnet, magrotation,
     bunchnum, gunperiod,
     targeten, output,
@@ -31,7 +32,8 @@ private:
         "epath", "bpath", "ppath", "cpath",
         "starttime", "endtime", "dt", 
         "guntime", "enum", "multh", 
-        "thcount", "r1", "r2", "ein", 
+        "thcount", "r1", "r2", 
+        "einmean", "einstd", 
         "addmagnet", "magrotation",
         "bunchnum", "gunperiod",
         "targeten", "output",
@@ -60,6 +62,7 @@ private:
     double r1;              bool r1IsSet = false;
     double r2;              bool r2IsSet = false;
     double Ein;             bool EinIsSet = false;
+    double EinStd;           bool EinStdIsSet = false;
     double mag_rotation;    bool magRotIsSet = false;
     double target_energy = 2 ; bool targetEnSet = false;
     std::string _output = "out.gif" ; bool outputIsSet = false;
@@ -94,6 +97,7 @@ public:
         if (isR2Set()) cout << "R2 : " << r2 << "\tm\n";
         if (magnets.size()) cout << "Magnet count :\t" << magnets.size() << "\n";
         if (isEinSet()) cout << "Ein : " << Ein << "\tMeV\n";
+        if (isEinStdSet()) cout << "Ein : " << EinStd << "\tMeV\n";
         if (isTargetEnSet()) cout << "TargetE : " << target_energy << "\tMeV\n";
         if (isOutputSet()) cout << "Output : " << _output << "\n";
         cout << "--------------------------------\n\n";
@@ -119,6 +123,7 @@ public:
     double getR1(){return r1;}
     double getR2(){return r2;}
     double getEin(){return Ein;}
+    double getEinStd(){return EinStd;}
     double getTargetEnergy(){return target_energy;}
     std::string getOutput(){return _output;}
 
@@ -141,6 +146,7 @@ public:
     bool isR1Set(){return r1IsSet;}
     bool isR2Set(){return r2IsSet;}
     bool isEinSet(){return EinIsSet;}
+    bool isEinStdSet(){return EinStdIsSet;}
     bool isTargetEnSet(){return targetEnSet;}
     bool isOutputSet(){return outputIsSet;}
     bool areThereMagnets(){return magnets.size() != 0;}
@@ -248,6 +254,10 @@ public:
             case ein:
                 Ein = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
                 EinIsSet = true;
+                break;
+            case ein_std:
+                EinStd = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
+                EinStdIsSet = true;
                 break;
             case addmagnet:
                 if(!magRotIsSet){ break; }

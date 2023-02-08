@@ -77,6 +77,7 @@ void RhodotronSimulator::getConfig(Configuration& config){
     if (config.isR1Set()) setR1(config.getR1());
     if (config.isR2Set()) setR2(config.getR2());
     if (config.isEinSet()) setEin(config.getEin());
+    if (config.isEinStdSet()) setEinStd(config.getEinStd());
     if (config.areThereMagnets()){
         for(int i = 0; i < config.magnets.size(); i++){
             addMagnet(config.magnets.at(i));

@@ -10,18 +10,27 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto Ein_icon_frame = new TGHorizontalFrame(this);
 
         TGVerticalFrame* Ein_entry_frame = new TGVerticalFrame(Ein_icon_frame);
+        TGHorizontalFrame* Ein_Einstd_frame = new TGHorizontalFrame(Ein_entry_frame);
 
         // Setup Gun Ein entry frame
         _Ein_entry_label = new TGLabel(Ein_entry_frame, gun_configuration_Ein_entry_label_text.c_str());
-        _Ein_entry = new TGNumberEntry(Ein_entry_frame, DEFAULT_GUN_EIN, 5, -1, TGNumberFormat::kNESRealThree,
+
+        _Ein_entry = new TGNumberEntry(Ein_Einstd_frame, DEFAULT_GUN_EIN, 5, -1, TGNumberFormat::kNESRealThree,
                 TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0.001, 3);
+        _EinStd_entry_label = new TGLabel(Ein_Einstd_frame, "+-");
+        _EinStd_entry = new TGNumberEntry(Ein_Einstd_frame, 0, 5, -1, TGNumberFormat::kNESRealThree,
+                TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0, 0.01);
+
+        Ein_Einstd_frame->AddFrame(_Ein_entry);
+        Ein_Einstd_frame->AddFrame(_EinStd_entry_label);
+        Ein_Einstd_frame->AddFrame(_EinStd_entry);
 
         _targetE_entry_label = new TGLabel(Ein_entry_frame, gun_configuration_targetE_entry_label_text.c_str());
         _targetE_entry = new TGNumberEntry(Ein_entry_frame, DEFAULT_GUN_TARGETE, 5, -1, TGNumberFormat::kNESRealOne,
                 TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0.1, 5);
         
         Ein_entry_frame->AddFrame(_Ein_entry_label, center_x_layout);
-        Ein_entry_frame->AddFrame(_Ein_entry, center_x_layout);
+        Ein_entry_frame->AddFrame(Ein_Einstd_frame, center_x_layout);
         Ein_entry_frame->AddFrame(_targetE_entry_label, center_x_layout);
         Ein_entry_frame->AddFrame(_targetE_entry, center_x_layout);
 
@@ -143,6 +152,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     gunConfiguration += temp;
                     break;
                 }
+                case einstd:{
+                    snprintf(temp, 50, "%.4f",_EinStd_entry->GetNumber());
+                    gunConfiguration += temp;
+                    break;
+                }
                 case guntime:{
                     snprintf(temp, 50, "%.1f",_tg_entry->GetNumber());
                     gunConfiguration += temp;
@@ -210,6 +224,10 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             {
                 case ein:{
                     _Ein_entry->SetNumber(atof(value.c_str()));
+                    break;
+                }
+                case einstd:{
+                    _EinStd_entry->SetNumber(atof(value.c_str()));
                     break;
                 }
                 case guntime:{

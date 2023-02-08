@@ -131,7 +131,7 @@ namespace RhodotronSimulatorGUI::frames{
     void MainFrame::NavigateToSimalateFrame(){
         this->Resize(SIM_FRAME_W, SIM_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
         main_buttons_frame->EnableAll();
-        main_buttons_frame->DisableByName("Simalate");
+        main_buttons_frame->DisableByName("Simulate");
         NavigateTo(run_frame);
     }
 

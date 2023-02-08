@@ -90,7 +90,7 @@ namespace RhodotronSimulatorGUI::frames{
     static const std::string B_configuration_B_entry_label_text = "B (T)";
     static const std::string B_configuration_R_entry_label_text = "R (m)";
     static const std::string B_configuration_r_entry_label_text = "r (m)";
-    static const std::string B_configuration_mag_rot_entry_label_text = "Rotation of each magnet (degree)";
+    static const std::string B_configuration_mag_rot_entry_label_text = "Rotation of each magnet, gamma(degree)";
     static const std::string B_configuration_magnet_desc_pic_path = "resources/magnet_desc.png";
     #define B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_X 275
     #define B_CONFIGURATION_MAGNET_DESC_PIC_SIZE_Y 150

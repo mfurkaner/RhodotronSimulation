@@ -43,6 +43,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGLabel* _frame_title;
 
         TGNumberEntry* _Ein_entry;
+        TGNumberEntry* _EinStd_entry;
         TGNumberEntry* _targetE_entry;
         TGNumberEntry* _T_entry;
         TGNumberEntry* _tg_entry;
@@ -50,6 +51,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGNumberEntry* _enum_entry;
 
         TGLabel* _Ein_entry_label;
+        TGLabel* _EinStd_entry_label;
         TGLabel* _targetE_entry_label;
         TGLabel* _T_entry_label;
         TGLabel* _tg_entry_label;

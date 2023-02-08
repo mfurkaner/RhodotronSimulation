@@ -16,6 +16,7 @@ const std::string ConfigurationFrame::config_comment =
             "# ================================================================\n#\n"
             "# emax = Maximum electric field strength (MV/m)\n"
             "# ein = Energy of electrons coming out of the gun (MeV)\n" 
+            "# einstd = Standard deviation of energy of electrons coming out of the gun (MeV)\n"
             "# targeten = Max energy on the output gif (MeV)\n"
             "# freq = Frequency of the RF field (MHz)\n"
             "# phaselag = phase lag of the first electrons (degree)\n"
@@ -39,7 +40,8 @@ const std::string ConfigurationFrame::config_comment =
             "# output = output file name \n\n"};
 
     const std::vector<ConfigurationCell> ConfigurationFrame::configs = std::vector<ConfigurationCell>(
-        {   ConfigurationCell(E,"emax", emax),              ConfigurationCell(Gun, "ein", ein),
+        {   ConfigurationCell(E,"emax", emax),              ConfigurationCell(Gun, "einmean", ein),
+            ConfigurationCell(Gun, "einstd", einstd),
             ConfigurationCell(Gun,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
             ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Sim,"starttime", starttime),
             ConfigurationCell(Sim,"endtime", endtime),     ConfigurationCell(Sim,"dt", dt), 

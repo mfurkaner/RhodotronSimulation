@@ -55,7 +55,11 @@ namespace RhodotronSimulatorGUI::data{
         std::string _mlog_path = "xy/magnet.txt";
 
         std::vector<ElectronLog> _electrons_log;
+        float _electron_time_step = 0.1f;
+
         RFLog _rf;
+        float _efield_time_step = 0.1f;
+            
         StaticMagneticFieldLog _magnets;
 
         uint32_t _enum;
@@ -82,6 +86,8 @@ namespace RhodotronSimulatorGUI::data{
         const RFLog& GetEField();
         const StaticMagneticFieldLog& GetStaticBField();
 
+        const float GetElectronTimeStep();
+        const float GetEFieldTimeStep();
     };
 
 

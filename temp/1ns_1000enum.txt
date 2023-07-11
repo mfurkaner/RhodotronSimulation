@@ -1,0 +1,45 @@
+
+Optimal phase with the least RMS ( 0.01389 MeV) after third pass : -5
+
+Simulation settings : 
+ph = -5 deg, gt = 1 ns, enum = 1000
+dT = 0.001 ns, dT_out = 0.01 ns
+
+
+For the 1th magnet:
+Optimum out path = 0.81044 m
+Magnet guide = 0.25852 m
+Rho = 0.088477 m
+Drift time of the first electron in the bunch : 7.688 ns
+Drift time of the middle electron in the bunch : 7.511 ns
+Drift time of the last electron in the bunch : 7.487 ns
+Max energy = 0.47581 MeV
+RMS = 0.0058165 MeV
+
+For the 2th magnet:
+Optimum out path = 1.0833 m
+Magnet guide = 0.37766 m
+Rho = 0.098898 m
+Drift time of the first electron in the bunch : 5.597 ns
+Drift time of the middle electron in the bunch : 5.578 ns
+Drift time of the last electron in the bunch : 5.617 ns
+Max energy = 0.89172 MeV
+RMS = 0.0099018 MeV
+
+For the 3th magnet:
+Optimum out path = 1.1705 m
+Magnet guide = 0.41573 m
+Rho = 0.10223 m
+Drift time of the first electron in the bunch : 5.314 ns
+Drift time of the middle electron in the bunch : 5.304 ns
+Drift time of the last electron in the bunch : 5.325 ns
+Max energy = 1.298 MeV
+RMS = 0.013879 MeV
+
+After the optimized magnet passes :
+
+Electron with the most energy : 623) 1.6999 MeV,	RMS of bunch : 0.017981 MeV
+
+Total steps calculated : 12468052652
+Simulation finished in : 632050015 us     ( 632.1 s )
+

@@ -85,6 +85,12 @@ namespace RhodotronSimulatorGUI::frames{
     static const std::string Analysis_type_energy_distribution_description_text = "Energy Distribution";
     static const std::string Analysis_type_sing_e_TvsE_description_text = "E(t) graph of each electron";
 
+    /// @brief SWEEP FRAME RESOURCES
+    static const std::string Sweep_phaselag_start_label_text = "Phase lag sweep start (degrees)";
+    static const std::string Sweep_phaselag_end_label_text = "Phase lag sweep end (degrees)";
+    static const std::string Sweep_sweep_button_text = "Sweep";
+    static const std::string Sweep_type_phaselag_description_text = "Phase lag sweep";
+
     /// @brief B CONFIGURATION FRAME RESOURCES
     static const std::string B_configuration_title = "- B Field Configuration -";
     static const std::string B_configuration_B_entry_label_text = "B (T)";

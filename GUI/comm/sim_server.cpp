@@ -15,7 +15,7 @@ const std::vector<std::string> GUISimulationHandler::sim_args = { sim_exe, "-fd"
 
 void GUISimulationHandler::spawn_simulation(){
     if( isRunning )return;
-    _status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_starting.c_str());
+    if (_status) _status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_starting.c_str());
     isRunning = true;
     extern char** environ;
 
@@ -50,15 +50,15 @@ void GUISimulationHandler::kill_simulation(){
     std::cout << getpid() << " "<<_sim_pid << " " << WIFSIGNALED(status) << std::endl; 
 }
 
+void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_args){
 
-void* GUISimulationHandler::sim_server_work(void* worker_args){
+    bool reportBar = worker_args.reportProgressBar;
+    bool reportStatus = worker_args.reportStatus;
 
-    SimulationServerWorkerArgs *args = (SimulationServerWorkerArgs*)worker_args;
-
-    int _fd = open_pipe(args->pipe_name.c_str());
+    int _fd = open_pipe(worker_args.pipe_name.c_str());
     if (_fd < 0){
         perror("open_pipe failed in sim_server_work");
-        return nullptr;
+        return;
     }
 
     uint8_t recvd_signal;
@@ -72,39 +72,58 @@ void* GUISimulationHandler::sim_server_work(void* worker_args){
         }
         
         std::bitset<8> a(recvd_signal /* & SIM_WORK_MASK */);
-        args->status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_running.c_str());
-        args->progressbar->SetPosition(recvd_signal & SIM_WORK_MASK);
+        if (reportBar){
+            worker_args.progressbar->SetPosition(recvd_signal & SIM_WORK_MASK);
+        }
+        if (reportStatus){
+            worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_running.c_str());
+        }
         if ( (recvd_signal & SIM_RUNNING) == 0){
             isRunning = false;
-            args->owner->isRunning = false;
+            worker_args.owner->isRunning = false;
             break;
         }
     }
-    args->status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_finished.c_str());
-    isRunning = false;
+    if (reportStatus){
+        worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_finished.c_str());
+    }
 
-    close_pipe(_fd, args->pipe_name.c_str());
-    delete args;
-
-    return nullptr;
+    close_pipe(_fd, worker_args.pipe_name.c_str());
+//    delete worker_args;
+    return;
 }
 
-void GUISimulationHandler::spawn_server(){
-    SimulationServerWorkerArgs* server_args = new SimulationServerWorkerArgs();
-    server_args->pipe_name = sim_server_pipe_name;
-    server_args->progressbar = _progressbar;
-    server_args->status = _status;
-    server_args->owner = this;
-    pthread_create(&worker, NULL, GUISimulationHandler::sim_server_work, (void*)server_args);
+void GUISimulationHandler::spawn_server(bool reportProgressBar, bool reportStatus){
+    SimulationServerWorkerArgs server_args;
+    server_args.pipe_name = sim_server_pipe_name;
+    server_args.progressbar = _progressbar;
+    server_args.status = _status;
+    server_args.owner = this;
+    server_args.reportProgressBar = reportProgressBar;
+    server_args.reportStatus = reportStatus;
+
+    if ( worker != NULL ){
+        if(worker->joinable()){
+            worker->join();
+        }
+        delete worker;
+    }
+    
+    worker = new std::thread(GUISimulationHandler::sim_server_work, server_args);
 }
 
 void GUISimulationHandler::join_server(){
-    void* a;
-    pthread_join(worker, &a);
+    while(!worker->joinable());
+    worker->join();
+}
+
+bool GUISimulationHandler::server_joinable(){
+    return worker->joinable();
 }
 
 void GUISimulationHandler::kill_server(){
-    pthread_kill(worker, SIGKILL);
+    //pthread_kill(worker, SIGKILL);
+    worker->detach();
 }
 
 void GUISimulationHandler::set_progress_bar(TGProgressBar* progressbar){
@@ -115,6 +134,7 @@ void GUISimulationHandler::set_status_label(TGLabel* status){
     _status = status;
 }
 
+bool GUISimulationHandler::IsRunning() const { return isRunning; }
 
 int GUISimulationHandler::open_pipe(const char* pipe_name){
     return open(pipe_name, O_RDONLY | O_CREAT | O_TRUNC, 0666);

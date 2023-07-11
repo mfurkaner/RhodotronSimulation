@@ -1,0 +1,203 @@
+{
+//========= Macro generated from object: /hmm
+//========= by ROOT version6.26/06
+   
+   TMultiGraph *multigraph = new TMultiGraph();
+   multigraph->SetName("");
+   multigraph->SetTitle("hmm");
+   
+   Double_t _fx1[31] = {
+   -30,
+   -29,
+   -28,
+   -27,
+   -26,
+   -25,
+   -24,
+   -23,
+   -22,
+   -21,
+   -20,
+   -19,
+   -18,
+   -17,
+   -16,
+   -15,
+   -14,
+   -13,
+   -12,
+   -11,
+   -10,
+   -9,
+   -8,
+   -7,
+   -6,
+   -5,
+   -4,
+   -3,
+   -2,
+   -1,
+   0};
+   Double_t _fy1[31] = {
+   2.29623,
+   2.27,
+   2.27,
+   2.29773,
+   2.298,
+   2.29823,
+   2.28,
+   2.29753,
+   2.282,
+   2.285,
+   2.28667,
+   2.29326,
+   2.29,
+   2.28913,
+   2.28663,
+   2.2838,
+   2.3,
+   2.3,
+   2.26607,
+   nan,
+   2.23807,
+   2.2249,
+   nan,
+   2.1921,
+   2.31,
+   2.15677,
+   2.13697,
+   2.31,
+   2.31,
+   2.31,
+   2.03177};
+   TGraph *graph = new TGraph(31,_fx1,_fy1);
+   graph->SetName("");
+   graph->SetTitle("");
+   graph->SetFillStyle(1000);
+
+   Int_t ci;      // for color index setting
+   TColor *color; // for color definition with alpha
+   ci = TColor::GetColor("#0000ff");
+   graph->SetMarkerColor(ci);
+   graph->SetMarkerStyle(21);
+   
+   TH1F *Graph_Graph1 = new TH1F("Graph_Graph1","",100,-33,0);
+   Graph_Graph1->SetMinimum(2.00394);
+   Graph_Graph1->SetMaximum(2.33782);
+   Graph_Graph1->SetDirectory(0);
+   Graph_Graph1->SetStats(0);
+
+   ci = TColor::GetColor("#000099");
+   Graph_Graph1->SetLineColor(ci);
+   Graph_Graph1->GetXaxis()->SetLabelFont(42);
+   Graph_Graph1->GetXaxis()->SetTitleOffset(1);
+   Graph_Graph1->GetXaxis()->SetTitleFont(42);
+   Graph_Graph1->GetYaxis()->SetLabelFont(42);
+   Graph_Graph1->GetYaxis()->SetTitleFont(42);
+   Graph_Graph1->GetZaxis()->SetLabelFont(42);
+   Graph_Graph1->GetZaxis()->SetTitleOffset(1);
+   Graph_Graph1->GetZaxis()->SetTitleFont(42);
+   graph->SetHistogram(Graph_Graph1);
+   
+   multigraph->Add(graph,"");
+   
+   Double_t _fx2[31] = {
+   -29.9096,
+   -28.9157,
+   -27.8389,
+   -26.8449,
+   -25.8509,
+   -24.8569,
+   -23.863,
+   -22.869,
+   -21.875,
+   -20.881,
+   -19.887,
+   -18.8931,
+   -17.8991,
+   -16.9051,
+   -15.9111,
+   -14.8343,
+   -13.8404,
+   -12.8464,
+   -11.8524,
+   -10.8584,
+   -9.86446,
+   -8.87048,
+   -7.87651,
+   -6.88253,
+   -5.88855,
+   -4.89458,
+   -3.9006,
+   -2.90663,
+   -1.91265,
+   -0.835843,
+   0.158133};
+   Double_t _fy2[31] = {
+   0.415209,
+   0.396944,
+   0.396944,
+   0.40912,
+   0.40912,
+   0.40912,
+   0.396944,
+   0.40912,
+   0.403032,
+   0.403032,
+   0.403032,
+   0.421297,
+   0.396944,
+   0.427385,
+   0.433473,
+   0.433473,
+   0.396944,
+   0.396944,
+   0.482178,
+   0.396944,
+   0.536971,
+   0.555235,
+   0.396944,
+   0.597852,
+   0.396944,
+   0.628292,
+   0.646556,
+   0.396944,
+   0.396944,
+   0.396944,
+   0.750054};
+   graph = new TGraph(31,_fx2,_fy2);
+   graph->SetName("");
+   graph->SetTitle("");
+   graph->SetFillStyle(1000);
+
+   ci = TColor::GetColor("#ff0000");
+   graph->SetMarkerColor(ci);
+   graph->SetMarkerStyle(20);
+   
+   TH1F *Graph_Graph2 = new TH1F("Graph_Graph2","",100,-33,0);
+   Graph_Graph2->SetMinimum(0);
+   Graph_Graph2->SetMaximum(0.384327);
+   Graph_Graph2->SetDirectory(0);
+   Graph_Graph2->SetStats(0);
+
+   ci = TColor::GetColor("#000099");
+   Graph_Graph2->SetLineColor(ci);
+   Graph_Graph2->GetXaxis()->SetLabelFont(42);
+   Graph_Graph2->GetXaxis()->SetTitleOffset(1);
+   Graph_Graph2->GetXaxis()->SetTitleFont(42);
+   Graph_Graph2->GetYaxis()->SetLabelFont(42);
+   Graph_Graph2->GetYaxis()->SetTitleFont(42);
+   Graph_Graph2->GetZaxis()->SetLabelFont(42);
+   Graph_Graph2->GetZaxis()->SetTitleOffset(1);
+   Graph_Graph2->GetZaxis()->SetTitleFont(42);
+   graph->SetHistogram(Graph_Graph2);
+   
+   multigraph->Add(graph,"");
+   multigraph->Draw("");
+   multigraph->GetXaxis()->SetLimits(-31.5, 1.5);
+   multigraph->GetXaxis()->SetLabelFont(42);
+   multigraph->GetXaxis()->SetTitleOffset(1);
+   multigraph->GetXaxis()->SetTitleFont(42);
+   multigraph->GetYaxis()->SetLabelFont(42);
+   multigraph->GetYaxis()->SetTitleFont(42);
+}

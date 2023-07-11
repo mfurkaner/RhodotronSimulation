@@ -64,7 +64,7 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
             std::getline(stream, time_str, ',');
 
             if ( time_str.size() ){
-                time = std::atof(time_str.c_str());
+                time = std::stof(time_str);
             }
             else{
                 std::getline(stream, time_str);
@@ -115,20 +115,29 @@ namespace RhodotronSimulatorGUI::data{
                 stream.open(filename, std::ios::in);
                 if(stream.fail()) { continue; }
 
-                std::getline(stream, filename);
+                std::string firstline;
+                std::getline(stream, firstline);
+                float time_step = 0, prev_time = 0;
 
                 while (!stream.eof()) {
                     ElectronSnapshot snapshot;
                     stream >> snapshot;
 
                     e.time_slices.push_back(snapshot);
+
+                    if(time_step != 0 && time_step - snapshot.time + prev_time > 0.0001){
+                        std::cerr << "   Inconsistent time step in electron log : " << filename << " t:" << snapshot.time << std::endl;
+                    }
+
+                    time_step = snapshot.time - prev_time;
+                    prev_time = snapshot.time;
                 }
                 _electrons_log.push_back(e);
                 stream.close();
 
+                _electron_time_step = time_step;
             }
         }
-
     }
 
     void DataProvider::_fillEField(){
@@ -136,9 +145,10 @@ namespace RhodotronSimulatorGUI::data{
         stream.open(_rflog_path, std::ios::in);
 
         if( stream.fail()) { return; }
-        std::string filename;
-        std::getline(stream, filename);
+        std::string firstline;
+        std::getline(stream, firstline);
 
+        float time_step = 0, prev_time = 0;
 
         while (!stream.eof()) {
             RFSnapshot snapshot;
@@ -155,9 +165,16 @@ namespace RhodotronSimulatorGUI::data{
                 
             
             _rf.time_slices.push_back(snapshot);
-        }
 
+            if(time_step != 0 && time_step - snapshot.time + prev_time > 0.0001){
+                std::cerr << "   Inconsistent time step in rf log, t:" << snapshot.time << " time_step:" << time_step << std::endl;
+            }
+
+            time_step = snapshot.time - prev_time;
+            prev_time = snapshot.time;
+        }
         stream.close();
+        _efield_time_step = time_step;
     }
 
     void DataProvider::_fillBField(){
@@ -210,5 +227,13 @@ namespace RhodotronSimulatorGUI::data{
         return _magnets;
     }
 
+
+    const float DataProvider::GetElectronTimeStep(){
+        return _electron_time_step;
+    }
+
+    const float DataProvider::GetEFieldTimeStep(){
+        return _efield_time_step;
+    }
 
 }

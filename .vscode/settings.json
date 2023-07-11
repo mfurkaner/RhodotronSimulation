@@ -101,6 +101,7 @@
         "*.ipp": "cpp",
         "*.icc": "cpp",
         "__bits": "cpp",
-        "__memory": "cpp"
+        "__memory": "cpp",
+        "shared_mutex": "cpp"
     }
 }

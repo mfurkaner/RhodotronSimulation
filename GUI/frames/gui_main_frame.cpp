@@ -10,10 +10,10 @@ namespace RhodotronSimulatorGUI::frames{
         render_frame = new RenderFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &renderer);
         analysis_frame = new AnalysisFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &analyzer);
         run_frame = new RunFrame(this, RENDER_FRAME_W, RENDER_FRAME_H);
+        sweep_frame = new SweepFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &analyzer, &sim_handler, &dataProvider, config_frame);
 
         renderer.SetDataProvider(&dataProvider);
         analyzer.SetDataProvider(&dataProvider);
-
         run_frame->SetSimulationHandler(&sim_handler);
 
         this->AddFrame(main_buttons_frame, center_x_layout);
@@ -21,6 +21,7 @@ namespace RhodotronSimulatorGUI::frames{
         this->AddFrame(run_frame, center_layout);
         this->AddFrame(render_frame, center_x_layout);
         this->AddFrame(analysis_frame, center_x_layout);
+        this->AddFrame(sweep_frame, center_x_layout);
 
         SetName("RhodoSim_GUI");
         SetWindowName("RhodoSim GUI");
@@ -34,6 +35,7 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(analysis_frame);
         this->HideFrame(run_frame);
         this->HideFrame(config_frame);
+        this->HideFrame(sweep_frame);
         this->Resize(w,h);
         this->SetWMSizeHints(900, 900, 1100, 1100, 50, 50);
 
@@ -100,6 +102,22 @@ namespace RhodotronSimulatorGUI::frames{
         analysis_frame->SetupAnalyzer();
     }
 
+    void MainFrame::SweepPressed(){
+        float _starttime = config_frame->GetStartTime();
+        float _endtime = config_frame->GetEndTime();
+        int _enum = config_frame->GetEnum();
+        int _bnum = config_frame->GetBnum();
+
+        dataProvider.clearLogs();
+        dataProvider.SetEnum(config_frame->GetEnum());
+        dataProvider.SetBnum(config_frame->GetBnum());
+        dataProvider.SetElogPath(config_frame->GetPPath());
+        dataProvider.SetRflogPath(config_frame->GetEPath());
+        dataProvider.SetStaticBfieldlogPath(config_frame->GetBPath());
+
+        NavigateToSweepFrame();
+    }
+
     void MainFrame::SimulatePressed(){
         config_frame->SaveConfigPressed();
         NavigateToSimalateFrame();
@@ -143,11 +161,20 @@ namespace RhodotronSimulatorGUI::frames{
         analysis_frame->OnNavigatedTo();
     }
 
+    void MainFrame::NavigateToSweepFrame(){
+        this->Resize(ANALYSIS_FRAME_W, ANALYSIS_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
+        main_buttons_frame->EnableAll();
+        main_buttons_frame->DisableByName("Sweep");
+        NavigateTo(sweep_frame);
+        sweep_frame->OnNavigatedTo();
+    }
+
     void MainFrame::NavigateToRenderFrame(){
         this->Resize(RENDER_FRAME_W, RENDER_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
         main_buttons_frame->EnableAll();
         main_buttons_frame->DisableByName("Render");
         NavigateTo(render_frame);
+        render_frame->OnNavigatedTo();
     }
 
 }

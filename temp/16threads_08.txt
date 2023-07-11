@@ -1,0 +1,31 @@
+Simulation started. Estimated time to complete : ( 689 s )
+
+Optimal phase with the least RMS ( 0.009398 MeV) after third pass : 1
+
+Simulation settings : 
+ph = 1 deg, gt = 0.8 ns, enum = 1000
+dT = 0.0001 ns, dT_out = 0.01 ns
+# of threads = 16
+
+
+For the 1th magnet:
+Optimum out path = 0.88082 m
+Magnet guide = 0.28925 m
+Rho = 0.091165 m
+Max energy = 0.47564 MeV
+RMS = 0.0035527 MeV
+
+For the 2th magnet:
+Optimum out path = 1.1158 m
+Magnet guide = 0.39186 m
+Rho = 0.10014 m
+Max energy = 0.89142 MeV
+RMS = 0.0064756 MeV
+
+After the optimized magnet passes :
+
+Electron with the most energy : 596) 1.2976 MeV,	E_ave of bunch : 1.2868 MeV,	RMS of bunch : 0.0094293 MeV
+
+Total steps calculated : 11461103779	( 11.46 B )
+Simulation finished in : 1072254521 us     ( 1072 s )
+

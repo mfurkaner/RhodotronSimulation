@@ -36,6 +36,7 @@
 #include "render_frame/gui_render_frame.h"
 #include "run_frame/gui_run_frame.h"
 #include "analysis_frame/gui_analysis_frame.h"
+#include "sweep_frame/gui_sweep_frame.h"
 #include "../data/gui_sim_dataprovider.h"
 #include "../analyzer/definitions.h"
 
@@ -55,6 +56,7 @@ namespace RhodotronSimulatorGUI::frames{
         RunFrame* run_frame;
         RenderFrame* render_frame;
         AnalysisFrame* analysis_frame;
+        SweepFrame* sweep_frame;
 
         TGFrame* active_frame;
 
@@ -75,6 +77,7 @@ namespace RhodotronSimulatorGUI::frames{
         void ConfigurationPressed();
         void RenderPressed();
         void AnalyzePressed();
+        void SweepPressed();
         void SimulatePressed();
         void QuitPressed();
 
@@ -82,6 +85,7 @@ namespace RhodotronSimulatorGUI::frames{
         void NavigateToConfigFrame();
         void NavigateToRenderFrame();
         void NavigateToAnalysisFrame();
+        void NavigateToSweepFrame();
         void NavigateToSimalateFrame();
 
     };

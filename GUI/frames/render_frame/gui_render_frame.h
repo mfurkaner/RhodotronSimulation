@@ -67,6 +67,9 @@ namespace RhodotronSimulatorGUI::frames{
         void SavePressed();
         void PlayPressed();
 
+
+        void OnNavigatedTo();
+        
     };
 
 }

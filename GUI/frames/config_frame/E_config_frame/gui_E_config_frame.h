@@ -68,6 +68,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         std::string ProduceEConfiguration();
         void SetEConfiguration(std::string config);
+        void SetPhaseLag(double phase);
 
         float GetR1(){ return (_r1_entry ? _r1_entry->GetNumber() : 0);}
         float GetR2(){ return (_r2_entry ? _r2_entry->GetNumber() : 0);}

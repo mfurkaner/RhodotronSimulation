@@ -19,7 +19,7 @@ namespace RhodotronSimulatorGUI::frames{
         //progressBar->SetBarType(TGProgressBar::EBarType::kFancy);
 
         //auto color = TColor::GetColor(232, 232, 233);
-        canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
+        canvas = new TRootEmbeddedCanvas("render_canvas", this, 500, 500);
 
         // Setup the play button
         auto play_button = new TGTextButton(this, "Play");
@@ -111,5 +111,8 @@ namespace RhodotronSimulatorGUI::frames{
         renderer->clear();
     }
 
+    void RenderFrame::OnNavigatedTo(){
+        canvas->Resize(500, 500);
+    }
 
 }

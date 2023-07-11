@@ -66,7 +66,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         freq_frame->AddFrame(_freq_entry, center_x_layout);
 
         _phase_lag_entry_label = new TGLabel(phase_lag_frame, E_configuration_phase_lag_entry_label_text.c_str());
-        _phase_lag_entry = new TGNumberEntry(phase_lag_frame, DEFAULT_E_PL, 5, -1, TGNumberFormat::kNESRealOne,
+        _phase_lag_entry = new TGNumberEntry(phase_lag_frame, DEFAULT_E_PL, 5, -1, TGNumberFormat::kNESInteger,
                 TGNumberFormat::kNEAAnyNumber, TGNumberFormat::kNELLimitMax, -180, 180);
 
         phase_lag_frame->AddFrame(_phase_lag_entry_label, center_y_layout);
@@ -221,4 +221,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         }
     }
     
+    void EConfigurationFrame::SetPhaseLag(double phase){
+        _phase_lag_entry->SetNumber(phase, false);
+    }
 }

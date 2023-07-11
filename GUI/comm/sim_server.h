@@ -14,12 +14,25 @@
 #include <iomanip>
 #include <bitset>
 #include <vector>
+#include <thread>
 
 #include "TGProgressBar.h"
 #include "TGLabel.h"
+
+class GUISimulationHandler;
+
+struct SimulationServerWorkerArgs{
+    std::string pipe_name;
+    TGProgressBar* progressbar;
+    TGLabel* status;
+    GUISimulationHandler* owner;
+    bool reportProgressBar = true;
+    bool reportStatus = true;
+};
  
 class GUISimulationHandler {
-    pthread_t worker;
+    //pthread_t worker;
+    std::thread* worker = NULL;
     pid_t _sim_pid;
     TGProgressBar* _progressbar;
     TGLabel* _status;
@@ -34,24 +47,20 @@ public:
 
     void spawn_simulation();
     void kill_simulation();
-    static void* sim_server_work(void* worker_args);
+    static void sim_server_work(SimulationServerWorkerArgs worker_args);
 
-    void spawn_server();
+    void spawn_server(bool reportProgressBar = true, bool reportStatus = true);
     void join_server();
+    bool server_joinable();
     void kill_server();
 
     void set_progress_bar(TGProgressBar* progressbar);
     void set_status_label(TGLabel* status);
 
+    bool IsRunning() const ;
+
     static int open_pipe(const char* path);
     static void close_pipe(const int _fd, const char* pipe_name);
-};
-
-struct SimulationServerWorkerArgs{
-    std::string pipe_name;
-    TGProgressBar* progressbar;
-    TGLabel* status;
-    GUISimulationHandler* owner;
 };
 
 #endif

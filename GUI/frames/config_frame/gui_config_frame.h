@@ -109,6 +109,9 @@ namespace RhodotronSimulatorGUI::frames{
         const std::string GetCPath(){return (sim_config_frame ? sim_config_frame->GetCPath() : "xy/settings.txt");}
 
 
+        void SetPhaseLag(double phase){ if(E_config_frame){ E_config_frame->SetPhaseLag(phase); } }
+
+
         void SaveConfigPressed();
         void LoadConfigPressed();
     };

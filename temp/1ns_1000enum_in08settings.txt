@@ -1,0 +1,24 @@
+
+Simulation settings : 
+ph = -5 deg, gt = 1 ns, enum = 1000
+dT = 1e-05 ns, dT_out = 0.01 ns
+
+
+
+Summary for -5 degrees of phase lag
+L1 : 0.80787 m, L2 : 1.0833 m, L3 : 1.1705 m
+
+Gecis 1) Electron with the most energy : 629) 0.47562 MeV,	RMS of bunch : 0.0058252 MeV
+
+Gecis 2) Electron with the most energy : 633) 0.89139 MeV,	RMS of bunch : 0.010086 MeV
+
+Gecis 3) Electron with the most energy : 631) 1.2976 MeV,	RMS of bunch : 0.014087 MeV
+
+Gecis 4) Electron with the most energy : 627) 1.6995 MeV,	RMS of bunch : 0.018057 MeV
+
+For the first magnet : 0.80787 m, magnet guide : 0.2574 m, rho : 0.088379 m
+For the second magnet : 1.0833 m, magnet guide : 0.37767 m, rho : 0.098899 m
+
+Total steps calculated : 2362921460
+Simulation finished in : 117691344 us     ( 117.7 s )
+

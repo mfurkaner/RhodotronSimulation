@@ -197,19 +197,25 @@ public:
                 break;
             case epath:
                 cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #ifdef __APPLE__
+                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #endif
                 e_path = cmd;
                 epathIsSet = true;
                 break;
             case bpath:
                 cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #ifdef __APPLE__
+                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #endif
                 b_path = cmd;
                 bpathIsSet = true;
                 break;
             case cpath:
                 cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #ifdef __APPLE__
+                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #endif
                 c_path = cmd;
                 cpathIsSet = true;
                 break;
@@ -288,7 +294,9 @@ public:
                 break;
             case output:
                 cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #ifdef __APPLE__
+                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
+                #endif
                 _output = cmd;
                 outputIsSet = true;
                 break;

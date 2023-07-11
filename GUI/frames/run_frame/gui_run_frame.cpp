@@ -1,6 +1,8 @@
 #include "gui_run_frame.h"
+#include "../gui_main_frame.h"
 
 namespace RhodotronSimulatorGUI::frames{
+
 
     RunFrame::RunFrame(const TGWindow* p, UInt_t w, UInt_t h) 
         : TGVerticalFrame(p, w, h){

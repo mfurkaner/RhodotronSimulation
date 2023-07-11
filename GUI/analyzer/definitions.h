@@ -44,6 +44,9 @@ namespace RhodotronSimulatorGUI::Analysis{
         float GetAverageE(float time = -1);
         float GetStdDevE(float time = -1);
 
+        vector3d GetAverageR(float time = -1);
+        float GetStdDevR(float time = -1);
+
         int TimeIndexFromTime(int e_index, float time);
     };
 
@@ -93,12 +96,15 @@ namespace RhodotronSimulatorGUI::Analysis{
             if( t == -1){
                 continue;
             }
+
+            bin = static_cast <int> (std::floor(e_logs[i].time_slices[t].energy / energy_step)) + 1;
             
+            /*
             for ( bin = 1; bin <= 100; bin++){
                 if ( e_logs[i].time_slices[t].energy < energy_step * bin){
                     break;
                 }
-            }
+            }*/
             if ( min > e_logs[i].time_slices[t].energy){
                 min = e_logs[i].time_slices[t].energy;
                 minbin = bin;
@@ -181,7 +187,6 @@ namespace RhodotronSimulatorGUI::Analysis{
         int count = 0;
 
         for(int i = 0; i < e_logs.size(); i++){
-            int bin = 1;
             int t = TimeIndexFromTime(i, time);
             if( t == -1){
                 continue;
@@ -212,7 +217,7 @@ namespace RhodotronSimulatorGUI::Analysis{
             count++;
         }
         if ( count > 1){
-            sum_dev = sqrtf(sum_dev/(count - 1));
+            sum_dev = sqrtf(sum_dev/count);
         }
         else{
             sum_dev = sqrtf(sum_dev);
@@ -222,19 +227,74 @@ namespace RhodotronSimulatorGUI::Analysis{
     }
 
 
+    vector3d Analyzer::GetAverageR(float time){
+        auto e_logs = _dataProvider->GetElectrons();
+
+        vector3d average(0,0,0);
+        int count = 0;
+
+        for(int i = 0; i < e_logs.size(); i++){
+            int t = TimeIndexFromTime(i, time);
+            if( t == -1){
+                continue;
+            }
+            average += e_logs[i].time_slices[t].position;
+            count++;
+        }
+        
+        return average/count;
+    }
+
+    float Analyzer::GetStdDevR(float time){
+        auto e_logs = _dataProvider->GetElectrons();
+
+        vector3d average = GetAverageR(time);
+
+        float sum_dev = 0.0f;
+        int count = 0;
+
+        for(int i = 0; i < e_logs.size(); i++){
+            int bin = 1;
+            int t = TimeIndexFromTime(i, time);
+            if( t == -1){
+                continue;
+            }
+            vector3d deviation = e_logs[i].time_slices[t].position - average;
+            sum_dev += deviation * deviation;
+            count++;
+        }
+        if ( count > 1){
+            sum_dev = sqrtf(sum_dev/count);
+        }
+        else{
+            sum_dev = sqrtf(sum_dev);
+        }
+        
+        return sum_dev;
+    }
+
     int Analyzer::TimeIndexFromTime(int e_index, float time){
         auto e_logs = _dataProvider->GetElectrons();
+        auto time_step = _dataProvider->GetElectronTimeStep();
+
+        int expected_time_index = time/time_step;
 
         if ( e_logs.size() <= e_index ) return -1;
         else if (time == -1){
             return e_logs[e_index].time_slices.size() - 1;
         }
 
-        int t = 0;
+        int t = expected_time_index;
 
-        for (; t < e_logs[e_index].time_slices.size() ;  t++){
+        for (; t < e_logs[e_index].time_slices.size() && t >= 0; ){
             if ( e_logs[e_index].time_slices[t].time == time){
                 return t;
+            }
+            else if ( e_logs[e_index].time_slices[t].time < time){
+                t++;
+            }
+            else{
+                t--;
             }
         }
         return -1;

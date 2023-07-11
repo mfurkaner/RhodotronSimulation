@@ -121,10 +121,6 @@ void RhodotronSimulator::run(){
     else
         _runST();
 
-    state_mutex->lock();
-    state &= ~SIM_RUNNING;
-    state_mutex->unlock();
-
 }
 
 void RhodotronSimulator::_runMT(){
@@ -134,6 +130,7 @@ void RhodotronSimulator::_runMT(){
     MTEngine.setupPool(time_interval, start_time, end_time, gun, E_field, B_field, gun.thread_bunchs);
 
     STEPS_TAKEN = 0;
+    simulation_time = start_time;
     while (simulation_time < end_time + time_interval ){
         if (STEPS_TAKEN % log_interval() == 0){
             E_field.update(simulation_time);

@@ -24,6 +24,8 @@
 #include "frames/render_frame/gui_render_frame.cpp"
 #include "frames/analysis_frame/gui_analysis_frame.cpp"
 #include "frames/run_frame/gui_run_frame.cpp"
+#include "frames/sweep_frame/gui_sweep_frame.cpp"
+#include "frames/sweep_frame/sweep_control_frames/gui_sweep_phaselag_frame.cpp"
 #include "comm/sim_server.cpp"
 #include "renderer/gui_renderer.cpp"
 #include "data/gui_sim_dataprovider.cpp"

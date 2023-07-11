@@ -432,7 +432,7 @@ namespace RhodotronSimulatorGUI::renderer{
             }
         }
 
-        std::cerr << "No such time. " <<  time << std::endl;
+        std::cerr << "No such time : " <<  time << std::endl;
         return -1;
     }
 

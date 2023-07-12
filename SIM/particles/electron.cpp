@@ -72,14 +72,73 @@ void Electron2D::interactRK_ActorE(const RFField& E, const MagneticField& B, dou
     move(acc, time_interval/2);
     accelerate(acc, time_interval);
     move(acc, time_interval/2);
+    
 }
+
+void Electron2D::interactRK(RFField& E, MagneticField& B, double time, double time_interval){
+        Electron2D e_dummy;
+        e_dummy.Et = Et;
+        e_dummy.pos = pos;
+        e_dummy.vel = vel;
+
+        // Calculate k1
+        vector3d acc_E = E.actOn(e_dummy);
+        vector3d acc_B = B.actOn(e_dummy);
+        vector3d acc = acc_E + acc_B;
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc, time_interval);
+        vector3d pos_k1 = e_dummy.pos, vel_k1 = e_dummy.vel;
+
+        // Calculate k2
+        e_dummy.pos = (pos + pos_k1)*0.5;
+        e_dummy.vel = (vel + vel_k1)*0.5;
+        e_dummy.Et = e_dummy.gamma()*E0;
+        E.update(time + time_interval*0.5);
+
+        acc_E = E.actOn(e_dummy);
+        acc_B = B.actOn(e_dummy);
+        acc = acc_E + acc_B;
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc, time_interval);
+        vector3d pos_k2 = e_dummy.pos, vel_k2 = e_dummy.vel;
+
+        // Calculate k3
+        e_dummy.pos = (pos + pos_k2)*0.5;
+        e_dummy.vel = (vel + vel_k2)*0.5;
+        e_dummy.Et = e_dummy.gamma()*E0;
+        E.update(time + time_interval*0.5);
+
+        acc_E = E.actOn(e_dummy);
+        acc_B = B.actOn(e_dummy);
+        acc = acc_E + acc_B;
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc, time_interval);
+        vector3d pos_k3 = e_dummy.pos, vel_k3 = e_dummy.vel;
+
+        // Calculate k4
+        E.update(time + time_interval);
+
+        acc_E = E.actOn(e_dummy);
+        acc_B = B.actOn(e_dummy);
+        acc = acc_E + acc_B;
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc, time_interval);
+        vector3d pos_k4 = e_dummy.pos, vel_k4 = e_dummy.vel;
+
+        E.update(time);
+
+        pos = (pos_k1 + pos_k2*2 + pos_k3*2 + pos_k4)/6;
+        vel = (vel_k1 + vel_k2*2 + vel_k3*2 + vel_k4)/6;
+        Et = gamma()*E0;
+}
+
 
 vector3d Electron2D::interactE_RK(const RFField& E, double time_interval){
     Electron2D e_dummy;
     e_dummy.Et = Et;
     e_dummy.pos = pos;
     e_dummy.vel = vel;
-    double dt_halved = time_interval/2;
+    double dt_halved = time_interval*0.5;
     // get k1                                    // Calculate E vector
     vector3d F_m = E.getField(e_dummy.pos)*1E6*eQMratio;                                             // Calculate F/m vector
     vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
@@ -110,7 +169,7 @@ vector3d Electron2D::interactB_RK(const MagneticField& B, double time_interval){
     e_dummy.Et = Et;
     e_dummy.pos = pos;
     e_dummy.vel = vel;
-    double time_halved = time_interval/2;
+    double time_halved = time_interval*0.5;
     // get k1                                       
     vector3d F_m = (e_dummy.vel % B.getField(pos))*eQMratio;                                       
     vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();     

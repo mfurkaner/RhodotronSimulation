@@ -53,6 +53,7 @@ public:
     
     void interactLF(RFField& E, MagneticField& B, double time_interval);
     void interactRK(RFField& E, MagneticField& B, double time_interval);
+    void interactRK(RFField& E, MagneticField& B, double time, double time_interval);
     void interactRK_ActorE(const RFField& E, const MagneticField& B, double time_interval);
 
     vector3d interactE_RK(const RFField& E, double time_interval);

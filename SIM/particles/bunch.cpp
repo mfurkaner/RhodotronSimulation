@@ -34,7 +34,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time_interval){
         #endif
 
         #ifdef RUNGE_KUTTA
-        e[i]->interactRK_ActorE(E, B, time_interval);
+        e[i]->interactRK(E, B, time_interval);
         #endif
 
     }

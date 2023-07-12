@@ -102,7 +102,7 @@ int main(){
     simulation.logPaths();
     simulation.closeLogs();
 
-    plot(simulation_time);
+    //plot(simulation_time);
 
     
 

@@ -1,0 +1,52 @@
+uint64_t STEPS_TAKEN = 0;
+double GUN_ACTIVE_TIME = 1; // ns
+int NUM_OF_ELECTRONS = 100;
+double dT = 0.00001;     // ns
+double dT_out = 0.00001; // ns
+sim time = 5ns
+
+
+dT = e-2 ns
+
+RK2 = Simulation finished in : 4109454 us     ( 4.10945 s )
+Energy of the electron : 2.04713
+RK1 = Simulation finished in : 4145997 us     ( 4.146 s )
+Energy of the electron : 2.26503
+LF = Simulation finished in : 4140917 us     ( 4.14092 s )
+Energy of the electron : 3.78323
+
+dT = e-3 ns
+
+RK2 = Simulation finished in : 4302247 us     ( 4.30225 s )
+    Energy of the electron : 1.06691
+RK1 = Simulation finished in : 4617031 us     ( 4.61703 s )
+    Energy of the electron : 1.07469
+LF = Simulation finished in : 4238167 us     ( 4.23817 s )
+    Energy of the electron : 1.11712
+
+dT = e-4 ns
+
+RK2 = Simulation finished in : 6306501 us     ( 6.3065 s )
+    Energy of the electron : 1.00644
+RK1 = Simulation finished in : 8935292 us     ( 8.93529 s )
+    Energy of the electron : 1.00716
+LF = Simulation finished in : 5046793 us     ( 5.04679 s )
+    Energy of the electron : 1.01101
+
+dT = e-5 ns
+
+RK2 = Simulation finished in : 25427875 us     ( 25.4279 s )
+    Energy of the electron : 1.00064
+RK1 = Simulation finished in : 51902425 us     ( 51.9024 s )
+    Energy of the electron : 1.00071
+LF = Simulation finished in : 13513466 us     ( 13.5135 s )
+    Energy of the electron : 1.00109
+
+dt = e-6 ns
+
+LF = Simulation finished in : 97622909 us     ( 97.6229 s )
+    Energy of the electron : 1.00011
+RK1 = Simulation finished in : 486377602 us     ( 486.378 s )
+    Energy of the electron : 1.00007
+RK2 = Simulation finished in : 217703550 us     ( 217.704 s )
+    Energy of the electron : 1.00006

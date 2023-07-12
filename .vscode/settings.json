@@ -84,6 +84,7 @@
         "thread": "cpp",
         "unordered_set": "cpp",
         "variant": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "numbers": "cpp"
     }
 }

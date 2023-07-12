@@ -72,7 +72,7 @@ double Bunch2D::E_rms(){
   return sqrt(result/e_count);
 }
 
-#define LF
+#define RK2
 void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
@@ -158,19 +158,8 @@ void Bunch2D::interactBonly(MagneticField& B, double time, double time_interval)
             continue;
         }
         #ifdef LF
-        vector3d acc_B;
-        vector3d acc;
-        //vector3d jerk = B.getJerk(e[i].pos, e[i].vel, acc);
-        if ( i == 0 && ((int)(time/time_interval))%1000 == 0 ){
-            acc_B = B.actOn(e[i],true);
-            acc =  acc_B;
-            vector3d c = (e[i].vel % acc);
-            cout << " )   v x a = ( " << c.X() << " , " << c.Y() << " , " << c.Z() << " )" << endl;
-        }
-        else{
-            acc_B = B.actOn(e[i], false);
-            acc = acc_B;
-        }
+        vector3d acc_B = B.actOn(e[i], false);
+        vector3d acc = acc_B;
         e[i].move( acc,time_interval/2);
         e[i].accelerate( acc, time_interval);
         e[i].move( acc, time_interval/2);
@@ -192,6 +181,10 @@ void Bunch2D::interactBonly(MagneticField& B, double time, double time_interval)
 
         // Calculate k1
         vector3d acc_B = B.actOn(e_dummy);
+        if(acc_B == vector3d(0,0,0)){
+            e[i].move(time_interval);
+            continue;
+        }
         e_dummy.move(time_interval);
         e_dummy.accelerate(acc_B, time_interval);
         vector3d pos_k1 = e_dummy.pos, vel_k1 = e_dummy.vel;

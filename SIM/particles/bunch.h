@@ -71,7 +71,7 @@ public:
     void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i]->setEin(E_in);}}
     void setNSLen(double len){ initial_length_ns = len; _LEGACY_ns_between = initial_length_ns/(e_count - 1);}
     double getEin(){ return E_in;}
-    void interact(RFField& E, MagneticField& B, double time_interval);
+    void interact(RFField& E, MagneticField& B, const double time, double time_interval);
     void divide(unsigned int num);
     void concat();
     Bunch2D& subBunch(unsigned int index);

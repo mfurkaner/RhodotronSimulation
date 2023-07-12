@@ -43,7 +43,7 @@ public:
 
     Gun();
     Gun(double Ein, double gun_active_time, double pulse_interval, vector3d gunpos);
-    void interact(RFField& E, MagneticField& B, double time_interval);
+    void interact(RFField& E, MagneticField& B, const double time, double time_interval);
 
     void fireIfActive(double time);
     void fireAllWithFireTimesMT();

@@ -72,10 +72,9 @@ void Electron2D::interactRK_ActorE(const RFField& E, const MagneticField& B, dou
     move(acc, time_interval/2);
     accelerate(acc, time_interval);
     move(acc, time_interval/2);
-    
 }
 
-void Electron2D::interactRK(RFField& E, MagneticField& B, double time, double time_interval){
+void Electron2D::interactRK(RFField& E, MagneticField& B, const double time, double time_interval){
         Electron2D e_dummy;
         e_dummy.Et = Et;
         e_dummy.pos = pos;

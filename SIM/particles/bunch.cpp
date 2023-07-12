@@ -26,7 +26,7 @@ double Bunch2D::E_rms(){
 }
 
 
-void Bunch2D::interact(RFField& E, MagneticField& B, double time_interval){
+void Bunch2D::interact(RFField& E, MagneticField& B, const double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
 
         #ifdef LEAP_FROG
@@ -34,7 +34,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time_interval){
         #endif
 
         #ifdef RUNGE_KUTTA
-        e[i]->interactRK(E, B, time_interval);
+        e[i]->interactRK(E, B, time, time_interval);
         #endif
 
     }

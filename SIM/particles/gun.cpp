@@ -10,9 +10,9 @@
         this->gunpos = gunpos;
     }
 
-    void Gun::interact(RFField& E, MagneticField& B, double time_interval){
+    void Gun::interact(RFField& E, MagneticField& B, const double time, double time_interval){
         for(int i = 0; i < bunchs.size(); i++){
-            bunchs[i].interact(E, B, time_interval);
+            bunchs[i].interact(E, B, time, time_interval);
         }
     }
 

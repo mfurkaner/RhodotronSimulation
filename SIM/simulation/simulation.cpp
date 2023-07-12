@@ -165,7 +165,7 @@ void RhodotronSimulator::_runST(){
         // Do the actual work
         // This part is accounts for ~97% of the execution time
         gun.fireIfActive(simulation_time);
-        gun.interact(E_field, B_field, time_interval);
+        gun.interact(E_field, B_field, simulation_time, time_interval);
         // Work is finished, update UI handlers watchpoint
         simulation_time += time_interval;
         notifyUI(simulation_time);

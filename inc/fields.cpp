@@ -113,15 +113,92 @@ vector3d MagneticField::getField(vector3d position){
     return vector3d(0, 0, magnets[magnet_index].B);
 }
 
-vector3d MagneticField::actOn(Electron2D& e){
+vector3d MagneticField::actOn(Electron2D& e, bool log){
     if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
     }
 
     vector3d Bfield = getField(e.pos);                                          // Calculate B vector
     vector3d F_m = (e.vel % Bfield)*eQMratio;                                   // Calculate F/m vector
-    vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();                   // Calculate a vector
+    vector3d acc = (F_m)/e.gamma();                   // Calculate a vector
+    if(log){
+        cout << "Fm = "<< F_m.magnitude() <<" (" << F_m.X() << " , " << F_m.Y() << " , " << F_m.Z();
+    }
     return acc;
+}
+
+std::vector<vector3d> MagneticField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+    vector<vector3d> result;
+    result.push_back(e.pos);
+    result.push_back(e.vel);
+    if (isInside(e.pos) == -1){
+        e.move(dt);
+        result[0] = e.pos;
+        return result;
+    }
+    Electron2D e_dummy;
+    e_dummy.Et = e.Et;
+    e_dummy.pos = e.pos;
+    e_dummy.vel = e.vel;
+    Electron2D e_dummy2;
+    e_dummy2.Et = e.Et;
+    e_dummy2.pos = e.pos;
+    e_dummy2.vel = e.vel;
+    // get k1
+    vector3d Bfield = getField(e.pos);                                             
+    vector3d F_m = (e_dummy.vel % Bfield)*eQMratio;         
+    vector3d a1 = F_m/e_dummy.gamma();                              
+    e_dummy2.move(dt);
+    e_dummy2.accelerate(a1, dt);
+    vector<vector3d> k1;  
+    k1.push_back(e_dummy2.pos); k1.push_back(e_dummy2.vel);
+
+    // get k2
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(a1, dt/2);
+
+    e_dummy2.Et = e_dummy.Et;
+    e_dummy2.pos = e_dummy.pos;
+    e_dummy2.vel = e_dummy.vel;
+
+    Bfield = getField(e_dummy.pos);                                                 
+    F_m = (e_dummy.vel % Bfield)*eQMratio;                                               
+    vector3d a2 = F_m/e_dummy.gamma();                              
+    e_dummy2.move(dt);
+    e_dummy2.accelerate(a2, dt);
+    vector<vector3d> k2;  
+    k2.push_back(e_dummy2.pos); k2.push_back(e_dummy2.vel);  
+
+    // get k3
+    e_dummy.vel = e.vel;
+    e_dummy.accelerate(a2, dt/2);
+    
+    e_dummy2.Et = e_dummy.Et;
+    e_dummy2.pos = e_dummy.pos;
+    e_dummy2.vel = e_dummy.vel;
+
+    F_m = (e_dummy.vel % Bfield)*eQMratio;                                               
+    vector3d a3 = F_m/e_dummy.gamma();                              
+    e_dummy2.move(dt);
+    e_dummy2.accelerate(a3, dt);
+    vector<vector3d> k3;  
+    k3.push_back(e_dummy2.pos); k3.push_back(e_dummy2.vel);  
+    
+    // get k4
+    e_dummy.vel = e.vel;
+    e_dummy.move(dt/2);
+    e_dummy.accelerate(a3, dt);
+    Bfield = getField(e_dummy.pos);                                                 
+    F_m = (e_dummy.vel % Bfield)*eQMratio;  
+    vector3d a4 = F_m/e_dummy.gamma();                              
+    e_dummy.move(dt);
+    e_dummy.accelerate(a4, dt);
+    vector<vector3d> k4;  
+    k4.push_back(e_dummy2.pos); k4.push_back(e_dummy2.vel);  
+
+    result[0] = (k1[0] + k2[0]*2 + k3[0]*2 + k4[0])/6;
+    result[1] = (k1[1] + k2[1]*2 + k3[1]*2 + k4[1])/6;
+    return result;
 }
 
 vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){

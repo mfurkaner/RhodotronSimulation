@@ -24,7 +24,7 @@ private:
     double time_interval = dT;
     uint64_t total_steps = 0;
     double gun_active_time = 1; // ns
-    uint64_t num_of_electrons = 1;
+    uint64_t num_of_electrons = 100;
     unsigned int thread_count = 1;
     bool multi_threading = false;
     DataStorage EfieldStorage = DataStorage("xy/rf.txt");
@@ -55,6 +55,7 @@ public:
     void setPhaseLag(double phase_lag){ this->phase_lag = phase_lag;}
     void setEndTime(double end_time){ this->end_time = end_time;}
     void run();
+    void runBonly();
     void saveElectronsInfo(double time);
     void openLogs(){
 

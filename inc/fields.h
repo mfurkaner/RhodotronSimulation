@@ -55,7 +55,8 @@ public:
     void addMagnet(double B, double r, vector3d position);
     void addMagnet(Magnet m);
     vector3d getField(vector3d position);
-    vector3d actOn(Electron2D& e);
+    vector3d actOn(Electron2D& e, bool log = false);
+    std::vector<vector3d> actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);
     vector3d getJerk(vector3d pos, vector3d vel, vector3d acc);
     void log(DataStorage& magnet);
     std::vector<double> getRelativeEnterDistance(){return relativeEnterDistance;}

@@ -69,6 +69,21 @@
         "edraw.C": "cpp",
         "__functional_03": "cpp",
         "memory_resource": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "__tree": "cpp",
+        "any": "cpp",
+        "coroutine": "cpp",
+        "future": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "queue": "cpp",
+        "set": "cpp",
+        "shared_mutex": "cpp",
+        "span": "cpp",
+        "strstream": "cpp",
+        "thread": "cpp",
+        "unordered_set": "cpp",
+        "variant": "cpp",
+        "random": "cpp"
     }
 }

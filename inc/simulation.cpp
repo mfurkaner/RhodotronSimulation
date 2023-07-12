@@ -33,6 +33,31 @@ void Simulator::run(){
     //logPaths();
 }
 
+void Simulator::runBonly(){
+    // Before starting, log the magnetic field to the mag file
+    logBfield();                                          
+    if(multi_threading){
+        cout << thread_count << endl;
+        bunch.divide(thread_count);
+    }
+    while ( simulation_time < end_time ){
+        if ( total_steps%log_interval() == 0 ){
+            // every 100th step, log the E field
+            saveElectronsInfo(simulation_time);
+        }
+        if( multi_threading ){
+            MTEngine.doWork(bunch.subBunchPtr(), E_field, B_field, simulation_time, time_interval);
+            MTEngine.join();
+        }
+        else{
+            bunch.interactBonly(B_field, simulation_time, time_interval);
+        }
+        simulation_time += time_interval;
+        total_steps++;
+    }
+    //logPaths();
+}
+
 void Simulator::saveElectronsInfo(double time){
     bunch.saveInfo(time);
 }

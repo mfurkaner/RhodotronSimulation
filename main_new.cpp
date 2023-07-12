@@ -10,7 +10,7 @@ using namespace std::chrono;
 
 uint64_t STEPS_TAKEN = 0;
 double GUN_ACTIVE_TIME = 1; // ns
-int NUM_OF_ELECTRONS = 1;
+int NUM_OF_ELECTRONS = 100;
 bool NOTIFICATIONS = false;
 int MAX_THREAD_COUNT = 1;
 bool MULTI_THREAD = false;
@@ -19,7 +19,7 @@ double dT_out = 0.01; // ns
 
 int main(){
     auto start = high_resolution_clock::now();
-    int simulation_time = 10;
+    int simulation_time = 5;
 
     /*
 
@@ -89,16 +89,16 @@ int main(){
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;*/
 
     Simulator simulation(0);
-    simulation.setNumberofElectrons(1);
     simulation.setEin(1);
+    simulation.setNumberofElectrons(NUM_OF_ELECTRONS);
     simulation.setEmax(0);
     simulation.setEndTime(simulation_time);
 
-    vector3d v(1,0,0);
+    vector3d v(0.05,0,0);
     Magnet m(0.1,10,v);
     simulation.addMagnet(m);
     simulation.openLogs();
-    simulation.run();
+    simulation.runBonly();
     simulation.logPaths();
     simulation.closeLogs();
 
@@ -118,9 +118,9 @@ int main(){
 
 void plot(double simulation_time){
     Gnuplot gp;
-    gp.setRange(0.5,1.5,-0.5,0.5);
+    gp.setRange(-0.2,0.2,-0.1,0.3);
     gp.enableMinorTics();
-    gp.setCbRange(1, 1.1);
+    gp.setCbRange(1, 4);
     gp.setCbTic(0.1);
     gp.setRatio(1);
     gp.addCommand("set isosamples 500,500");
@@ -136,8 +136,15 @@ void plot(double simulation_time){
     for( int j = 2 ; j <= NUM_OF_ELECTRONS ; j++){
         plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";
     }
-    plotCommand += "}";
-    gp.setPlotCommand(plotCommand);
+    std::string plotCommandB = "do for [i=1:" + to_string(simulation_time*10) + "] {plot ";
+    plotCommandB += "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, ";                    // 4=sari
+    plotCommandB +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
+    for( int j = 2 ; j <= NUM_OF_ELECTRONS ; j++){
+        plotCommandB +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";
+    }
+    plotCommandB += "}";
+
+    gp.setPlotCommand(plotCommandB);
 
     gp.executeCommands();
     gp.plot();

@@ -72,7 +72,7 @@ double Bunch2D::E_rms(){
   return sqrt(result/e_count);
 }
 
-#define RK2
+#define LF
 void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){

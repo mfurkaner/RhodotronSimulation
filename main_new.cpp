@@ -5,6 +5,7 @@
 
 int getrusage(int who, struct rusage *usage);
 void plot(double);
+std::pair<vector<double>, vector<double>> test_out_dt_dE(vector<double> dts);
 
 using namespace std::chrono;
 
@@ -14,12 +15,10 @@ int NUM_OF_ELECTRONS = 100;
 bool NOTIFICATIONS = false;
 int MAX_THREAD_COUNT = 1;
 bool MULTI_THREAD = false;
-double dT = 0.01;     // ns
-double dT_out = 0.01; // ns
+double dT = 0.000001;     // ns
+double dT_out = 0.00000; // ns
 
 int main(){
-    auto start = high_resolution_clock::now();
-    int simulation_time = 5;
 
     /*
 
@@ -82,12 +81,15 @@ int main(){
     gp.waitUntilDone();
     
 
-    /*
+    
     vector3d magnet_position(R2 + 0.35, 0, 0);
     magnet_position.rotate(vector3d(0,0,1), -5);
     Magnet m(-0.13, 1, magnet_position);
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;*/
 
+    auto start = high_resolution_clock::now();
+    int simulation_time = 5;
+/*
     Simulator simulation(0);
     simulation.setEin(1);
     simulation.setNumberofElectrons(NUM_OF_ELECTRONS);
@@ -104,15 +106,98 @@ int main(){
 
     //plot(simulation_time);
 
-    
+    */
+
+    vector<double> dts;
+
+
+
+
+
+
+
+    dts.push_back(5e-2);
+    dts.push_back(1e-2);
+    dts.push_back(1e-3);
+
+    dts.push_back(9e-4);
+    dts.push_back(8e-4);
+    dts.push_back(7e-4);
+    dts.push_back(6e-4);
+    dts.push_back(5e-4);
+    dts.push_back(4e-4);
+    dts.push_back(3e-4);
+    dts.push_back(2e-4);
+    dts.push_back(1e-4);
+
+    dts.push_back(9e-5);
+    dts.push_back(8e-5);
+    dts.push_back(7e-5);
+    dts.push_back(6e-5);
+    dts.push_back(5e-5);
+    dts.push_back(4e-5);
+    dts.push_back(3e-5);
+    dts.push_back(2e-5);
+    dts.push_back(1e-5);
+
+    dts.push_back(1e-6);
+
+
+    auto results = test_out_dt_dE(dts);
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl << "Energy of the electron : " << simulation.getElectronWithMaxEnergy().Et - E0 << endl;
-    rusage ru;
-    getrusage( RUSAGE_SELF, &ru);
-    cout << "Size of simulation : " << ru.ru_ixrss << endl;
+    cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl;
+
+    ofstream test_result_stream("lf_rk_test_results.txt", std::ios::out);
+
+
+    for(int i = 0; i < dts.size() && i < results.first.size() && i < results.second.size(); i++){
+        test_result_stream << setprecision(6);
+
+        test_result_stream << std::scientific << dts[i] << std::fixed << " " << results.first[i] <<  " " << results.second[i] << std::endl;
+    }
+
+    test_result_stream.close();
+
+
     return 0;
+}
+
+std::pair<vector<double>, vector<double>> test_out_dt_dE(vector<double> dts){
+    vector<double> E_tries;
+    vector<double> t_sims;
+    for(double dt : dts){
+        dT = dt;
+
+        auto start = high_resolution_clock::now();
+        int simulation_time = 5;
+
+        Simulator simulation(0);
+        simulation.setEin(1);
+        simulation.setNumberofElectrons(NUM_OF_ELECTRONS);
+        simulation.setEmax(0);
+        simulation.setEndTime(simulation_time);
+
+        vector3d v(0.05,0,0);
+        Magnet m(0.1,10,v);
+        simulation.addMagnet(m);
+        simulation.openLogs();
+        simulation.runBonly();
+        simulation.logPaths();
+        simulation.closeLogs();
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        double dE = simulation.getElectronWithMaxEnergy().Et - E0 - 1;
+
+        std::cout << "Simulation for dt : " << std::scientific << dT << " ns, Tsim = "  
+                << std::fixed <<duration.count()/1000000.0 << "s, dE = " << dE << std::endl << std::flush;
+
+        E_tries.push_back(dE);
+        t_sims.push_back(duration.count()/1000000.0);
+    }
+    return make_pair(E_tries,t_sims);
 }
 
 

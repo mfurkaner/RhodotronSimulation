@@ -171,20 +171,71 @@ int main(){
 
     dts.push_back(1e-6);
 
+    vector<pair<vector<double>, vector<double>>> results;
 
-    auto results = test_out_staticE_rk_lf_dt_dE(dts);
+    int RUN_COUNT = 5;
 
+    for(int i = 0; i < RUN_COUNT; i++){
+        results.push_back(test_out_staticE_rk_lf_dt_dE(dts));
+
+        std::cout << "---> End of RUN : " << i + 1 << std::endl;
+    }
+
+    vector<double> dE_avg , dE_std, T_avg, T_std;
+
+    std::cout << "Calculating averages..." << std::endl;
+
+    for(int i = 0 ; i < dts.size() ; i++){
+        double first_avg = 0, second_avg = 0;
+        for(auto result : results){
+            first_avg += result.first[i];
+            second_avg += result.second[i];
+        }
+        dE_avg.push_back(first_avg/results.size());
+        T_avg.push_back(second_avg/results.size());
+        std::cout << "dt : " << dts[i] << " = dE_ave : " << dE_avg[i] << " T_ave : " << T_avg[i] << std::endl;
+    }
+
+    std::cout << "Calculating stds..." << std::endl;
+
+    for(int i = 0 ; i < dts.size() ; i++){
+        double first_std = 0, second_std = 0;
+        for(auto result : results){
+            first_std += (result.first[i] - dE_avg[i])*(result.first[i] - dE_avg[i]);
+            second_std += (result.second[i] - T_avg[i])*(result.second[i] - T_avg[i]);
+        }
+        first_std = sqrt(first_std/(results.size() - 1));
+        second_std = sqrt(second_std/(results.size() - 1));
+
+        dE_std.push_back(first_std);
+        T_std.push_back(second_std);
+        std::cout << "dt : " << dts[i] << " = dE_std : " << dE_std[i] << " T_std : " << T_std[i] << std::endl;
+    }
 
     ofstream test_result_stream("lf_rk_staticE_test_results.txt", std::ios::out);
+    ofstream raw_data_stream("raw_lf_rk_staticE_test_results.txt", std::ios::out);
 
+    for(int i = 0; i < dts.size() && i < dE_avg.size() && i < dE_std.size(); i++){
+        test_result_stream << "dt(ns) dE_ave(MeV) sdE(MeV) Tsim(s) sTsim(s)" << std::endl <<  setprecision(6);
 
-    for(int i = 0; i < dts.size() && i < results.first.size() && i < results.second.size(); i++){
-        test_result_stream << setprecision(6);
+        test_result_stream << std::scientific << dts[i] << 
+        std::fixed << " " << dE_avg[i] <<  " " << dE_std[i] <<
+         " " << T_avg[i] <<  " " << T_std[i] <<  std::endl;
+    }
 
-        test_result_stream << std::scientific << dts[i] << std::fixed << " " << results.first[i] <<  " " << results.second[i] << std::endl;
+    raw_data_stream << "dt(ns) dE_ave(MeV) sdE(MeV) Tsim(s) sTsim(s)" << std::endl <<  setprecision(6);
+
+    for(int i = 0; i < results.size() ; i++){
+        raw_data_stream << "   --- RUN : " << i + 1 << " ---\n";
+
+        for(auto result : results){
+            raw_data_stream << std::scientific << dts[i] << 
+            std::fixed << " " << result.first[i] <<  " " << result.second[i] << std::endl;
+        }
     }
 
     test_result_stream.close();
+    raw_data_stream.close();
 
     //plot(simulation_time);
 

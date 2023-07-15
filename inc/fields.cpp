@@ -26,14 +26,13 @@ vector3d StaticConstantEField::actOn(Electron2D& e){
     return acc;
 }
 
-int StaticConstantEField::log(DataStorage& rf){
+int StaticConstantEField::log(DataStorage& statE){
     int count = 0;
-    for( double i = -R2; i <= R2 ; i += 0.05){
-        for (double j = -R2; j <= R2 ; j += 0.05){
-            vector3d pos(i,j,0);
-            if ( pos.magnitude() > R1 ){
-                rf << "p: " << pos << "  E: " << E << "   mag: " << E.magnitude() <<"\n";
-                count ++;
+    for(double x_ = -2; x_ <= 2 ; x_+=0.08){
+        for(double y_ = -2; y_ <= 2; y_+=0.08){
+            if ( x_ >= -x && x_ <= x && y_ >= -y && y_ <= y){
+                statE << "p: " << vector3d(x_, y_, 0) << " E: " << E << " mag: " << E.magnitude() << "\n";
+                count++;
             }
         }
     }

@@ -29,6 +29,7 @@ private:
     unsigned int thread_count = 1;
     bool multi_threading = false;
     DataStorage EfieldStorage = DataStorage("xy/rf.txt");
+    DataStorage StatEfieldStorage = DataStorage("xy/statE.txt"); 
     DataStorage BfieldStorage = DataStorage("xy/magnet.txt");
     vector<DataStorage> pathsStorage;
 
@@ -75,17 +76,19 @@ public:
             pathsStorage.push_back(DataStorage(path));
         }
         EfieldStorage.open();
+        StatEfieldStorage.open();
         BfieldStorage.open();
     }
     void closeLogs(){
         EfieldStorage.close();
+        StatEfieldStorage.close();
         BfieldStorage.close();
     }
     void logEfield(double time){
         E_field.log(EfieldStorage, time);
     }
     void logStaticEfield(){
-        S_C_E_field.log(EfieldStorage);
+        S_C_E_field.log(StatEfieldStorage);
     }
     void logBfield(){
         B_field.log(BfieldStorage);

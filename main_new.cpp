@@ -140,7 +140,7 @@ int main(){
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;*/
 
     auto start = high_resolution_clock::now();
-    int simulation_time = 6;
+    int simulation_time = 5;
 
     
     vector<double> dts;
@@ -342,18 +342,19 @@ std::pair<vector<double>, vector<double>> test_out_staticE_rk_lf_dt_dE(vector<do
         dT = dt;
 
         auto start = high_resolution_clock::now();
-        int simulation_time = 6;
+        int simulation_time = 5;
 
         Simulator simulation(0);
         simulation.setEin(1);
         simulation.setNumberofElectrons(NUM_OF_ELECTRONS);
         simulation.setEndTime(simulation_time);
 
-        vector3d E(0, -2*2.65616, 0);
+        vector3d E(-2.65616, 0, 0);
         simulation.setStaticConstantEfield(E, R2, R2);
         simulation.openLogs();
         simulation.runStaticEonly();
         simulation.logPaths();
+        //simulation.logStaticEfield();
         simulation.closeLogs();
 
         auto stop = high_resolution_clock::now();
@@ -371,7 +372,7 @@ std::pair<vector<double>, vector<double>> test_out_staticE_rk_lf_dt_dE(vector<do
 
 void plot(double simulation_time){
     Gnuplot gp;
-    gp.setRange(-R2,R2,-R2, R2);
+    gp.setRange(-1.0,1.0,-1.0, 1.0);
     gp.enableMinorTics();
     gp.setCbRange(1, 4);
     gp.setCbTic(0.1);
@@ -383,12 +384,15 @@ void plot(double simulation_time){
     gp.addCommand("set output \"out.gif\"");
     gp.addCommand("set key top left");
     
+    // General plot command used in Rhodo
     std::string plotCommand = "do for [i=1:" + to_string(simulation_time*10) + "] {plot \"xy/rf.txt\" every ::(i*916 - 915)::(i*916) using 5:7:($13/15):($15/15) title \"RF Field\" with vectors lc 6 head filled,";
     plotCommand += "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, ";                    // 4=sari
     plotCommand +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
     for( int j = 2 ; j <= NUM_OF_ELECTRONS ; j++){
         plotCommand +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";
     }
+
+    // Plot command to draw magnets and electrons only
     std::string plotCommandB = "do for [i=1:" + to_string(simulation_time*10) + "] {plot ";
     plotCommandB += "\"xy/magnet.txt\" u 1:2 title \"magnets\" ls 5 lc 4 ps 0.2, ";                    // 4=sari
     plotCommandB +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
@@ -397,7 +401,16 @@ void plot(double simulation_time){
     }
     plotCommandB += "}";
 
-    gp.setPlotCommand(plotCommandB);
+    // plot command to draw static E field and electrons only
+    std::string plotCommandE = "do for [i=1:" + to_string(simulation_time*10) + "] {plot ";
+    plotCommandE += "\"xy/statE.txt\" using 3:5:($11/85):($13/85) title \"E Field\" with vectors lc 6 head filled,";                    // 4=sari
+    plotCommandE +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
+    for( int j = 2 ; j <= NUM_OF_ELECTRONS ; j++){
+        plotCommandE +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";
+    }
+    plotCommandE += "}";
+
+    gp.setPlotCommand(plotCommandE);
 
     gp.executeCommands();
     gp.plot();

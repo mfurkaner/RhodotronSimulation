@@ -16,6 +16,7 @@ class Simulator{        // E in MV/m,   En in MeV,   B in T,    t in
 private:
     MultiThreadEngine MTEngine;
     RFField E_field;
+    StaticConstantEField S_C_E_field;
     MagneticField B_field;
     double simulation_time = 0;
     double end_time = 45;
@@ -30,6 +31,10 @@ private:
     DataStorage EfieldStorage = DataStorage("xy/rf.txt");
     DataStorage BfieldStorage = DataStorage("xy/magnet.txt");
     vector<DataStorage> pathsStorage;
+
+    bool _RF_active = true;
+    bool _Static_E_active = false;
+    bool _Static_B_active = true;
 public:
     Simulator(double phase_lag) : phase_lag(phase_lag){
         E_field = RFField(phase_lag);
@@ -42,6 +47,10 @@ public:
         MTEngine = MultiThreadEngine(thread_count);
     }
 
+    void disableRF(){_RF_active = false;}
+    void disableStaticB(){_Static_B_active = false;}
+    void disableStaticE(){_Static_E_active = false;}
+
     void setEmax(double E_max){E_field.setEmax(E_max);}
     void setEin(double E_in){ bunch.setEin(E_in);}
     void setNumberofElectrons(uint64_t num_of_electrons){
@@ -50,12 +59,14 @@ public:
         bunch = Bunch2D(num_of_electrons);
         bunch.setEin(E_in);
     }
+    void setStaticConstantEfield(vector3d E, double x, double y);
     void addMagnet(double B, double r, vector3d position);
     void addMagnet(Magnet m);
     void setPhaseLag(double phase_lag){ this->phase_lag = phase_lag;}
     void setEndTime(double end_time){ this->end_time = end_time;}
     void run();
     void runBonly();
+    void runStaticEonly();
     void saveElectronsInfo(double time);
     void openLogs(){
 
@@ -72,6 +83,9 @@ public:
     }
     void logEfield(double time){
         E_field.log(EfieldStorage, time);
+    }
+    void logStaticEfield(){
+        S_C_E_field.log(EfieldStorage);
     }
     void logBfield(){
         B_field.log(BfieldStorage);

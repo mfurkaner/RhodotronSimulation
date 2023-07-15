@@ -5,9 +5,61 @@
 
 int getrusage(int who, struct rusage *usage);
 void plot(double);
-std::pair<vector<double>, vector<double>> test_out_dt_dE(vector<double> dts);
+std::pair<vector<double>, vector<double>> test_out_mag_rk_lf_dt_dE(vector<double> dts);
+std::pair<vector<double>, vector<double>> test_out_staticE_rk_lf_dt_dE(vector<double> dts);
+
+void TEST_MAG_LF_RK();
+
+
 
 using namespace std::chrono;
+
+void TEST_STATIC_E_LF_RK(){
+
+    vector<double> dts;
+
+    dts.push_back(5e-2);
+    dts.push_back(1e-2);
+    dts.push_back(1e-3);
+
+    dts.push_back(9e-4);
+    dts.push_back(8e-4);
+    dts.push_back(7e-4);
+    dts.push_back(6e-4);
+    dts.push_back(5e-4);
+    dts.push_back(4e-4);
+    dts.push_back(3e-4);
+    dts.push_back(2e-4);
+    dts.push_back(1e-4);
+
+    dts.push_back(9e-5);
+    dts.push_back(8e-5);
+    dts.push_back(7e-5);
+    dts.push_back(6e-5);
+    dts.push_back(5e-5);
+    dts.push_back(4e-5);
+    dts.push_back(3e-5);
+    dts.push_back(2e-5);
+    dts.push_back(1e-5);
+
+    dts.push_back(1e-6);
+
+
+    auto results = test_out_staticE_rk_lf_dt_dE(dts);
+
+
+    ofstream test_result_stream("lf_rk_staticE_test_results.txt", std::ios::out);
+
+
+    for(int i = 0; i < dts.size() && i < results.first.size() && i < results.second.size(); i++){
+        test_result_stream << setprecision(6);
+
+        test_result_stream << std::scientific << dts[i] << std::fixed << " " << results.first[i] <<  " " << results.second[i] << std::endl;
+    }
+
+    test_result_stream.close();
+}
+
 
 uint64_t STEPS_TAKEN = 0;
 double GUN_ACTIVE_TIME = 1; // ns
@@ -88,33 +140,10 @@ int main(){
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;*/
 
     auto start = high_resolution_clock::now();
-    int simulation_time = 5;
-/*
-    Simulator simulation(0);
-    simulation.setEin(1);
-    simulation.setNumberofElectrons(NUM_OF_ELECTRONS);
-    simulation.setEmax(0);
-    simulation.setEndTime(simulation_time);
+    int simulation_time = 6;
 
-    vector3d v(0.05,0,0);
-    Magnet m(0.1,10,v);
-    simulation.addMagnet(m);
-    simulation.openLogs();
-    simulation.runBonly();
-    simulation.logPaths();
-    simulation.closeLogs();
-
-    //plot(simulation_time);
-
-    */
-
+    
     vector<double> dts;
-
-
-
-
-
-
 
     dts.push_back(5e-2);
     dts.push_back(1e-2);
@@ -143,11 +172,69 @@ int main(){
     dts.push_back(1e-6);
 
 
-    auto results = test_out_dt_dE(dts);
+    auto results = test_out_staticE_rk_lf_dt_dE(dts);
+
+
+    ofstream test_result_stream("lf_rk_staticE_test_results.txt", std::ios::out);
+
+
+    for(int i = 0; i < dts.size() && i < results.first.size() && i < results.second.size(); i++){
+        test_result_stream << setprecision(6);
+
+        test_result_stream << std::scientific << dts[i] << std::fixed << " " << results.first[i] <<  " " << results.second[i] << std::endl;
+    }
+
+    test_result_stream.close();
+
+    //plot(simulation_time);
+
+
+
 
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
     cout << "Simulation finished in : " << duration.count() << " us     ( "<<duration.count()/1000000.0 << " s )" << endl;
+
+
+
+    return 0;
+}
+
+
+void TEST_MAG_LF_RK(){
+
+    vector<double> dts;
+
+    dts.push_back(5e-2);
+    dts.push_back(1e-2);
+    dts.push_back(1e-3);
+
+    dts.push_back(9e-4);
+    dts.push_back(8e-4);
+    dts.push_back(7e-4);
+    dts.push_back(6e-4);
+    dts.push_back(5e-4);
+    dts.push_back(4e-4);
+    dts.push_back(3e-4);
+    dts.push_back(2e-4);
+    dts.push_back(1e-4);
+
+    dts.push_back(9e-5);
+    dts.push_back(8e-5);
+    dts.push_back(7e-5);
+    dts.push_back(6e-5);
+    dts.push_back(5e-5);
+    dts.push_back(4e-5);
+    dts.push_back(3e-5);
+    dts.push_back(2e-5);
+    dts.push_back(1e-5);
+
+    dts.push_back(1e-6);
+
+
+
+    auto results = test_out_mag_rk_lf_dt_dE(dts);
+
 
     ofstream test_result_stream("lf_rk_test_results.txt", std::ios::out);
 
@@ -160,11 +247,9 @@ int main(){
 
     test_result_stream.close();
 
-
-    return 0;
 }
 
-std::pair<vector<double>, vector<double>> test_out_dt_dE(vector<double> dts){
+std::pair<vector<double>, vector<double>> test_out_mag_rk_lf_dt_dE(vector<double> dts){
     vector<double> E_tries;
     vector<double> t_sims;
     for(double dt : dts){
@@ -200,10 +285,43 @@ std::pair<vector<double>, vector<double>> test_out_dt_dE(vector<double> dts){
     return make_pair(E_tries,t_sims);
 }
 
+std::pair<vector<double>, vector<double>> test_out_staticE_rk_lf_dt_dE(vector<double> dts){
+    vector<double> E_tries;
+    vector<double> t_sims;
+    for(double dt : dts){
+        dT = dt;
+
+        auto start = high_resolution_clock::now();
+        int simulation_time = 6;
+
+        Simulator simulation(0);
+        simulation.setEin(1);
+        simulation.setNumberofElectrons(NUM_OF_ELECTRONS);
+        simulation.setEndTime(simulation_time);
+
+        vector3d E(0, -2*2.65616, 0);
+        simulation.setStaticConstantEfield(E, R2, R2);
+        simulation.openLogs();
+        simulation.runStaticEonly();
+        simulation.logPaths();
+        simulation.closeLogs();
+
+        auto stop = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(stop - start);
+        double dE = simulation.getElectronWithMaxEnergy().Et - E0 - 5;
+
+        std::cout << "Simulation for dt : " << std::scientific << dT << " ns, Tsim = "  
+                << std::fixed <<duration.count()/1000000.0 << "s, dE = " << dE << std::endl << std::flush;
+
+        E_tries.push_back(dE);
+        t_sims.push_back(duration.count()/1000000.0);
+    }
+    return make_pair(E_tries,t_sims);
+}
 
 void plot(double simulation_time){
     Gnuplot gp;
-    gp.setRange(-0.2,0.2,-0.1,0.3);
+    gp.setRange(-R2,R2,-R2, R2);
     gp.enableMinorTics();
     gp.setCbRange(1, 4);
     gp.setCbTic(0.1);

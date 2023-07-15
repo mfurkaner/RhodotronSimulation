@@ -14,7 +14,9 @@ void Simulator::run(){
         bunch.divide(thread_count);
     }
     while ( simulation_time < end_time ){
-        E_field.update(simulation_time);
+        if( _RF_active ){
+            E_field.update(simulation_time);
+        }
         if ( total_steps%log_interval() == 0 ){
             logEfield(simulation_time);
             // every 100th step, log the E field
@@ -50,12 +52,24 @@ void Simulator::runBonly(){
             MTEngine.join();
         }
         else{
-            bunch.interactBonly(B_field, simulation_time, time_interval);
+            bunch.interactStaticB(B_field, simulation_time, time_interval);
         }
         simulation_time += time_interval;
         total_steps++;
     }
     //logPaths();
+}
+
+void Simulator::runStaticEonly(){
+    while ( simulation_time < end_time ){
+        if ( total_steps%log_interval() == 0 ){
+            // every 100th step, log the E field
+            saveElectronsInfo(simulation_time);
+        }
+        bunch.interactStaticE(S_C_E_field, simulation_time, time_interval);
+        simulation_time += time_interval;
+        total_steps++;
+    }
 }
 
 void Simulator::saveElectronsInfo(double time){
@@ -79,6 +93,12 @@ double Simulator::getAverageEnergy(){
 Electron2D& Simulator::getElectronWithMaxEnergy(){
     return bunch.getFastest();
 }*/
+
+void Simulator::setStaticConstantEfield(vector3d E, double x, double y){
+    _Static_E_active = true;
+    S_C_E_field.SetE(E);
+    S_C_E_field.SetXY(x,y);
+}
 
 void Simulator::addMagnet(double B, double r, vector3d position){
     B_field.addMagnet(B, r, position);

@@ -5,6 +5,41 @@
     #include "rhodo2d.h"
 #endif
 
+void StaticConstantEField::SetE(vector3d E){
+    this->E = E;
+}
+
+void StaticConstantEField::SetXY(double x, double y){
+    this->x = x;
+    this->y = y;
+}
+
+
+vector3d StaticConstantEField::GetE() const {return E;}
+
+vector3d StaticConstantEField::actOn(Electron2D& e){
+    if( (e.pos.X() > x || e.pos.X() < -x ) || (e.pos.Y() > y || e.pos.Y() < -y)){
+        return vector3d(0,0,0);
+    }
+    vector3d F_m = E*1E6*eQMratio;                           // Calculate F/m vector
+    vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
+    return acc;
+}
+
+int StaticConstantEField::log(DataStorage& rf){
+    int count = 0;
+    for( double i = -R2; i <= R2 ; i += 0.05){
+        for (double j = -R2; j <= R2 ; j += 0.05){
+            vector3d pos(i,j,0);
+            if ( pos.magnitude() > R1 ){
+                rf << "p: " << pos << "  E: " << E << "   mag: " << E.magnitude() <<"\n";
+                count ++;
+            }
+        }
+    }
+    return count;
+}
+
 void RFField::update(double time){
     double w = 2 * M_PI * frequency / 1000;
     E = sin(w*time + phase_lag*deg_to_rad)*E_max;

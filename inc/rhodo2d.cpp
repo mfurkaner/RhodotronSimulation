@@ -72,7 +72,7 @@ double Bunch2D::E_rms(){
   return sqrt(result/e_count);
 }
 
-#define LF
+#define RK2
 void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
@@ -152,7 +152,7 @@ void Bunch2D::interact(RFField& E, MagneticField& B, double time, double time_in
 }
 
 
-void Bunch2D::interactBonly(MagneticField& B, double time, double time_interval){
+void Bunch2D::interactStaticB(MagneticField& B, double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
         if ( time < i*ns_between){
             continue;
@@ -211,6 +211,69 @@ void Bunch2D::interactBonly(MagneticField& B, double time, double time_interval)
 
         // Calculate k4
         acc_B = B.actOn(e_dummy);
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc_B, time_interval);
+        vector3d pos_k4 = e_dummy.pos, vel_k4 = e_dummy.vel;
+
+        e[i].pos = (pos_k1 + pos_k2*2 + pos_k3*2 + pos_k4)/6;
+        e[i].vel = (vel_k1 + vel_k2*2 + vel_k3*2 + vel_k4)/6;
+        e[i].Et = e[i].gamma()*E0;
+
+        #endif
+    }
+}
+
+void Bunch2D::interactStaticE(StaticConstantEField& E, double time, double time_interval){
+    for(int i = 0; i < e.size() ; i++){
+        if ( time < i*ns_between){
+            continue;
+        }
+        #ifdef LF
+        vector3d acc_B = E.actOn(e[i]);
+        vector3d acc = acc_B;
+        e[i].move( acc,time_interval/2);
+        e[i].accelerate( acc, time_interval);
+        e[i].move( acc, time_interval/2);
+        #endif
+
+        #ifdef RK2
+        Electron2D e_dummy;
+        e_dummy.Et = e[i].Et;
+        e_dummy.pos = e[i].pos;
+        e_dummy.vel = e[i].vel;
+
+        // Calculate k1
+        vector3d acc_B = E.actOn(e_dummy);
+        if(acc_B == vector3d(0,0,0)){
+            e[i].move(time_interval);
+            continue;
+        }
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc_B, time_interval);
+        vector3d pos_k1 = e_dummy.pos, vel_k1 = e_dummy.vel;
+
+        // Calculate k2
+        e_dummy.pos = (e[i].pos + pos_k1)/2;
+        e_dummy.vel = (e[i].vel + vel_k1)/2;
+        e_dummy.Et = e_dummy.gamma()*E0;
+
+        acc_B = E.actOn(e_dummy);
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc_B, time_interval);
+        vector3d pos_k2 = e_dummy.pos, vel_k2 = e_dummy.vel;
+
+        // Calculate k3
+        e_dummy.pos = (e[i].pos + pos_k2)/2;
+        e_dummy.vel = (e[i].vel + vel_k2)/2;
+        e_dummy.Et = e_dummy.gamma()*E0;
+
+        acc_B = E.actOn(e_dummy);
+        e_dummy.move(time_interval);
+        e_dummy.accelerate(acc_B, time_interval);
+        vector3d pos_k3 = e_dummy.pos, vel_k3 = e_dummy.vel;
+
+        // Calculate k4
+        acc_B = E.actOn(e_dummy);
         e_dummy.move(time_interval);
         e_dummy.accelerate(acc_B, time_interval);
         vector3d pos_k4 = e_dummy.pos, vel_k4 = e_dummy.vel;

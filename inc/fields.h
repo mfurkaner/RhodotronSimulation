@@ -12,6 +12,21 @@
 
 class Electron2D;
 
+class StaticConstantEField{
+    private:
+    vector3d E;
+    double x;
+    double y;
+    public:
+
+    void SetE(vector3d E);
+    vector3d GetE() const;
+    void SetXY(double x, double y);
+
+    vector3d actOn(Electron2D& e);
+    int log(DataStorage& rf);
+};
+
 class RFField{
 private:
     double E;

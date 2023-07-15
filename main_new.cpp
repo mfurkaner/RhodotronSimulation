@@ -173,7 +173,7 @@ int main(){
 
     vector<pair<vector<double>, vector<double>>> results;
 
-    int RUN_COUNT = 5;
+    int RUN_COUNT = 10;
 
     for(int i = 0; i < RUN_COUNT; i++){
         results.push_back(test_out_staticE_rk_lf_dt_dE(dts));
@@ -215,9 +215,8 @@ int main(){
     ofstream test_result_stream("lf_rk_staticE_test_results.txt", std::ios::out);
     ofstream raw_data_stream("raw_lf_rk_staticE_test_results.txt", std::ios::out);
 
+    test_result_stream << "dt(ns) dE_ave(MeV) sdE(MeV) Tsim(s) sTsim(s)" << std::endl <<  setprecision(6);
     for(int i = 0; i < dts.size() && i < dE_avg.size() && i < dE_std.size(); i++){
-        test_result_stream << "dt(ns) dE_ave(MeV) sdE(MeV) Tsim(s) sTsim(s)" << std::endl <<  setprecision(6);
-
         test_result_stream << std::scientific << dts[i] << 
         std::fixed << " " << dE_avg[i] <<  " " << dE_std[i] <<
          " " << T_avg[i] <<  " " << T_std[i] <<  std::endl;
@@ -228,9 +227,9 @@ int main(){
     for(int i = 0; i < results.size() ; i++){
         raw_data_stream << "   --- RUN : " << i + 1 << " ---\n";
 
-        for(auto result : results){
-            raw_data_stream << std::scientific << dts[i] << 
-            std::fixed << " " << result.first[i] <<  " " << result.second[i] << std::endl;
+        for(int j = 0; j < dts.size(); j++){
+            raw_data_stream << std::scientific << dts[j] << 
+            std::fixed << " " << results[i].first[j] <<  " " << results[i].second[j] << std::endl;
         }
     }
 

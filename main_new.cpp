@@ -140,7 +140,7 @@ int main(){
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;*/
 
     auto start = high_resolution_clock::now();
-    int simulation_time = 5;
+    int simulation_time = 6;
 
     
     vector<double> dts;
@@ -342,7 +342,7 @@ std::pair<vector<double>, vector<double>> test_out_staticE_rk_lf_dt_dE(vector<do
         dT = dt;
 
         auto start = high_resolution_clock::now();
-        int simulation_time = 5;
+        int simulation_time = 6;
 
         Simulator simulation(0);
         simulation.setEin(1);
@@ -403,7 +403,7 @@ void plot(double simulation_time){
 
     // plot command to draw static E field and electrons only
     std::string plotCommandE = "do for [i=1:" + to_string(simulation_time*10) + "] {plot ";
-    plotCommandE += "\"xy/statE.txt\" using 3:5:($11/85):($13/85) title \"E Field\" with vectors lc 6 head filled,";                    // 4=sari
+    plotCommandE += "\"xy/statE.txt\" using 3:5:($11/40):($13/40) title \"E Field\" with vectors lc 6 head filled,";                    // 4=sari
     plotCommandE +=  "\"xy/paths/e" + to_string(1) +".txt\" every ::i::i u 3:4:2 title \"bunch\" ls 7 ps 0.5 palette, ";
     for( int j = 2 ; j <= NUM_OF_ELECTRONS ; j++){
         plotCommandE +=  "\"xy/paths/e" + to_string(j) +".txt\" every ::i::i u 3:4:2 notitle ls 7 ps 0.5 palette, ";

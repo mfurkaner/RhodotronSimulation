@@ -37,7 +37,7 @@ void Simulator::run(){
 
 void Simulator::runBonly(){
     // Before starting, log the magnetic field to the mag file
-    logBfield();                                          
+    //logBfield();                                          
     if(multi_threading){
         cout << thread_count << endl;
         bunch.divide(thread_count);

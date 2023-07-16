@@ -140,12 +140,12 @@ int main(){
     cout << setprecision(6) << m.getOptimalB(0.45, -0.1, -0.01, 0.00001) << endl;*/
 
     auto start = high_resolution_clock::now();
-    int simulation_time = 6;
+    int simulation_time = 5;
 
     
     vector<double> dts;
 
-    dts.push_back(5e-2);
+    //dts.push_back(5e-2);
     dts.push_back(1e-2);
     dts.push_back(1e-3);
 
@@ -176,8 +176,8 @@ int main(){
     int RUN_COUNT = 10;
 
     for(int i = 0; i < RUN_COUNT; i++){
-        results.push_back(test_out_staticE_rk_lf_dt_dE(dts));
-
+        //results.push_back(test_out_staticE_rk_lf_dt_dE(dts));
+        results.push_back(test_out_mag_rk_lf_dt_dE(dts));
         std::cout << "---> End of RUN : " << i + 1 << std::endl;
     }
 
@@ -318,6 +318,7 @@ std::pair<vector<double>, vector<double>> test_out_mag_rk_lf_dt_dE(vector<double
         Magnet m(0.1,10,v);
         simulation.addMagnet(m);
         simulation.openLogs();
+        //simulation.logBfield();
         simulation.runBonly();
         simulation.logPaths();
         simulation.closeLogs();
@@ -372,7 +373,7 @@ std::pair<vector<double>, vector<double>> test_out_staticE_rk_lf_dt_dE(vector<do
 
 void plot(double simulation_time){
     Gnuplot gp;
-    gp.setRange(-1.0,1.0,-1.0, 1.0);
+    gp.setRange(-0.15,0.15,-0.1, 0.2);
     gp.enableMinorTics();
     gp.setCbRange(1, 4);
     gp.setCbTic(0.1);
@@ -410,7 +411,7 @@ void plot(double simulation_time){
     }
     plotCommandE += "}";
 
-    gp.setPlotCommand(plotCommandE);
+    gp.setPlotCommand(plotCommandB);
 
     gp.executeCommands();
     gp.plot();

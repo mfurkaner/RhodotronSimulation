@@ -10,7 +10,7 @@ Example *unsynchronized* simulation renders for visual impression
   <img src="/resources/gifs/5bunch_5nsPeriod.gif" width="56%" /> 
 </p>
 
-# GUI V01 Config and Render frames
+# Config and Render frames of GUI
 <p float="left">
   <img src="/resources/GUI_config_frame.png" width="48.5%" />
   <img src="/resources/RhodoSim_GUI_RenderFrame_V02.png" width="49.5%" /> 

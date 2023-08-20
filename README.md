@@ -4,6 +4,7 @@
 </br>
 
 # GUI render - Command line render
+Example *unsynchronized* simulation
 <p float="left">
   <img src="/resources/gifs/gui_v2_rendered-min.gif" width="42%" />
   <img src="/resources/gifs/5bunch_5nsPeriod.gif" width="56%" /> 

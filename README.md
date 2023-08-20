@@ -4,7 +4,7 @@
 </br>
 
 # GUI render - Command line render
-Example *unsynchronized* simulation renders
+Example *unsynchronized* simulation renders for visual impression
 <p float="left">
   <img src="/resources/gifs/gui_v2_rendered-min-inf.gif" width="42%" loop="infinite"/>
   <img src="/resources/gifs/5bunch_5nsPeriod.gif" width="56%" /> 

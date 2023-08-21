@@ -194,4 +194,8 @@ const std::string ConfigurationFrame::config_comment =
         LoadConfigFromFile(_config_file_path);
     }
 
+    void ConfigurationFrame::LoadCompletedConfig(){
+        LoadConfigFromFile(_completed_config_file_path);
+    }
+
 }

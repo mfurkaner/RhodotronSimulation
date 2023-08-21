@@ -55,6 +55,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
         std::vector<TEllipse*> electrons;
         std::vector<TArrow*> rfFieldArrows;
+        float arrowSizeMultiplier;
         std::vector<TEllipse*> posBField;
 
         TPaveText* _time_legend;

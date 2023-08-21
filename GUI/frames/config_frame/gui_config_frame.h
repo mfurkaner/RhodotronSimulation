@@ -74,6 +74,7 @@ namespace RhodotronSimulatorGUI::frames{
         subframes::SimConfigurationFrame* sim_config_frame;
 
         std::string _config_file_path = "config.ini";
+        std::string _completed_config_file_path = "xy/settings.txt";
         std::string _old_config_file_path = "gui_config_backup.ini";
 
         const TGWindow* parent;
@@ -114,6 +115,7 @@ namespace RhodotronSimulatorGUI::frames{
 
         void SaveConfigPressed();
         void LoadConfigPressed();
+        void LoadCompletedConfig();
     };
 
 

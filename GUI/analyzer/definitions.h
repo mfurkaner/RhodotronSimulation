@@ -119,7 +119,7 @@ namespace RhodotronSimulatorGUI::Analysis{
         _canvas->Clear();
         _canvas->GetCanvas()->cd();
 
-        hist->GetXaxis()->SetRange(minbin/2, maxbin + 1);
+        hist->GetXaxis()->SetRange(2*minbin/3, maxbin + 1);
         char t[10];
         snprintf(t, 10, "%.1fns", time);
         std::string title = "Electron Energy Distribution at t = ";
@@ -166,6 +166,8 @@ namespace RhodotronSimulatorGUI::Analysis{
 
         std::string title = "Electron " + std::to_string(e_index) + " in bunch "  + std::to_string(b_index); 
         graph->SetTitle(title.c_str());
+        graph->SetLineColor(kRed);
+        graph->SetLineWidth(5);
         graph->GetXaxis()->SetTitle("t(ns)");
         graph->GetXaxis()->CenterTitle();
         graph->GetYaxis()->SetTitle("E(MeV)");
@@ -175,6 +177,7 @@ namespace RhodotronSimulatorGUI::Analysis{
         }
 
         graph->Draw();
+        _canvas->GetCanvas()->SetGrid();
 
         _canvas->GetCanvas()->Modified();
         _canvas->GetCanvas()->Update();

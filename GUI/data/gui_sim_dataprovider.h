@@ -33,11 +33,13 @@ namespace RhodotronSimulatorGUI::data{
     /// @brief Description of an E field at time RFSnapshot.time
     struct RFSnapshot{
         float time;
+        float max = 0; // in MV/s
         std::vector<RFPoint> field;
     };
 
     /// @brief Description of an E field over some time
     struct RFLog{
+        float RF_max = 0; // in MV/m
         std::vector<RFSnapshot> time_slices;
     };
 

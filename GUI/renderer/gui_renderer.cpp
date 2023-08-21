@@ -105,13 +105,18 @@ namespace RhodotronSimulatorGUI::renderer{
     
     void Renderer::_renderEField(){
         auto rf_log = _dataProvider->GetEField();
+        arrowSizeMultiplier = SIZE_E_ARROW_MULTIPLIER/rf_log.RF_max;
+
+        std::cout << "RF max (MV/m) = " << rf_log.RF_max 
+                  << " : arrowSizeMultiplier = " << arrowSizeMultiplier << std::endl;
+
         if(rf_log.time_slices.size() > 0){
             float x1,y1,x2,y2;
 
             for(int i = 0; i < rf_log.time_slices.at(0).field.size() ; i++){
                 auto point = rf_log.time_slices.at(0).field.at(i);
 
-                point.field *= SIZE_E_ARROW_MULTIPLIER;
+                point.field *= arrowSizeMultiplier;
                 //point.position /= 3;
 
                 x1 = point.position.X();
@@ -283,7 +288,7 @@ namespace RhodotronSimulatorGUI::renderer{
                 if( point.magnitude == 0 )
                     continue;
 
-                point.field /= 10;
+                point.field *= arrowSizeMultiplier;
                 //point.position /= 3;
 
                 float x1,y1,x2,y2;
@@ -422,6 +427,7 @@ namespace RhodotronSimulatorGUI::renderer{
         electrons.clear();
         rfFieldArrows.clear();
         posBField.clear();
+        arrowSizeMultiplier = 0;
     }
 
     int Renderer::_indexFromTime(float time){

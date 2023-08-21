@@ -86,6 +86,9 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
             //if(rf_snapshot.time == 0) std::cout << "snapshot read for t=0 : " << point.position << " " << point.field << std::endl;
 
             rf_snapshot.field.push_back(point);
+            if(point.magnitude > rf_snapshot.max){
+                rf_snapshot.max = point.magnitude;
+            }
             count++;
         }
 
@@ -165,6 +168,10 @@ namespace RhodotronSimulatorGUI::data{
                 
             
             _rf.time_slices.push_back(snapshot);
+            if(snapshot.max > _rf.RF_max){
+                _rf.RF_max = snapshot.max;
+            }
+            
 
             if(time_step != 0 && time_step - snapshot.time + prev_time > 0.0001){
                 std::cerr << "   Inconsistent time step in rf log, t:" << snapshot.time << " time_step:" << time_step << std::endl;
@@ -210,6 +217,7 @@ namespace RhodotronSimulatorGUI::data{
     void DataProvider::clearLogs(){
         _electrons_log.clear();
         _rf.time_slices.clear();
+        _rf.RF_max = 0;
         _magnets.non_zero_positions.clear();
         _data_filled = false;
     }

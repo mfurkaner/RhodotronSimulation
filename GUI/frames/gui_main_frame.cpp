@@ -59,11 +59,8 @@ namespace RhodotronSimulatorGUI::frames{
         NavigateToRenderFrame();
         // TODO : remove these by add-ing configuration to mainframe and giving the address to render frame
 
-        float _starttime = config_frame->GetStartTime();
-        float _endtime = config_frame->GetEndTime();
-        float _targetEn = config_frame->GetTargetEnergy();
-        float _r1 = config_frame->GetR1();
-        float _r2 = config_frame->GetR2();
+        config_frame->SaveConfigPressed();
+        config_frame->LoadCompletedConfig();
 
         if ( dataProvider.isDataFilled() == false){
             dataProvider.clearLogs();
@@ -76,18 +73,18 @@ namespace RhodotronSimulatorGUI::frames{
         }
 
         render_frame->SetupRenderer();
-        render_frame->SetTargetEnergy(_targetEn);
-        render_frame->SetTimeInterval(_starttime, _endtime);
-        render_frame->SetR1R2(_r1, _r2);
+        render_frame->SetTargetEnergy(config_frame->GetTargetEnergy());
+        render_frame->SetTimeInterval(config_frame->GetStartTime(), config_frame->GetEndTime());
+        render_frame->SetR1R2(config_frame->GetR1(), config_frame->GetR2());
         renderer.Render();
     }
 
     void MainFrame::AnalyzePressed(){
         NavigateToAnalysisFrame();
-        float _starttime = config_frame->GetStartTime();
-        float _endtime = config_frame->GetEndTime();
-        int _enum = config_frame->GetEnum();
-        int _bnum = config_frame->GetBnum();
+
+        config_frame->SaveConfigPressed();
+        config_frame->LoadCompletedConfig();
+
         if ( dataProvider.isDataFilled() == false){
             dataProvider.clearLogs();
             dataProvider.SetEnum(config_frame->GetEnum());
@@ -97,16 +94,13 @@ namespace RhodotronSimulatorGUI::frames{
             dataProvider.SetStaticBfieldlogPath(config_frame->GetBPath());
             dataProvider.fillLogs();
         }
-        analysis_frame->SetTimeInterval(_starttime, _endtime);
-        analysis_frame->SetEnumBnum(_enum, _bnum);
+        analysis_frame->SetTimeInterval(config_frame->GetStartTime(), config_frame->GetEndTime());
+        analysis_frame->SetEnumBnum(config_frame->GetEnum(), config_frame->GetBnum());
         analysis_frame->SetupAnalyzer();
     }
 
     void MainFrame::SweepPressed(){
-        float _starttime = config_frame->GetStartTime();
-        float _endtime = config_frame->GetEndTime();
-        int _enum = config_frame->GetEnum();
-        int _bnum = config_frame->GetBnum();
+        config_frame->SaveConfigPressed();
 
         dataProvider.clearLogs();
         dataProvider.SetEnum(config_frame->GetEnum());
@@ -141,6 +135,9 @@ namespace RhodotronSimulatorGUI::frames{
 
     void MainFrame::NavigateToConfigFrame(){
         this->Resize(w, h);
+
+        config_frame->LoadConfigPressed();
+
         main_buttons_frame->EnableAll();
         main_buttons_frame->DisableByName("Configuration");
         NavigateTo(config_frame);

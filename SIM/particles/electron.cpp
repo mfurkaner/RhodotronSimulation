@@ -8,11 +8,11 @@ std::ostream& operator<<(std::ostream& stream, ElectronLog& log){
 }
  
 #pragma region ELECTRON
-double Electron2D::get_vel(){
+double Electron::get_vel(){
     return c*sqrt(Et*Et-E0_sq)/Et;
 }
 
-void Electron2D::print_electron_info(){/*
+void Electron::print_electron_info(){/*
     //cout<<std::setprecision(4);
     for(int i = 0; i < t_giris_cikis.size() ; i++ ){
         //cout << "\tGecis " << i+1 << ") " << "Enerji : " << enerjiler.at(i)-E0 << " MeV, giris zamani : " << t_giris_cikis.at(i).first << " ns, cikis zamani : " << t_giris_cikis.at(i).second << " ns" << endl;
@@ -20,30 +20,30 @@ void Electron2D::print_electron_info(){/*
     //cout << "Energy : " << Et - E0 << "    Position : " << pos << "    Velocity : " << vel << endl;
 }
 
-void Electron2D::move(double dt){
+void Electron::move(double dt){
     pos += vel*(dt*ns);
 }
 
-void Electron2D::move(const vector3d& acc, double dt){
+void Electron::move(const vector3d& acc, double dt){
     pos += vel*(dt*ns) + acc*(dt*ns)*(dt*ns)/2;
 }
 
-void Electron2D::move(const vector3d& acc, const vector3d& jerk, double dt){
+void Electron::move(const vector3d& acc, const vector3d& jerk, double dt){
     pos += vel*(dt*ns) + acc*(dt*ns)*(dt*ns)/2 + jerk*(dt*ns*dt*ns*dt*ns)/6 ;
 }
 
-void Electron2D::accelerate(const vector3d& acc, const vector3d& jerk, double dt){
+void Electron::accelerate(const vector3d& acc, const vector3d& jerk, double dt){
     vel += acc*(dt*ns) + jerk*(dt*ns*dt*ns)/2;  
     Et = gamma()*E0;                                                
 }
 
-void Electron2D::accelerate(const vector3d& acc, double dt){
+void Electron::accelerate(const vector3d& acc, double dt){
     vel += acc*(dt*ns);  
     Et = gamma()*E0;                                                
 }
 
-void Electron2D::interactLF(RFField& E, MagneticField& B, double time_interval){
-    vector3d acc_E = E.actOn(*this);
+void Electron::interactLF(RFField& E, MagneticField& B, double time_interval){
+    vector3d acc_E = E.ac.qtOn(*this);
     vector3d acc_B = B.actOn(*this);
 
     vector3d acc = acc_E + acc_B;
@@ -52,7 +52,7 @@ void Electron2D::interactLF(RFField& E, MagneticField& B, double time_interval){
     move( acc, time_interval/2);
 }
 
-void Electron2D::interactRK(RFField& E, MagneticField& B, double time_interval){
+void Electron::interactRK(RFField& E, MagneticField& B, double time_interval){
     vector3d run_kut_E = E.actOnAndGetRungeKuttaCoef(*this, time_interval);
     vector3d run_kut_B = B.actOnAndGetRungeKuttaCoef(*this, time_interval);
 
@@ -63,7 +63,7 @@ void Electron2D::interactRK(RFField& E, MagneticField& B, double time_interval){
     move(acc, time_interval/2);
 }
 
-void Electron2D::interactRK_ActorE(const RFField& E, const MagneticField& B, double time_interval){
+void Electron::interactRK_ActorE(const RFField& E, const MagneticField& B, double time_interval){
     vector3d run_kut_E = interactE_RK(E, time_interval);
     vector3d run_kut_B = interactB_RK(B, time_interval);
 
@@ -74,8 +74,8 @@ void Electron2D::interactRK_ActorE(const RFField& E, const MagneticField& B, dou
     move(acc, time_interval/2);
 }
 
-void Electron2D::interactRK(RFField& E, MagneticField& B, const double time, double time_interval){
-        Electron2D e_dummy;
+void Electron::interactRK(RFField& E, MagneticField& B, const double time, double time_interval){
+        Electron e_dummy;
         e_dummy.Et = Et;
         e_dummy.pos = pos;
         e_dummy.vel = vel;
@@ -132,8 +132,8 @@ void Electron2D::interactRK(RFField& E, MagneticField& B, const double time, dou
 }
 
 
-vector3d Electron2D::interactE_RK(const RFField& E, double time_interval){
-    Electron2D e_dummy;
+vector3d Electron::interactE_RK(const RFField& E, double time_interval){
+    Electron e_dummy;
     e_dummy.Et = Et;
     e_dummy.pos = pos;
     e_dummy.vel = vel;
@@ -160,11 +160,11 @@ vector3d Electron2D::interactE_RK(const RFField& E, double time_interval){
     return (k1 + k2*2 + k3*2 + k4)/6;
 }
 
-vector3d Electron2D::interactB_RK(const MagneticField& B, double time_interval){
+vector3d Electron::interactB_RK(const MagneticField& B, double time_interval){
     if (B.isInside(pos) == -1){
         return vector3d(0,0,0);
     }
-    Electron2D e_dummy;
+    Electron e_dummy;
     e_dummy.Et = Et;
     e_dummy.pos = pos;
     e_dummy.vel = vel;

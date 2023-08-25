@@ -44,7 +44,7 @@ void Simulator::logPaths(){
 }
 
 /*
-Electron2D& Simulator::getElectronWithMaxEnergy(){
+Electron& Simulator::getElectronWithMaxEnergy(){
     return bunch.getFastest();
 }*/
 

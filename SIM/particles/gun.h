@@ -36,10 +36,10 @@ class Gun{
 
     void setNSLen(double len){ for (int i = 0; i < bunchs.size() ; i++){  bunchs[i].setNSLen(len); }}
 public:
-    vector<Bunch2D> bunchs;
+    vector<Bunch> bunchs;
 
     mutex _gun_mutex; 
-    vector<shared_ptr<vector<shared_ptr<Electron2D>>>> thread_bunchs;
+    vector<shared_ptr<vector<shared_ptr<Electron>>>> thread_bunchs;
 
     Gun();
     Gun(double Ein, double gun_active_time, double pulse_interval, vector3d gunpos);

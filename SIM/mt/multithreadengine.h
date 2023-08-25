@@ -17,7 +17,7 @@
 
 
 struct InteractArguments{
-    shared_ptr<vector<shared_ptr<Electron2D>>> e_list;
+    shared_ptr<vector<shared_ptr<Electron>>> e_list;
     shared_ptr<CoaxialRFField> E;
     shared_ptr<MagneticField> B;
     double time_interval;
@@ -41,7 +41,7 @@ struct ThreadArguments{
     InteractArguments i_args;
 
     ThreadArguments(int id,  double _time_interval, double _start_time, double _end_time, Gun* gun, 
-        shared_ptr<CoaxialRFField> _E, shared_ptr<MagneticField> _B, shared_ptr<vector<shared_ptr<Electron2D>>> e_list, 
+        shared_ptr<CoaxialRFField> _E, shared_ptr<MagneticField> _B, shared_ptr<vector<shared_ptr<Electron>>> e_list, 
         double _time_of_first_fire, double _time_between_each_fire){
 
         index = id;
@@ -78,7 +78,7 @@ class MultiThreadEngine{
     void setThreadCount(unsigned int _thread_count){thread_count = _thread_count;}
 
     void setupPool( double _time_interval, double _start_time, double _end_time, Gun& gun, 
-        CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron2D>>>>& e_list);
+        CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron>>>>& e_list);
 
 
     void join();

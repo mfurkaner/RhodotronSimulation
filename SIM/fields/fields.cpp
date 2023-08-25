@@ -9,18 +9,18 @@ void RFField::update(double time){
     E = sin(w*time + phase_lag*deg_to_rad)*E_max;
 }
 
-vector3d RFField::actOn(Electron2D& e){
+vector3d RFField::actOn(Electron& e){
     vector3d Efield = getField(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
     return acc;
 }
 
-vector3d RFField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+vector3d RFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     // (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)/e_dummy.gamma()
     // is equal to
     // (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv()
-    Electron2D e_dummy;
+    Electron e_dummy;
     e_dummy.Et = e.Et;
     e_dummy.pos = e.pos;
     e_dummy.vel = e.vel;
@@ -57,18 +57,18 @@ CoaxialRFField::~CoaxialRFField(){
     }
 }
 
-vector3d CoaxialRFField::actOn(Electron2D& e){
+vector3d CoaxialRFField::actOn(Electron& e){
     vector3d Efield = getField(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
     return acc;
 }
 
-vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     // (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)/e_dummy.gamma()
     // is equal to
     // (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv()
-    Electron2D e_dummy;
+    Electron e_dummy;
     e_dummy.Et = e.Et;
     e_dummy.pos = e.pos;
     e_dummy.vel = e.vel;
@@ -180,7 +180,7 @@ void CoaxialRFField::update(double time){
 
 /////////           Magnet
 double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
-    Electron2D e;
+    Electron e;
     e.Et = E + E0;
     double mag = e.get_vel();
     double min_r = 0.752967;
@@ -256,7 +256,7 @@ vector3d MagneticField::getField(vector3d position)const{
     return vector3d(0, 0, magnets[magnet_index].B);
 }
 
-vector3d MagneticField::actOn(Electron2D& e){
+vector3d MagneticField::actOn(Electron& e){
     if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
     }
@@ -267,11 +267,11 @@ vector3d MagneticField::actOn(Electron2D& e){
     return acc;
 }
 
-vector3d MagneticField::actOnAndGetRungeKuttaCoef(Electron2D& e, double dt){
+vector3d MagneticField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
     }
-    Electron2D e_dummy;
+    Electron e_dummy;
     e_dummy.Et = e.Et;
     e_dummy.pos = e.pos;
     e_dummy.vel = e.vel;

@@ -57,7 +57,7 @@ void saveElectronInfoForSingleThread(InteractArguments& interact_arguments){
 
 
 void MultiThreadEngine::setupPool( double _time_interval, double _start_time, double _end_time, Gun& gun, 
-    CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron2D>>>>& e_list){
+    CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron>>>>& e_list){
     threads.reserve(thread_count);
 
     for(int i = 0; i < thread_count && i == threads.size(); i++){

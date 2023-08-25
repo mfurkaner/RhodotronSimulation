@@ -18,7 +18,7 @@
 
     void Gun::addBunch(unsigned int num_of_electrons, double Ein){
         e_per_bunch = num_of_electrons;
-        bunchs.push_back(Bunch2D());
+        bunchs.push_back(Bunch());
         bunch_count = bunchs.size();
     }
     void Gun::setGunActiveTime(double gt){gun_active_time = gt; setNSLen(gt);}
@@ -46,7 +46,7 @@
         _mt_enabled = true;
         _child_thread_count = thread_count;
         for(int i = 0; i < thread_count; i++){
-            thread_bunchs.push_back(make_shared<vector<shared_ptr<Electron2D>>>(vector<shared_ptr<Electron2D>>()));
+            thread_bunchs.push_back(make_shared<vector<shared_ptr<Electron>>>(vector<shared_ptr<Electron>>()));
         }
     }
 

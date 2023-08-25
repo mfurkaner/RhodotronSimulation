@@ -13,7 +13,7 @@ using namespace std;
 
 typedef pair<double, double> max_energy_rms_pair;
 
-class Bunch2D{
+class Bunch{
 private:
     int e_count = 0;
     double initial_length_ns = 1;
@@ -25,27 +25,27 @@ private:
     vector3d _LEGACY_gun_pos;
     vector3d _LEGACY_gun_dir;
 public:
-    vector<Bunch2D> subBunchs;
-    vector<shared_ptr<Electron2D>> e;
-    Bunch2D(unsigned int num_of_electrons, double Ein, vector3d gunpos, vector3d gundir, double gun_ns){
+    vector<Bunch> subBunchs;
+    vector<shared_ptr<Electron>> e;
+    Bunch(unsigned int num_of_electrons, double Ein, vector3d gunpos, vector3d gundir, double gun_ns){
         E_in = Ein;
         e_count = num_of_electrons;
         initial_length_ns = gun_ns;
         _LEGACY_gun_pos = gunpos;
         _LEGACY_gun_dir = gundir;
         for(int i = 0 ; i < num_of_electrons ; i++){
-            e.push_back(make_shared<Electron2D>(Electron2D(Ein, gunpos, gundir)));
+            e.push_back(make_shared<Electron>(Electron(Ein, gunpos, gundir)));
             e.back()->setLogSize(1000);
         }
         _LEGACY_ns_between = initial_length_ns/(e_count - 1);
     }
 
-    Bunch2D(){
+    Bunch(){
         e_count = 0;
     }
 
-    /*Bunch2D(){
-        Bunch2D(1, 0.4, vector3d(-0.753,0,0), vector3d(1,0,0), 0);
+    /*Bunch(){
+        Bunch(1, 0.4, vector3d(-0.753,0,0), vector3d(1,0,0), 0);
     }*/
 
     void saveInfo(double time){
@@ -54,15 +54,15 @@ public:
         }
     }
 
-    Electron2D& getFastest();
+    Electron& getFastest();
 
     void AddElectron(double Ein, const vector3d& gunpos, const vector3d& gundir, double fire_time){
-        e.push_back(make_shared<Electron2D>(Ein, gunpos, gundir, fire_time));
+        e.push_back(make_shared<Electron>(Ein, gunpos, gundir, fire_time));
         e.back()->setLogSize(1000);
         e_count = e.size();
     }
 
-    shared_ptr<Electron2D> AddElectronGiveAddress(double Ein, const vector3d& gunpos, const vector3d& gundir, double fire_time){
+    shared_ptr<Electron> AddElectronGiveAddress(double Ein, const vector3d& gunpos, const vector3d& gundir, double fire_time){
         AddElectron(Ein, gunpos, gundir, fire_time);
         return e.back();
     }
@@ -74,8 +74,8 @@ public:
     void interact(RFField& E, MagneticField& B, const double time, double time_interval);
     void divide(unsigned int num);
     void concat();
-    Bunch2D& subBunch(unsigned int index);
-    vector<Bunch2D*> subBunchPtr();
+    Bunch& subBunch(unsigned int index);
+    vector<Bunch*> subBunchPtr();
     double E_ave();
     double E_rms();
     void reset();

@@ -25,7 +25,7 @@ struct ElectronLog{
 
 
 std::ostream& operator<<(std::ostream& stream, ElectronLog& log);
-class Electron2D{
+class Electron{
     std::vector<ElectronLog> log;
 public:
     uint64_t index;
@@ -33,8 +33,8 @@ public:
     vector3d pos;
     vector3d vel;
     double fire_time;
-    Electron2D(){}
-    Electron2D(double Ein, vector3d position, vector3d direction, double _fire_time = 0){
+    Electron(){}
+    Electron(double Ein, vector3d position, vector3d direction, double _fire_time = 0){
         Et = E0 + Ein;
         //t_giris_cikis.push_back(giris_cikis_tpair(0,0));
         pos = position;

@@ -7,7 +7,7 @@
 #ifndef FIELDS_H
 #define FIELDS_H
 
-class Electron2D;
+class Electron;
 
 class RFField{
 protected:
@@ -23,8 +23,8 @@ public:
     virtual vector3d getField(vector3d position) const {return vector3d(0,0,0);}              // FIX
     virtual double getField(double R)const{ return 0;}                         // FIX
     virtual int log(DataStorage& rf, double time, bool end = false){return 0;}             // FIX
-    vector3d actOn(Electron2D& e);    
-    vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);                  
+    vector3d actOn(Electron& e);    
+    vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);                  
     
     double getE() {return E;}
     void setEmax(double E_max) {this->E_max = E_max; update(0);}
@@ -51,8 +51,8 @@ public:
 
     vector3d getField(vector3d position) const override;
     double getField(double R) const override;
-    vector3d actOn(Electron2D& e);
-    vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);    
+    vector3d actOn(Electron& e);
+    vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);    
     void update(double time) override; 
 
     int log(DataStorage& rf, double time, bool end = false) override;
@@ -86,8 +86,8 @@ public:
     void addMagnet(double B, double r, vector3d position);
     void addMagnet(Magnet m);
     vector3d getField(vector3d position) const;
-    vector3d actOn(Electron2D& e);
-    vector3d actOnAndGetRungeKuttaCoef(Electron2D& e, double dt);        
+    vector3d actOn(Electron& e);
+    vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);        
     vector3d getJerk(vector3d pos, vector3d vel, vector3d acc);
     void log(DataStorage& magnet);
     std::vector<double> getRelativeEnterDistance(){return relativeEnterDistance;}

@@ -18,12 +18,12 @@ Example *unsynchronized* simulation renders for visual impression
 
 # E(t) - E histogram
 <p float="left">
-  <img src="/resources/E_t.png" width="49%" />
-  <img src="/resources/E_hist.png" width="49%" /> 
+  <img src="/resources/GUI_analyze_Et_3.png" width="49%" />
+  <img src="/resources/GUI_analyze_Edist_2.png" width="49%" /> 
 </p>
 
 # Phase Lag Sweep
 <p float="left">
-  <img src="/resources/sE_phL.png" width="49%" />
-  <img src="/resources/mE_phL.png" width="49%" /> 
+  <img src="/resources/GUI_sweep_sE_3.png" width="49%" />
+  <img src="/resources/GUI_sweep_muE_3.png" width="49%" /> 
 </p>

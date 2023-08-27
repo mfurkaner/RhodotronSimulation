@@ -66,6 +66,7 @@ namespace RhodotronSimulatorGUI::data{
 
         uint32_t _enum;
         uint32_t _bnum;
+        float _Emax = 0;
 
         void _fillElectrons();
         void _fillEField();
@@ -87,6 +88,8 @@ namespace RhodotronSimulatorGUI::data{
         const std::vector<ElectronLog>& GetElectrons();
         const RFLog& GetEField();
         const StaticMagneticFieldLog& GetStaticBField();
+
+        const float GetEmax(){return _Emax;}
 
         const float GetElectronTimeStep();
         const float GetEFieldTimeStep();

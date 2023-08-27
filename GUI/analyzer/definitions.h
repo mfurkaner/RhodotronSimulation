@@ -52,7 +52,7 @@ namespace RhodotronSimulatorGUI::Analysis{
 
 
     Analyzer::Analyzer(){
-        hist = new TH1I("Electron Energies", "Electron Energy Distribution", 100, 0, 3);
+        hist = new TH1I("Electron Energies", "Electron Energy Distribution", 200, 0, 10);
         graph = new TGraph(1);
     }
 
@@ -84,11 +84,25 @@ namespace RhodotronSimulatorGUI::Analysis{
 
         hist->Reset();
         hist->SetBarWidth(1); 
-
-        double energy_step = 3.0/100;
-        double min = e_logs[0].time_slices.back().energy;
+        double min = 100;
         double max = 0;
         int minbin, maxbin, count = 0;
+
+        for(int i = 0; i < e_logs.size(); i++){
+            int t = TimeIndexFromTime(i, time);
+            if( t == -1){
+                continue;
+            }
+
+            if(max < e_logs[i].time_slices[t].energy){
+                max = e_logs[i].time_slices[t].energy; 
+            }
+            else if(min > e_logs[i].time_slices[t].energy){
+                min = e_logs[i].time_slices[t].energy; 
+            }
+        }
+        double offset = (max - min)*0.25;
+        double energy_step = 0.05;
 
         for(int i = 0; i < e_logs.size(); i++){
             int bin = 1;
@@ -105,21 +119,22 @@ namespace RhodotronSimulatorGUI::Analysis{
                     break;
                 }
             }*/
-            if ( min > e_logs[i].time_slices[t].energy){
-                min = e_logs[i].time_slices[t].energy;
-                minbin = bin;
-            }
-            if ( max < e_logs[i].time_slices[t].energy){
-                max = e_logs[i].time_slices[t].energy;
-                maxbin = bin;
-            }
+
             hist->AddBinContent(bin);
             count++;
         }
         _canvas->Clear();
         _canvas->GetCanvas()->cd();
+        _canvas->GetCanvas()->SetGrid();
+        _canvas->GetCanvas()->SetFrameLineWidth(3);
 
-        hist->GetXaxis()->SetRange(2*minbin/3, maxbin + 1);
+        minbin = static_cast <int> (std::floor((min)/ energy_step)) - 1;
+        if (minbin < 0){
+            minbin = 0;
+        }
+        maxbin = static_cast <int> (std::floor((max)/ energy_step)) + 1;
+
+        hist->GetXaxis()->SetRange( minbin*0.9 , maxbin*1.1);
         char t[10];
         snprintf(t, 10, "%.1fns", time);
         std::string title = "Electron Energy Distribution at t = ";

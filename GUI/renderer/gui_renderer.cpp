@@ -387,7 +387,7 @@ namespace RhodotronSimulatorGUI::renderer{
 
             if (_save_gif){
                 _save_gif = false;
-                gSystem->Exec("convert -delay 3 -loop 1 temp/gif_frames/*.png animation.gif");
+                gSystem->Exec("convert -delay 3 -loop 0 temp/gif_frames/*.png animation.gif");
                 std::string rmdir_cmd = "rm -r ";
                 rmdir_cmd += _temp_gif_frames_path;
                 gSystem->Exec(rmdir_cmd.c_str());

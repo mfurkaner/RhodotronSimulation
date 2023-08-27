@@ -126,6 +126,10 @@ namespace RhodotronSimulatorGUI::data{
                     ElectronSnapshot snapshot;
                     stream >> snapshot;
 
+                    if(snapshot.energy > _Emax){
+                        _Emax = snapshot.energy;
+                    }
+
                     e.time_slices.push_back(snapshot);
 
                     if(time_step != 0 && time_step - snapshot.time + prev_time > 0.0001){

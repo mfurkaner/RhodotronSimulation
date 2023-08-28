@@ -8,6 +8,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         Analysis::Analyzer* analyzer_, GUISimulationHandler* sim_handler_, data::DataProvider* dataProvider_, ConfigurationFrame* config_frame_)
          : SweepControlVerticalFrame(p, w, h, analyzer_, sim_handler_, dataProvider_, config_frame_){
 
+        _phase_lag_data_mutex = std::make_shared<std::mutex>();
+        _data_updated_mutex = std::make_shared<std::mutex>();
+        _worker_terminate = std::make_shared<bool>();
+        _data_updated = std::make_shared<bool>();
+
         _phase_vs_muE_graph = new TGraph();
         _phase_vs_sigmaE_graph = new TGraph();
         _phase_vs_sigmaR_graph = new TGraph();
@@ -43,9 +48,19 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         current_phase = new TGLabel(this, " ");
 
-        _sweep_button = new TGTextButton(this, Sweep_sweep_button_text.c_str());
+        auto sweep_button_frame = new TGHorizontalFrame(this);
+
+        _sweep_button = new TGTextButton(sweep_button_frame, Sweep_sweep_button_text.c_str());
         _sweep_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::subframes::PhaseLagSweepControlFrame", this, 
                              "PhaselagSweepRequested()");
+
+        _stop_button = new TGTextButton(sweep_button_frame, Sweep_stop_button_text.c_str());
+        _stop_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::subframes::PhaseLagSweepControlFrame", this, 
+                             "PhaselagSweepStopRequested()");
+        _stop_button->SetEnabled(false);   
+
+        sweep_button_frame->AddFrame(_sweep_button, center_x_layout);            
+        sweep_button_frame->AddFrame(_stop_button, center_x_layout);    
 
         auto draw_button_frame = new TGHorizontalFrame(this);
 
@@ -68,12 +83,16 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         draw_button_frame->AddFrame(_draw_phase_vs_sigmaE_button, center_x_layout);
         draw_button_frame->AddFrame(_draw_phase_vs_sigmaR_button, center_x_layout);
 
-        this->AddFrame(progressBar, center_layout);
+
+        this->AddFrame(current_phase, center_layout_notoppadding);
+        this->AddFrame(progressBar, center_layout_notoppadding);
+        this->AddFrame(input_frame, center_layout_notoppadding);
         this->AddFrame(canvas, center_layout);
-        this->AddFrame(current_phase, center_layout);
-        this->AddFrame(input_frame, center_layout);
-        this->AddFrame(_sweep_button, center_layout);
+        this->AddFrame(sweep_button_frame, center_layout);
         this->AddFrame(draw_button_frame, center_layout);
+
+        _draw_timer = new TTimer(1000);
+        _draw_timer->Connect("Timeout()", "RhodotronSimulatorGUI::frames::subframes::PhaseLagSweepControlFrame", this, "DrawActiveGraphIfThereIsUpdate()");
     }
 
 
@@ -101,6 +120,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         worker_args.config_frame = config_frame;
         worker_args.sim_handler = sim_handler;
         worker_args.data = &phaselagData;
+        worker_args.dataMutex = _phase_lag_data_mutex;
+        worker_args.terminate = _worker_terminate;
+
+        worker_args.dataUpdated = _data_updated;
+        worker_args.dataMutex = _data_updated_mutex;
         worker_args.owner = this;
 
         if ( worker != NULL){ 
@@ -109,7 +133,18 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             }
             delete worker;
         }
+        *(_worker_terminate.get()) = false;
         worker = new std::thread(PhaseLagSweepControlFrame::PhaselagSweepWork, worker_args);
+    }
+
+    void PhaseLagSweepControlFrame::PhaselagSweepStopRequested(){
+        if ( worker != NULL){ 
+            *(_worker_terminate.get()) = true;
+            if(worker->joinable()){
+                worker->join();
+            }
+            delete worker;
+        }
     }
 
     void PhaseLagSweepControlFrame::PhaselagSweepWork(PhaseLagSweepWorkerArguments args){
@@ -131,6 +166,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         }
 
         for ( int ph = phaselag_start ; ph <= phaselag_end ; ph++){
+            if(* args.terminate.get()){
+                break;
+            }
             args.owner->SetCurrentPhase(ph);
 
             args.config_frame->SetPhaseLag(ph);
@@ -154,26 +192,39 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             data.sigmaE = args.analyzer->GetStdDevE();
             data.sigmaR = args.analyzer->GetStdDevR();
 
+            args.dataMutex->lock();
             args.data->push_back(data);
+            args.dataMutex->unlock();
+
+            args.dataMutex->lock();
+            (*args.dataUpdated) = true;
+            args.dataMutex->unlock();
         }
 
         args.owner->SweepingModeActivate(false);
     }
 
     void PhaseLagSweepControlFrame::SweepingModeActivate(bool active){
+        _sweeping_mode_active = active;
         if(active){
-            this->HideFrame(canvas);
+            //this->HideFrame(canvas);
             this->ShowFrame(progressBar);
             this->ShowFrame(current_phase);
+
+            canvas->Resize(400,400);
+            canvas->GetCanvas()->Resize();
             
             _sweep_button->SetEnabled(false);
+            _stop_button->SetEnabled(true);
             
             phase_lag_sweep_start->SetState(false);
             phase_lag_sweep_end->SetState(false);
             
-            _draw_phase_vs_muE_button->SetEnabled(false);
-            _draw_phase_vs_sigmaE_button->SetEnabled(false);
-            _draw_phase_vs_sigmaR_button->SetEnabled(false);
+            _draw_phase_vs_muE_button->SetEnabled(true);
+            _draw_phase_vs_sigmaE_button->SetEnabled(true);
+            _draw_phase_vs_sigmaR_button->SetEnabled(true);
+
+            _draw_timer->TurnOn();
             
             this->Layout();
             parent->Layout();
@@ -183,7 +234,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             this->HideFrame(progressBar);
             this->HideFrame(current_phase);
 
+            _draw_timer->TurnOff();
+
+            canvas->Resize(500,500);
+            canvas->GetCanvas()->Resize();
+
             _sweep_button->SetEnabled(true);
+            _stop_button->SetEnabled(false);
             
             phase_lag_sweep_start->SetState(true);
             phase_lag_sweep_end->SetState(true);
@@ -198,15 +255,19 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::DrawPhaseLagvsAverageE(){
+        _active_graph = muE_vs_phase;
         this->ShowFrame(canvas);
-        this->HideFrame(progressBar);
-        this->HideFrame(current_phase);
+        if(!_sweeping_mode_active){
+            this->HideFrame(progressBar);
+            this->HideFrame(current_phase);
+        }
         this->Layout();
         parent->Layout();
 
         TGraph* muGraph = _phase_vs_muE_graph;
         muGraph->Clear();
 
+        _phase_lag_data_mutex->lock();
         float maxE, maxphase;
         for (int i = 0 ; i < phaselagData.size() ; i++){
             if ( maxE < phaselagData[i].muE){
@@ -215,6 +276,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             }
             muGraph->AddPoint(phaselagData[i].phase, phaselagData[i].muE);
         }
+        _phase_lag_data_mutex->unlock();
 
         canvas->GetCanvas()->Clear();
         canvas->GetCanvas()->cd();
@@ -241,18 +303,23 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::DrawPhaseLagvsStdE(){
+        _active_graph = sE_vs_phase;
         this->ShowFrame(canvas);
-        this->HideFrame(progressBar);
-        this->HideFrame(current_phase);
+        if(!_sweeping_mode_active){
+            this->HideFrame(progressBar);
+            this->HideFrame(current_phase);
+        }
         this->Layout();
         parent->Layout();
 
         TGraph* sGraph = _phase_vs_sigmaE_graph;
         sGraph->Clear();
 
+        _phase_lag_data_mutex->lock();
         for (int i = 0 ; i < phaselagData.size() ; i++){
             sGraph->AddPoint(phaselagData[i].phase, phaselagData[i].sigmaE);
         }
+        _phase_lag_data_mutex->unlock();
 
         canvas->GetCanvas()->Clear();
         canvas->GetCanvas()->cd();
@@ -280,18 +347,23 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::DrawPhaseLagvsStdR(){
+        _active_graph = sR_vs_phase;
         this->ShowFrame(canvas);
-        this->HideFrame(progressBar);
-        this->HideFrame(current_phase);
+        if(!_sweeping_mode_active){
+            this->HideFrame(progressBar);
+            this->HideFrame(current_phase);
+        }
         this->Layout();
         parent->Layout();
 
         TGraph* sRGraph = _phase_vs_sigmaR_graph;
         sRGraph->Clear();
 
+        _phase_lag_data_mutex->lock();
         for (int i = 0 ; i < phaselagData.size() ; i++){
             sRGraph->AddPoint(phaselagData[i].phase, phaselagData[i].sigmaR);
         }
+        _phase_lag_data_mutex->unlock();
 
         canvas->GetCanvas()->Clear();
         canvas->GetCanvas()->cd();
@@ -318,6 +390,33 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         canvas->GetCanvas()->Modified();
 
         this->Layout();
+    }
+
+    void PhaseLagSweepControlFrame::DrawActiveGraph(){
+        
+        switch (_active_graph)
+        {
+        case muE_vs_phase:
+            DrawPhaseLagvsAverageE();
+            break;
+        case sE_vs_phase:
+            DrawPhaseLagvsStdE();
+            break;
+        case sR_vs_phase:
+            DrawPhaseLagvsStdR();
+            break;
+        case None:
+            break;
+        }
+    }
+
+    void PhaseLagSweepControlFrame::DrawActiveGraphIfThereIsUpdate(){
+        if(_data_updated){
+            DrawActiveGraph();
+            _data_updated_mutex->lock();
+            *_data_updated = false;
+            _data_updated_mutex->unlock();
+        }
     }
 
     void PhaseLagSweepControlFrame::OnNavigatedTo(){

@@ -18,6 +18,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         float sigmaR;
     };
 
+    enum PhaseLagGraphType{
+        muE_vs_phase,
+        sE_vs_phase,
+        sR_vs_phase,
+        None
+    };
+
     struct PhaseLagSweepWorkerArguments;
 
     class PhaseLagSweepControlFrame : public SweepControlVerticalFrame{
@@ -30,17 +37,26 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGNumberEntry* phase_lag_sweep_end;
 
         TGTextButton* _sweep_button;
+        TGTextButton* _stop_button;
         TGTextButton* _draw_phase_vs_muE_button;
         TGTextButton* _draw_phase_vs_sigmaE_button;
         TGTextButton* _draw_phase_vs_sigmaR_button;
+
+        PhaseLagGraphType _active_graph = None;
+        TTimer* _draw_timer;
 
         TGraph* _phase_vs_muE_graph;
         TGraph* _phase_vs_sigmaE_graph;
         TGraph* _phase_vs_sigmaR_graph;
         
+        std::shared_ptr<std::mutex> _phase_lag_data_mutex;
         std::vector<PhaseLagSweepData> phaselagData;
 
         std::thread* worker = NULL;
+        std::shared_ptr<bool> _worker_terminate;
+        std::shared_ptr<bool> _data_updated;
+        std::shared_ptr<std::mutex> _data_updated_mutex;
+        bool _sweeping_mode_active = false;
     public:
         PhaseLagSweepControlFrame(const TGWindow* p, UInt_t w, UInt_t h, 
             Analysis::Analyzer* analyzer_, GUISimulationHandler* sim_handler_, data::DataProvider* dataProvider_, ConfigurationFrame* config_frame_);
@@ -49,7 +65,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         void DrawPhaseLagvsStdE();
         void DrawPhaseLagvsStdR();
 
+        void DrawActiveGraph();
+        void DrawActiveGraphIfThereIsUpdate();
+
         void PhaselagSweepRequested();
+        void PhaselagSweepStopRequested();
         static void PhaselagSweepWork(PhaseLagSweepWorkerArguments args);
 
         void SweepingModeActivate(bool active);
@@ -71,6 +91,12 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         PhaseLagSweepControlFrame* owner;
 
         std::vector<PhaseLagSweepData>* data;
+        std::shared_ptr<std::mutex> dataMutex;
+
+        std::shared_ptr<bool> terminate;
+        
+        std::shared_ptr<bool> dataUpdated;
+        std::shared_ptr<std::mutex> dataUpdatedMutex;
     };
 
 

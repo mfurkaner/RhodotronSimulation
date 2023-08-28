@@ -18,9 +18,8 @@ namespace RhodotronSimulatorGUI::frames{
         _fillSweepSelection();
 
         _phaselag_control_frame = new subframes::PhaseLagSweepControlFrame(this, 600, 900, analyzer, sim_handler, dataProvider, config_frame);
-
         this->AddFrame(_sweepSelection, center_x_layout);
-        this->AddFrame(_phaselag_control_frame, center_layout);
+        this->AddFrame(_phaselag_control_frame, center_layout_notoppadding);
 
         active_frame = _phaselag_control_frame;
     }

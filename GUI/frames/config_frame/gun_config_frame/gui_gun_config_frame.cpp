@@ -16,7 +16,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         _Ein_entry_label = new TGLabel(Ein_entry_frame, gun_configuration_Ein_entry_label_text.c_str());
 
         _Ein_entry = new TGNumberEntry(Ein_Einstd_frame, DEFAULT_GUN_EIN, 5, -1, TGNumberFormat::kNESRealThree,
-                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0.001, 3);
+                TGNumberFormat::kNEAPositive, TGNumberFormat::kNELLimitMinMax, 0.001, 5);
         _EinStd_entry_label = new TGLabel(Ein_Einstd_frame, "+-");
         _EinStd_entry = new TGNumberEntry(Ein_Einstd_frame, 0, 5, -1, TGNumberFormat::kNESRealThree,
                 TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0, 0.01);

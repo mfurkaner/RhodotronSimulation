@@ -55,6 +55,7 @@ namespace RhodotronSimulatorGUI::frames{
     static const Int_t common_padding = 5;
 
     static TGLayoutHints* center_layout = new TGLayoutHints(kLHintsCenterX | kLHintsCenterY, common_padding, common_padding, common_padding, common_padding); 
+    static TGLayoutHints* center_layout_notoppadding = new TGLayoutHints(kLHintsCenterX | kLHintsCenterY, common_padding, common_padding, 0, common_padding); 
     static TGLayoutHints* center_x_layout = new TGLayoutHints(kLHintsCenterX, common_padding, common_padding, common_padding, common_padding); 
     static TGLayoutHints* center_y_layout = new TGLayoutHints(kLHintsCenterY, common_padding, common_padding, common_padding, common_padding); 
     static TGLayoutHints* left_layout = new TGLayoutHints(kLHintsLeft, common_padding, common_padding, common_padding, common_padding); 
@@ -89,6 +90,7 @@ namespace RhodotronSimulatorGUI::frames{
     static const std::string Sweep_phaselag_start_label_text = "Phase lag sweep start (degrees)";
     static const std::string Sweep_phaselag_end_label_text = "Phase lag sweep end (degrees)";
     static const std::string Sweep_sweep_button_text = "Sweep";
+    static const std::string Sweep_stop_button_text = " Stop ";
     static const std::string Sweep_type_phaselag_description_text = "Phase lag sweep";
 
     /// @brief B CONFIGURATION FRAME RESOURCES

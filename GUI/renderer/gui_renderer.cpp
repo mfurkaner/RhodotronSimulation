@@ -23,7 +23,8 @@ namespace RhodotronSimulatorGUI::renderer{
         if( E <= 0 )
             return TColor::GetColor(10,10,10);
 
-        const static Color_t color_map[10]{
+        const static Color_t color_map[11]{
+            /*
             (Color_t)TColor::GetColor(11, 22, 103),
             (Color_t)TColor::GetColor(67, 16, 110),
             (Color_t)TColor::GetColor(105, 0, 112),
@@ -33,7 +34,7 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(219, 0, 78),
             (Color_t)TColor::GetColor(236, 34, 62),
             (Color_t)TColor::GetColor(247, 70, 41),
-            (Color_t)TColor::GetColor(253, 101, 0)
+            (Color_t)TColor::GetColor(253, 101, 0)*/
 
 /*
             (Color_t)TColor::GetColor(252, 112, 50),
@@ -47,15 +48,52 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(125, 17, 56),
             (Color_t)TColor::GetColor(110, 0, 55)*/
 
+            (Color_t)TColor::GetColor(99, 20, 231),
+            (Color_t)TColor::GetColor(0, 126, 255),
+            (Color_t)TColor::GetColor(0, 171, 255),
+            (Color_t)TColor::GetColor(0, 202, 182),
+            (Color_t)TColor::GetColor(20, 224, 97),
+            (Color_t)TColor::GetColor(119, 198, 0),
+            (Color_t)TColor::GetColor(162, 169, 0),
+            (Color_t)TColor::GetColor(186, 149, 0),
+            (Color_t)TColor::GetColor(211, 124, 0),
+            (Color_t)TColor::GetColor(235, 88, 0),
+            (Color_t)TColor::GetColor(255, 0, 0)
+
+/*
+            (Color_t)TColor::GetColor(92, 10, 228),
+            (Color_t)TColor::GetColor(0, 129, 255),
+            (Color_t)TColor::GetColor(0, 177, 255),
+            (Color_t)TColor::GetColor(0, 211, 161),
+            (Color_t)TColor::GetColor(64, 234, 12),
+            (Color_t)TColor::GetColor(255, 252, 0),
+            (Color_t)TColor::GetColor(255, 216, 0),
+            (Color_t)TColor::GetColor(255, 177, 0),
+            (Color_t)TColor::GetColor(255, 137, 0),
+            (Color_t)TColor::GetColor(255, 90, 0),
+            (Color_t)TColor::GetColor(255, 0, 0)*/
+/*
+            (Color_t)TColor::GetColor(106, 30, 171),
+            (Color_t)TColor::GetColor(71, 78, 197),
+            (Color_t)TColor::GetColor(25, 110, 212),
+            (Color_t)TColor::GetColor(0, 137, 217),
+            (Color_t)TColor::GetColor(24, 191, 185),
+            (Color_t)TColor::GetColor(0, 217, 138),
+            (Color_t)TColor::GetColor(146, 230, 0),
+            (Color_t)TColor::GetColor(203, 192, 0),
+            (Color_t)TColor::GetColor(230, 152, 0),
+            (Color_t)TColor::GetColor(244, 106, 0),
+            (Color_t)TColor::GetColor(255, 0, 0)*/
+
         };
         float step = Emax / 10;
         int times = E/step;
-        int index = times >= 10 ? 9 : times;
+        int index = times >= 10 ? 10 : times;
 
         return color_map[index];
     }
 
-    Color_t EGradient(float E){
+    Color_t EGradient(float E, float Emax){
         const static Color_t color_map[10]{
             /*
             (Color_t)TColor::GetColor(27, 2, 222),
@@ -69,7 +107,7 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(59, 3, 99),
             (Color_t)TColor::GetColor(55, 6, 86)*/
             
-            
+            /*
             (Color_t)TColor::GetColor(252, 112, 50),
             (Color_t)TColor::GetColor(236, 100, 52),
             (Color_t)TColor::GetColor(219, 89, 54),
@@ -79,10 +117,21 @@ namespace RhodotronSimulatorGUI::renderer{
             (Color_t)TColor::GetColor(156, 43, 57),
             (Color_t)TColor::GetColor(140, 31, 56),
             (Color_t)TColor::GetColor(125, 17, 56),
-            (Color_t)TColor::GetColor(110, 0, 55)
+            (Color_t)TColor::GetColor(110, 0, 55)*/
+
+            (Color_t)TColor::GetColor(15, 137, 231),
+            (Color_t)TColor::GetColor(0, 159, 221),
+            (Color_t)TColor::GetColor(0, 170, 165),
+            (Color_t)TColor::GetColor(0, 173, 89),
+            (Color_t)TColor::GetColor(148, 164, 12),
+            (Color_t)TColor::GetColor(160, 144, 0),
+            (Color_t)TColor::GetColor(169, 122, 0),
+            (Color_t)TColor::GetColor(175, 99, 0),
+            (Color_t)TColor::GetColor(178, 74, 0),
+            (Color_t)TColor::GetColor(177, 44, 8)
 
         };
-        float step = 0.96 / 10;
+        float step = Emax / 10;
         int times = E/step;
         int index = times >= 10 ? 9 : times;
 
@@ -90,6 +139,7 @@ namespace RhodotronSimulatorGUI::renderer{
     }
 
     void Renderer::_renderElectrons(){
+        std::cout << "Target energy = " << _targetEnergy << std::endl;
         auto e_logs = _dataProvider->GetElectrons();
         for(int i = 0; i < e_logs.size(); i++){
             TEllipse* point = new TEllipse( e_logs[i].time_slices.at(0).position.X(),//0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
@@ -124,7 +174,7 @@ namespace RhodotronSimulatorGUI::renderer{
                 x2 = x1 + point.field.X();
                 y2 = y1 + point.field.Y();
                 TArrow* rfArrow = new TArrow(x1, y1, x2, y2, 0.005);
-                rfArrow->SetLineColor(EGradient(point.magnitude));
+                rfArrow->SetLineColor(EGradient(point.magnitude, rf_log.RF_max));
 
                 if( point.magnitude != 0.0 ){
                     rfArrow->Draw();
@@ -272,7 +322,7 @@ namespace RhodotronSimulatorGUI::renderer{
             if (i < e_logs[j].time_slices.size()){
                 electrons[j]->SetX1(e_logs[j].time_slices[i].position.X());
                 electrons[j]->SetY1(e_logs[j].time_slices[i].position.Y());
-                electrons[j]->SetFillColor(EnergyGradient(e_logs[j].time_slices[i].energy, 1.5));
+                electrons[j]->SetFillColor(EnergyGradient(e_logs[j].time_slices[i].energy, _targetEnergy));
                 electrons[j]->Draw();
             }
         }
@@ -297,7 +347,7 @@ namespace RhodotronSimulatorGUI::renderer{
                 x2 = x1 + point.field.X();
                 y2 = y1 + point.field.Y();
 
-                rfFieldArrows[j]->SetLineColor(EGradient(point.magnitude));
+                rfFieldArrows[j]->SetLineColor(EGradient(point.magnitude, rf_log.RF_max));
                 rfFieldArrows[j]->DrawArrow(x1, y1, x2, y2, 0.005);
             }
 

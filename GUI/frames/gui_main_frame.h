@@ -39,6 +39,7 @@
 #include "sweep_frame/gui_sweep_frame.h"
 #include "../data/gui_sim_dataprovider.h"
 #include "../analyzer/definitions.h"
+#include "../msgbox/gui_msgbox_handler.h"
 
 
 namespace RhodotronSimulatorGUI::frames{
@@ -48,7 +49,6 @@ namespace RhodotronSimulatorGUI::frames{
         renderer::Renderer renderer;
         data::DataProvider dataProvider;
         Analysis::Analyzer analyzer;
-
 
         MainButtonsFrame* main_buttons_frame;
 

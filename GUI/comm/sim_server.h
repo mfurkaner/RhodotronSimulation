@@ -22,6 +22,7 @@
 class GUISimulationHandler;
 
 struct SimulationServerWorkerArgs{
+    std::shared_ptr<bool> terminate;
     std::string pipe_name;
     TGProgressBar* progressbar;
     TGLabel* status;
@@ -33,6 +34,7 @@ struct SimulationServerWorkerArgs{
 class GUISimulationHandler {
     //pthread_t worker;
     std::thread* worker = NULL;
+    std::shared_ptr<bool> worker_terminate = std::make_shared<bool>(false);
     pid_t _sim_pid;
     TGProgressBar* _progressbar;
     TGLabel* _status;

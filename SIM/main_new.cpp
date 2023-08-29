@@ -12,6 +12,22 @@
 
 //#define DEBUG
 
+RhodotronSimulator* sim_ptr;
+
+void signal_handler(int signum){
+
+    if(signum == SIGINT){
+        std::cerr << "\nSIGINT received.\nStopping simulation..." << std::endl;
+        if(sim_ptr != nullptr){
+            sim_ptr->stop();
+        }
+        
+        exit(signum);
+    }
+
+
+}
+
 
 using namespace std::chrono;
 
@@ -24,6 +40,8 @@ int main(int argc, char** argv) {
     Configuration config("config.ini");
     config.getConfiguration();
     RhodotronSimulator rhodotron(config);
+    sim_ptr = &rhodotron;
+    signal(SIGINT, signal_handler);
 
     // Is the simulation a service of GUI?
     if ( argc > 1  && strcmp(argv[1],"-fd") == 0 ) {

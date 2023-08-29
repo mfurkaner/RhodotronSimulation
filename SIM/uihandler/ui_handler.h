@@ -16,8 +16,6 @@ struct UIThreadArgs{
 };
 
 
-
-
 class UIHandler{
     
     std::shared_ptr<std::thread> ui_handler_thread;

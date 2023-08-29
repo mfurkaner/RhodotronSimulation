@@ -123,6 +123,15 @@ void RhodotronSimulator::run(){
 
 }
 
+void RhodotronSimulator::stop(){
+    closeLogs();
+    
+    if(MULTI_THREAD){
+        MTEngine.stopPool();
+    }
+    logPaths();
+}
+
 void RhodotronSimulator::_runMT(){
 
     gun.fireAllWithFireTimesMT();

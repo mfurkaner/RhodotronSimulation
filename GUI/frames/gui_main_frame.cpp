@@ -1,4 +1,5 @@
 #include "gui_main_frame.h" 
+#include "TGMsgBox.h"
 
 namespace RhodotronSimulatorGUI::frames{
 
@@ -11,6 +12,8 @@ namespace RhodotronSimulatorGUI::frames{
         analysis_frame = new AnalysisFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &analyzer);
         run_frame = new RunFrame(this, RENDER_FRAME_W, RENDER_FRAME_H);
         sweep_frame = new SweepFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &analyzer, &sim_handler, &dataProvider, config_frame);
+
+        Handlers::GUIMessageBoxHandler::CreateObject(this);
 
         renderer.SetDataProvider(&dataProvider);
         analyzer.SetDataProvider(&dataProvider);
@@ -43,6 +46,7 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     MainFrame::~MainFrame(){
+        Handlers::GUIMessageBoxHandler::DestroyObject();
         DeleteWindow();
     }
 
@@ -118,7 +122,32 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void MainFrame::QuitPressed(){
-        sim_handler.join_server();
+        auto msgboxHandler = Handlers::GUIMessageBoxHandler::GetObject();
+        if(msgboxHandler == NULL){
+            std::cerr << "msgboxHandler is NULL!" << std::endl;
+            return;
+        }
+
+        auto sure = msgboxHandler->DrawYesNoQuestion("Quitting the application", "Do you want to quit the application?");
+        if(sure == MessageBoxResult::No){
+            return;
+        }
+        
+        if(sim_handler.IsRunning()){
+            auto kill_sim = msgboxHandler->DrawYesNoExclamation("Simulation Running!", "A simulation is running, do you want to stop the simulation?");
+            if(kill_sim == MessageBoxResult::Yes){
+                sim_handler.kill_simulation();
+                sim_handler.kill_server();
+            }
+        }
+        else if(active_frame == config_frame){
+            auto save_config = msgboxHandler->DrawYesNoExclamation("Configuration may not be saved!", "Do you want to save the configuration?");
+            if(save_config == MessageBoxResult::Yes){
+                config_frame->SaveConfigPressed();
+            }
+        }
+        Handlers::GUIMessageBoxHandler::DestroyObject();
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         DeleteWindow();
     }
 

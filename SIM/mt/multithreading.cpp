@@ -9,6 +9,7 @@ void threadLoop(ThreadArguments thread_arguments){
     double sim_time = thread_arguments.start_time;
 
     while(sim_time < thread_arguments.end_time + thread_arguments.time_interval){
+        if(*thread_arguments.terminate) return;
         thread_arguments.E->update(sim_time);
         thread_arguments.i_args.time = sim_time;
         
@@ -61,7 +62,7 @@ void MultiThreadEngine::setupPool( double _time_interval, double _start_time, do
     threads.reserve(thread_count);
 
     for(int i = 0; i < thread_count && i == threads.size(); i++){
-
+        child_terminate.push_back(make_shared<bool>(false));
         child_notifier_mutexes.push_back(make_shared<mutex>());
         child_times.push_back(make_shared<double>());
         // Is this even a good idea?
@@ -70,10 +71,18 @@ void MultiThreadEngine::setupPool( double _time_interval, double _start_time, do
         double time_between_fires = thread_count*0.8/50;
         double first_fire_time = i*0.8/50;
         ThreadArguments thread_arguments(i, _time_interval, _start_time, _end_time, &gun, _E, _B, e_list[i], first_fire_time, time_between_fires);
+        thread_arguments.terminate = child_terminate[i];
         thread_arguments.parent_notifier_mutex = child_notifier_mutexes[i];
         thread_arguments.current_thread_time = child_times[i];
         threads.push_back(thread(threadLoop, thread_arguments));
     }
+}
+
+void MultiThreadEngine::stopPool(){
+    for(int i = 0; i < threads.size(); i++){
+        *child_terminate[i] = true;
+    }
+    join();
 }
 
 void MultiThreadEngine::join(){

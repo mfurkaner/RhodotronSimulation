@@ -38,16 +38,14 @@ void GUISimulationHandler::spawn_simulation(){
 }
 
 void GUISimulationHandler::kill_simulation(){
-    int status;
-    int cpid = waitpid(_sim_pid, &status, WNOHANG);
+    int* status;
+    int cpid = waitpid(_sim_pid, status, WNOHANG);
     if (cpid < 0) return;
-    if (WIFEXITED(status) || WIFSTOPPED(status)) {
+    if (status != NULL && (WIFEXITED(status) || WIFSTOPPED(status))) {
         return;
     }
-    std::cout << getpid() << " "<<_sim_pid << " " << WIFSIGNALED(status) << std::endl; 
-    kill(_sim_pid, SIGTERM);
-    cpid = waitpid(_sim_pid, &status, 0);
-    std::cout << getpid() << " "<<_sim_pid << " " << WIFSIGNALED(status) << std::endl; 
+    kill(_sim_pid, SIGINT);
+    cpid = waitpid(_sim_pid, status, 0);
 }
 
 void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_args){
@@ -64,8 +62,7 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
     uint8_t recvd_signal;
 
     ssize_t n ;
-    bool isRunning = true;
-    while ( isRunning ){
+    while ( *worker_args.terminate == false ){
         n = read(_fd, &recvd_signal, SIGNAL_SIZE);
         if ( n <= 0){
             continue;
@@ -79,17 +76,14 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
             worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_running.c_str());
         }
         if ( (recvd_signal & SIM_RUNNING) == 0){
-            isRunning = false;
-            worker_args.owner->isRunning = false;
             break;
         }
     }
     if (reportStatus){
         worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_finished.c_str());
     }
-
+    worker_args.owner->isRunning = false;
     close_pipe(_fd, worker_args.pipe_name.c_str());
-//    delete worker_args;
     return;
 }
 
@@ -101,6 +95,7 @@ void GUISimulationHandler::spawn_server(bool reportProgressBar, bool reportStatu
     server_args.owner = this;
     server_args.reportProgressBar = reportProgressBar;
     server_args.reportStatus = reportStatus;
+    server_args.terminate = worker_terminate;
 
     if ( worker != NULL ){
         if(worker->joinable()){
@@ -109,12 +104,19 @@ void GUISimulationHandler::spawn_server(bool reportProgressBar, bool reportStatu
         delete worker;
     }
     
+    *worker_terminate = false;
     worker = new std::thread(GUISimulationHandler::sim_server_work, server_args);
 }
 
 void GUISimulationHandler::join_server(){
-    while(!worker->joinable());
-    worker->join();
+    if(!IsRunning()) return;
+
+    if(worker != NULL){
+        while(!worker->joinable());
+        worker->join();
+        delete worker;
+        worker = NULL;
+    }
 }
 
 bool GUISimulationHandler::server_joinable(){
@@ -122,8 +124,8 @@ bool GUISimulationHandler::server_joinable(){
 }
 
 void GUISimulationHandler::kill_server(){
-    //pthread_kill(worker, SIGKILL);
-    worker->detach();
+    *worker_terminate = true;
+    join_server();
 }
 
 void GUISimulationHandler::set_progress_bar(TGProgressBar* progressbar){

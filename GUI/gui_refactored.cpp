@@ -29,6 +29,7 @@
 #include "comm/sim_server.cpp"
 #include "renderer/gui_renderer.cpp"
 #include "data/gui_sim_dataprovider.cpp"
+#include "msgbox/gui_msgbox_handler.cpp"
 
 
 

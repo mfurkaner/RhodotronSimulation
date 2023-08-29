@@ -212,6 +212,7 @@ public:
     }
 
     void run();
+    void stop();
     void notifyUI(double time);
 
     void setState(uint8_t state_);

@@ -25,6 +25,7 @@ struct InteractArguments{
 };
 
 struct ThreadArguments{
+    shared_ptr<bool> terminate;
     shared_ptr<mutex> parent_notifier_mutex;
     shared_ptr<double> current_thread_time;
 
@@ -67,6 +68,7 @@ void threadLoop(ThreadArguments thread_arguments);
 
 class MultiThreadEngine{
     std::vector<thread> threads = {};
+    std::vector<shared_ptr<bool>> child_terminate;
     std::vector<shared_ptr<mutex>> child_notifier_mutexes;
     std::vector<shared_ptr<double>> child_times; 
     unsigned int thread_count = 0;
@@ -79,6 +81,8 @@ class MultiThreadEngine{
 
     void setupPool( double _time_interval, double _start_time, double _end_time, Gun& gun, 
         CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron>>>>& e_list);
+
+    void stopPool();
 
 
     void join();

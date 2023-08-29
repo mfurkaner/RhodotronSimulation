@@ -43,7 +43,7 @@ void Electron::accelerate(const vector3d& acc, double dt){
 }
 
 void Electron::interactLF(RFField& E, MagneticField& B, double time_interval){
-    vector3d acc_E = E.ac.qtOn(*this);
+    vector3d acc_E = E.actOn(*this);
     vector3d acc_B = B.actOn(*this);
 
     vector3d acc = acc_E + acc_B;

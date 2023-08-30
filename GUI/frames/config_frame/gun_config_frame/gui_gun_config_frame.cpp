@@ -1,10 +1,9 @@
 #include "gui_gun_config_frame.h"
+#include "../../../data/gui_data_types.h"
 
-
-#include "../gui_config_frame.h"
 #include <sstream>
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     TGHorizontalFrame* GunConfigurationFrame::_init_Ein_icon_frame(){
         auto Ein_icon_frame = new TGHorizontalFrame(this);
@@ -137,7 +136,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     std::string GunConfigurationFrame::ProduceGunConfiguration(){
         std::string gunConfiguration;
 
-        for (  const auto cell : ConfigurationFrame::configs ){
+        for (  const auto cell : configs ){
             if ( cell.Type != Gun )
                 continue;
             
@@ -183,7 +182,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 default:
+                    #ifdef DEBUG
                     std::cerr << "Unknown command in ProduceGunConfiguration: " << cell.Value << std::endl;
+                    #endif
                     break;
             }
 
@@ -213,7 +214,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
             AvailableConfigIndex command = endofconfig;
 
-            for( const auto cell : ConfigurationFrame::configs ){
+            for( const auto cell : configs ){
                 if ( cell.Type == Gun && cell.Value == cmd){
                     command = cell.Index;
                     break;
@@ -251,9 +252,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 default:
+                    #ifdef DEBUG
                     std::cerr << "Unknown command in SetGunConfiguration: " << line << std::endl;
+                    #endif
                     break;
             }
         }
     }
-}
+//}

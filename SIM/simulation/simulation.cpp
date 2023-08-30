@@ -137,7 +137,7 @@ void RhodotronSimulator::_runMT(){
     gun.fireAllWithFireTimesMT();
 
     MTEngine.setupPool(time_interval, start_time, end_time, gun, E_field, B_field, gun.thread_bunchs);
-
+ 
     STEPS_TAKEN = 0;
     simulation_time = start_time;
     while (simulation_time < end_time + time_interval ){

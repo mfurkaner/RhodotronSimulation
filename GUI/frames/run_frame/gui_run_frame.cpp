@@ -1,7 +1,6 @@
 #include "gui_run_frame.h"
-#include "../gui_main_frame.h"
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
 
     RunFrame::RunFrame(const TGWindow* p, UInt_t w, UInt_t h) 
@@ -29,24 +28,19 @@ namespace RhodotronSimulatorGUI::frames{
         auto button_frame = new TGHorizontalFrame(this);
         // Setup the play button
         _runButton = new TGTextButton(button_frame, "Run Simulation");
-        _runButton->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "RunPressed()");
-/*
+
+
         _pauseButton = new TGTextButton(button_frame, "Pause Simulation");
-        _pauseButton->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "PausePressed()");
+
 
         _continueButton = new TGTextButton(button_frame, "Continue Simulation");
-        _continueButton->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "ContinuePressed()");
-*/
+
+
         _stopButton = new TGTextButton(button_frame, "Stop Simulation");
-        _stopButton->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "StopPressed()");
 
         button_frame->AddFrame(_runButton, center_y_layout);
-        //button_frame->AddFrame(_pauseButton, center_y_layout); 
-        //button_frame->AddFrame(_continueButton, center_y_layout);
+        button_frame->AddFrame(_pauseButton, center_y_layout); 
+        button_frame->AddFrame(_continueButton, center_y_layout);
         button_frame->AddFrame(_stopButton, center_y_layout);
 
         this->AddFrame(_label, center_x_layout);
@@ -54,7 +48,18 @@ namespace RhodotronSimulatorGUI::frames{
         this->AddFrame(progressBar, center_x_layout);
         this->AddFrame(button_frame, center_x_layout);
 
-        //Layout();
+        ShowStandbyButtons();
+    }
+
+    void RunFrame::Setup(){
+        _runButton->Connect("Clicked()", "RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
+                             "RunPressed()");
+        _pauseButton->Connect("Clicked()", "RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
+                             "PausePressed()");
+        _continueButton->Connect("Clicked()", "RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
+                             "ContinuePressed()");
+        _stopButton->Connect("Clicked()", "RunFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
+                             "StopPressed()");
     }
 
     void RunFrame::RunPressed(){
@@ -66,26 +71,29 @@ namespace RhodotronSimulatorGUI::frames{
         sim_handler->spawn_server();
         sim_handler->spawn_simulation();
 
-        ((MainFrame*)parent)->ClearData();
-/*
+        dp->clearLogs();
+        renderer->clear();
+
         if(_runCheckerThread != NULL){
             if(_runCheckerThread->joinable()){
                 _runCheckerThread->join();
             }
             delete _runCheckerThread;
         }
-        _runCheckerThread = new std::thread(RunFrame::RunCheckerThreadWork, sim_handler, this);*/
+        _runCheckerThread = new std::thread(RunFrame::RunCheckerThreadWork, sim_handler, this);
     }
 
-/*
+
     void RunFrame::PausePressed(){
         sim_handler->pause_simulation();
 
         _progressBar_mutex->lock();
         _status_mutex->lock();
-        ((TGCompositeFrame*)_pauseButton->GetParent())->HideFrame(_pauseButton);
-        ((TGCompositeFrame*)_continueButton->GetParent())->ShowFrame(_continueButton);
-        Layout();
+        //((TGCompositeFrame*)_pauseButton->GetParent())->HideFrame(_pauseButton);
+        _pauseButton->SetEnabled(false);
+        //((TGCompositeFrame*)_continueButton->GetParent())->HideFrame(_continueButton);
+        _continueButton->SetEnabled(true);
+        //Layout();
         _status_mutex->unlock();
         _progressBar_mutex->unlock();
     }
@@ -95,15 +103,17 @@ namespace RhodotronSimulatorGUI::frames{
 
         _progressBar_mutex->lock();
         _status_mutex->lock();
-        ((TGCompositeFrame*)_pauseButton->GetParent())->ShowFrame(_pauseButton);
-        ((TGCompositeFrame*)_continueButton->GetParent())->HideFrame(_continueButton);
-        Layout();
+        //((TGCompositeFrame*)_pauseButton->GetParent())->HideFrame(_pauseButton);
+        _pauseButton->SetEnabled(true);
+        //((TGCompositeFrame*)_continueButton->GetParent())->HideFrame(_continueButton);
+        _continueButton->SetEnabled(false);
+        //Layout();
         _status_mutex->unlock();
         _progressBar_mutex->unlock();
-    }*/
+    }
 
     void RunFrame::StopPressed(){
-        auto mboxHandler = Handlers::GUIMessageBoxHandler::GetObject();
+        auto mboxHandler = GUIMessageBoxHandler::GetObject();
 
         auto sure = mboxHandler->DrawYesNoExclamation(
             Run_frame_mbox_title_stopping.c_str(), Run_frame_mbox_msg_stopping.c_str());
@@ -119,12 +129,16 @@ namespace RhodotronSimulatorGUI::frames{
     void RunFrame::ShowRunningButtons(){
         _progressBar_mutex->lock();
         _status_mutex->lock();
-        ((TGCompositeFrame*)_runButton->GetParent())->HideFrame(_runButton);
-        ((TGCompositeFrame*)_stopButton->GetParent())->ShowFrame(_stopButton);
-        //((TGCompositeFrame*)_pauseButton->GetParent())->ShowFrame(_pauseButton);
+        //((TGCompositeFrame*)_runButton->GetParent())->ShowFrame(_runButton);
+        _runButton->SetEnabled(false);
+        //((TGCompositeFrame*)_stopButton->GetParent())->HideFrame(_stopButton);        
+        _stopButton->SetEnabled(true);
+        //((TGCompositeFrame*)_pauseButton->GetParent())->HideFrame(_pauseButton);
+        _pauseButton->SetEnabled(true);
         //((TGCompositeFrame*)_continueButton->GetParent())->HideFrame(_continueButton);
-        ((TGCompositeFrame*)_runButton->GetParent())->Layout();
-        Layout();
+        _continueButton->SetEnabled(false);
+        //((TGCompositeFrame*)_runButton->GetParent())->Layout();
+        //Layout();
         _status_mutex->unlock();
         _progressBar_mutex->unlock();
     }
@@ -132,18 +146,23 @@ namespace RhodotronSimulatorGUI::frames{
     void RunFrame::ShowStandbyButtons(){
         _progressBar_mutex->lock();
         _status_mutex->lock();
-        ((TGCompositeFrame*)_runButton->GetParent())->ShowFrame(_runButton);
-        ((TGCompositeFrame*)_stopButton->GetParent())->HideFrame(_stopButton);
+        //((TGCompositeFrame*)_runButton->GetParent())->ShowFrame(_runButton);
+        _runButton->SetEnabled(true);
+        //((TGCompositeFrame*)_stopButton->GetParent())->HideFrame(_stopButton);        
+        _stopButton->SetEnabled(false);
         //((TGCompositeFrame*)_pauseButton->GetParent())->HideFrame(_pauseButton);
+        _pauseButton->SetEnabled(false);
         //((TGCompositeFrame*)_continueButton->GetParent())->HideFrame(_continueButton);
-        ((TGCompositeFrame*)_runButton->GetParent())->Layout();
-        Layout();
+        _continueButton->SetEnabled(false);
+        //((TGCompositeFrame*)_runButton->GetParent())->Layout();
+        //Layout();
         _status_mutex->unlock();
         _progressBar_mutex->unlock();
     }
 
     void RunFrame::RunFinished(){
         ShowStandbyButtons();
+        dp->fillLogs();
     }
 
     void RunFrame::RunCheckerThreadWork(GUISimulationHandler* _sim_handler, RunFrame* _frame){
@@ -158,4 +177,4 @@ namespace RhodotronSimulatorGUI::frames{
     void RunFrame::OnNavigatedTo(){
         ShowStandbyButtons();
     }
-}
+//}

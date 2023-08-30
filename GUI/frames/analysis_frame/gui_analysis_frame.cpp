@@ -2,10 +2,10 @@
 #include "TGNumberEntry.h"
 #include "TColor.h"
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
 
-    AnalysisFrame::AnalysisFrame(const TGWindow* p, UInt_t w, UInt_t h, Analysis::Analyzer* analyzer_) 
+    AnalysisFrame::AnalysisFrame(const TGWindow* p, UInt_t w, UInt_t h, Analyzer* analyzer_) 
         : TGVerticalFrame(p, w, h){
         parent = p;
         analyzer = analyzer_;
@@ -14,20 +14,17 @@ namespace RhodotronSimulatorGUI::frames{
         canvas = new TRootEmbeddedCanvas("output", this, 500, 500);
 
 
-        _Edist_control_frame = new subframes::EDistributionControlFrame(this, 300, 300);
-        _tvsE_control_frame = new subframes::TvsEControlFrame(this, 300, 300);
+        _Edist_control_frame = new EDistributionControlFrame(this, 300, 300);
+        _tvsE_control_frame = new TvsEControlFrame(this, 300, 300);
 
 
         _analysisSelection = new TGComboBox(this);
-        _analysisSelection->Connect("Selected(Int_t)", "RhodotronSimulatorGUI::frames::AnalysisFrame", this, "AnalysisTypeSelected(Int_t)");
+
         _analysisSelection->Resize(200,20);
         _fillAnalysisSelection();
 
 
-        auto save_button = new TGTextButton(this, "Save");
-        save_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::AnalysisFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "SavePressed()");
-
+        _save_button = new TGTextButton(this, "Save");
 
         this->AddFrame(_analysisSelection, center_x_layout);
         this->AddFrame(canvas, center_x_layout);
@@ -35,9 +32,17 @@ namespace RhodotronSimulatorGUI::frames{
         this->AddFrame(_Edist_control_frame, center_x_layout);
         this->AddFrame(_tvsE_control_frame, center_x_layout);
 
-        this->AddFrame(save_button, center_x_layout);
+        this->AddFrame(_save_button, center_x_layout);
 
         active_frame = _Edist_control_frame;
+    }
+
+    void AnalysisFrame::Setup(){
+        _analysisSelection->Connect("Selected(Int_t)", "AnalysisFrame", this, "AnalysisTypeSelected(Int_t)");
+        _save_button->Connect("Clicked()", "AnalysisFrame", this, "SavePressed()");
+        
+        _Edist_control_frame->Setup();
+        _tvsE_control_frame->Setup();
     }
 
     void AnalysisFrame::_fillAnalysisSelection(){
@@ -127,4 +132,4 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(_Edist_control_frame);
         this->HideFrame(_tvsE_control_frame);
     }
-}
+//}

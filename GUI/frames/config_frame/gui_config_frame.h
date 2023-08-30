@@ -32,46 +32,19 @@
 #include <fstream>
 
 #include "../gui_frames_common.h"
-#include "../gui_main_frame.h"
 #include "B_config_frame/gui_B_config_frame.h"
 #include "E_config_frame/gui_E_config_frame.h"
 #include "gun_config_frame/gui_gun_config_frame.h"
 #include "sim_config_frame/gui_sim_config_frame.h"
+#include "../../data/gui_data_types.h"
 
-namespace RhodotronSimulatorGUI::frames{
-
-// TODO : DO THIS DYNAMICALLY
-    enum AvailableConfigIndex{
-        emax, frequency, phaselag,
-        epath, bpath, ppath, cpath,
-        starttime, endtime, dt,
-        guntime, _enum, multh,
-        thcount, _r1, _r2, 
-        ein, einstd,
-        addmagnet, magrotation,
-        bunchnum, gunperiod,
-        targeten, output,
-        debug,
-
-        endofconfig
-    };
-
-    enum ConfigType{
-        B, E, Gun, Sim
-    };
-    struct ConfigurationCell{
-        ConfigType Type;
-        std::string Value;
-        AvailableConfigIndex Index;
-
-        ConfigurationCell(ConfigType type, std::string value, AvailableConfigIndex index) : Type(type), Value(value), Index(index){}
-    };
+//namespace RhodotronSimulatorGUI::frames{
 
     class ConfigurationFrame : public TGVerticalFrame{
-        subframes::BConfigurationFrame* B_config_frame;
-        subframes::EConfigurationFrame* E_config_frame;
-        subframes::GunConfigurationFrame* gun_config_frame;
-        subframes::SimConfigurationFrame* sim_config_frame;
+        BConfigurationFrame* B_config_frame;
+        EConfigurationFrame* E_config_frame;
+        GunConfigurationFrame* gun_config_frame;
+        SimConfigurationFrame* sim_config_frame;
 
         std::string _config_file_path = "config.ini";
         std::string _completed_config_file_path = "xy/settings.txt";
@@ -79,13 +52,12 @@ namespace RhodotronSimulatorGUI::frames{
 
         const TGWindow* parent;
     public:
-        
-        static const std::vector<ConfigurationCell> configs;
-
 
         static const std::string config_comment;
         
         ConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h);
+
+        void Setup();
 
 
         std::string GetConfigAsString();
@@ -119,7 +91,7 @@ namespace RhodotronSimulatorGUI::frames{
     };
 
 
-}
+//}
 
 
 #endif

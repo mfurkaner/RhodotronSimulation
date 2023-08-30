@@ -2,6 +2,7 @@
 #define GUI_RENDERER_H
 
 #include "../../SIM/basic/vector.h"
+#include "../data/gui_data_types.h"
 #include "../data/gui_sim_dataprovider.h"
 #include "render_settings.h"
 #include <vector>
@@ -13,41 +14,11 @@
 #include "TTimer.h"
 #include <iostream>
 
-namespace RhodotronSimulatorGUI::renderer{
-
-    struct ElectronSnapshot{
-        float time;
-        float energy;
-        vector3d position;
-        vector3d velocity;
-    };
-
-    struct ElectronLog{
-        std::vector<ElectronSnapshot> time_slices;
-    };
-
-    struct RFPoint{
-        vector3d position;
-        vector3d field;
-        float magnitude;
-    };
-
-    struct RFSnapshot{
-        float time;
-        std::vector<RFPoint> field;
-    };
-
-    struct RFLog{
-        std::vector<RFSnapshot> time_slices;
-    };
-
-    struct StaticMagneticFieldLog{
-        std::vector<std::pair<float, float>> positive_positions;
-    };
+//namespace RhodotronSimulatorGUI::renderer{
 
     class Renderer{
 
-        data::DataProvider* _dataProvider; 
+        DataProvider* _dataProvider; 
         TRootEmbeddedCanvas *canvas_to_render_in;
 
         float _ein = 0.04;
@@ -89,7 +60,7 @@ namespace RhodotronSimulatorGUI::renderer{
         Renderer(){timer = new TTimer(1);}
         ~Renderer(){timer->TurnOff(); delete timer;}
 
-        void SetDataProvider(data::DataProvider* dp){_dataProvider = dp;}
+        void SetDataProvider(DataProvider* dp){_dataProvider = dp;}
         void SetTargetEnergy(float targetEn) { _targetEnergy = targetEn;}
         void SetCanvasToRender(TRootEmbeddedCanvas* canvas){ canvas_to_render_in = canvas;}
 
@@ -105,5 +76,5 @@ namespace RhodotronSimulatorGUI::renderer{
         void iterate();
     };
 
-}
+//}
 #endif

@@ -1,11 +1,11 @@
 #include "gui_sim_config_frame.h"
 
-#include "../gui_config_frame.h"
+#include "../../../data/gui_data_types.h"
 
 #include <sstream>
 
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     TGHorizontalFrame* SimConfigurationFrame::_init_time_entry_frame(){
         TGHorizontalFrame* time_entry_frame = new TGHorizontalFrame(this);
@@ -130,10 +130,10 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         auto _frame_save_load = new TGHorizontalFrame(this);
 
         _loadConfig_button = new TGTextButton(_frame_save_load, "Load Configuration");
-        _loadConfig_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::ConfigurationFrame", (void*)parent, "LoadConfigPressed()");
+
 
          _saveConfig_button = new TGTextButton(_frame_save_load, "Save Configuration");
-        _saveConfig_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::ConfigurationFrame", (void*)parent, "SaveConfigPressed()");
+
 
         auto save_layout = new TGLayoutHints(kLHintsCenterY, 5, 20, 10, 10);
         auto load_layout = new TGLayoutHints(kLHintsCenterY, 20, 5, 10, 10);
@@ -144,11 +144,16 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         this->AddFrame(_frame_save_load, center_x_layout);
     }
 
+    void SimConfigurationFrame::Setup(){
+        _loadConfig_button->Connect("Clicked()", "ConfigurationFrame", (void*)parent, "LoadConfigPressed()");
+        _saveConfig_button->Connect("Clicked()", "ConfigurationFrame", (void*)parent, "SaveConfigPressed()");
+    }
+
 
     std::string SimConfigurationFrame::ProduceSimConfiguration(){
         std::string simConfiguration;
 
-        for (  const auto cell : ConfigurationFrame::configs ){
+        for (  const auto cell : configs ){
             if ( cell.Type != Sim )
                 continue;
             
@@ -210,7 +215,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 default:
+                    #ifdef DEBUG
                     std::cerr << "Unknown command in ProduceSimConfiguration: " << cell.Value << std::endl;
+                    #endif
                     break;
             }
 
@@ -242,7 +249,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
             AvailableConfigIndex command = endofconfig;
 
-            for( const auto cell : ConfigurationFrame::configs ){
+            for( const auto cell : configs ){
                 if ( cell.Type == Sim && cell.Value == cmd){
                     command = cell.Index;
                     break;
@@ -291,7 +298,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 default:
+                    #ifdef DEBUG
                     std::cerr << "Unknown command in SetGunConfiguration: " << line << std::endl;
+                    #endif
                     break;
             }
         }
@@ -311,4 +320,4 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         _thnum_entry->SetNumber(DEFAULT_SIM_THNUM);
         _multh_enable_button->SetDown(DEFAULT_SIM_MULTH_STATE);
     }
-}
+//}

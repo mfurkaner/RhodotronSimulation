@@ -2,10 +2,10 @@
 #include "TGNumberEntry.h"
 #include "TColor.h"
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
 
-    RenderFrame::RenderFrame(const TGWindow* p, UInt_t w, UInt_t h, renderer::Renderer* renderer_) 
+    RenderFrame::RenderFrame(const TGWindow* p, UInt_t w, UInt_t h, Renderer* renderer_) 
         : TGVerticalFrame(p, w, h){
         parent = p;
         renderer = renderer_;
@@ -22,27 +22,22 @@ namespace RhodotronSimulatorGUI::frames{
         canvas = new TRootEmbeddedCanvas("render_canvas", this, 500, 500);
 
         // Setup the play button
-        auto play_button = new TGTextButton(this, "Play");
-        play_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RenderFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "PlayPressed()");
+        play_button = new TGTextButton(this, "Play");
 
-        auto save_button = new TGTextButton(this, "Save");
-        save_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::RenderFrame", this, //"RhodotronSimulatorGUI::renderer::Renderer", &renderer, 
-                             "SavePressed()");
+        save_button = new TGTextButton(this, "Save");
+
 
         // Setup the time entry field
         active_time = new TGNumberEntry(this,0.0,3, -1, TGNumberFormat::kNESRealOne, 
                                 TGNumberFormat::kNEANonNegative, TGNumberFormat::kNELLimitMinMax, 0.1, 50);
         active_time->Resize(100, 25);
-        active_time->Connect("Modified()", "RhodotronSimulatorGUI::frames::RenderFrame", this, 
-                             "TimeChanged()");
+
 
         // Setup the time slider
         time_slider = new TGHSlider(this, 200);
         time_slider->SetPosition(0);
         time_slider->SetRange(0, 500);
-        time_slider->Connect("PositionChanged(Int_t)", "RhodotronSimulatorGUI::frames::RenderFrame", this, 
-                             "SliderPositionChanged(Int_t)");
+
 
 
         this->AddFrame(progressBar, center_x_layout);
@@ -52,6 +47,20 @@ namespace RhodotronSimulatorGUI::frames{
         this->AddFrame(active_time, center_x_layout);
         this->AddFrame(save_button, center_x_layout);
 
+    }
+
+    void RenderFrame::Setup(){
+        play_button->Connect("Clicked()", "RenderFrame", this,
+                             "PlayPressed()");
+
+        save_button->Connect("Clicked()", "RenderFrame", this,
+                             "SavePressed()");
+
+        active_time->Connect("Modified()", "RenderFrame", this, 
+                             "TimeChanged()");
+                             
+        time_slider->Connect("PositionChanged(Int_t)", "RenderFrame", this, 
+                             "SliderPositionChanged(Int_t)");
     }
 
     void RenderFrame::UpdateProgressBar(uint8_t progress){
@@ -115,4 +124,4 @@ namespace RhodotronSimulatorGUI::frames{
         canvas->Resize(500, 500);
     }
 
-}
+//}

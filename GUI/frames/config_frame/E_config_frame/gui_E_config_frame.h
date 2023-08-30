@@ -35,7 +35,7 @@
 
 #include "../../gui_frames_common.h"
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     class EConfigurationFrame : public TGVerticalFrame{
         const TGWindow* parent;
@@ -75,7 +75,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     };
 
 
-}
+//}
 
 
 

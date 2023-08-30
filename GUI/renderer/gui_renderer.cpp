@@ -1,5 +1,5 @@
 #include "gui_renderer.h"
-#include "../../SIM/basic/vector.cpp"
+#include "../../SIM/basic/vector.h"
 #include <fstream>
 #include <sstream>
 #include <string>
@@ -15,7 +15,7 @@
 
 
 
-namespace RhodotronSimulatorGUI::renderer{
+//namespace RhodotronSimulatorGUI::renderer{
 
 #pragma region RENDER_FILLED
 
@@ -139,7 +139,9 @@ namespace RhodotronSimulatorGUI::renderer{
     }
 
     void Renderer::_renderElectrons(){
+        #ifdef DEBUG
         std::cout << "Target energy = " << _targetEnergy << std::endl;
+        #endif
         auto e_logs = _dataProvider->GetElectrons();
         for(int i = 0; i < e_logs.size(); i++){
             TEllipse* point = new TEllipse( e_logs[i].time_slices.at(0).position.X(),//0.5 + _electrons_log[i].time_slices.at(0).position.X()/3,
@@ -157,8 +159,10 @@ namespace RhodotronSimulatorGUI::renderer{
         auto rf_log = _dataProvider->GetEField();
         arrowSizeMultiplier = SIZE_E_ARROW_MULTIPLIER/rf_log.RF_max;
 
+#ifdef DEBUG
         std::cout << "RF max (MV/m) = " << rf_log.RF_max 
                   << " : arrowSizeMultiplier = " << arrowSizeMultiplier << std::endl;
+#endif
 
         if(rf_log.time_slices.size() > 0){
             float x1,y1,x2,y2;
@@ -353,7 +357,9 @@ namespace RhodotronSimulatorGUI::renderer{
 
         }
         else{
+            #ifdef DEBUG
             std::cerr << "An index bigger than rf.time_slices is requested : " << log_index <<  " last time was : " << rf_log.time_slices[rf_log.time_slices.size()-1].time << std::endl;
+            #endif
         }
     }
 
@@ -412,7 +418,7 @@ namespace RhodotronSimulatorGUI::renderer{
     void Renderer::RunRendered(){
         if(render_ready == false || timer->IsRunning()) return;
 
-        timer->Connect("Timeout()", "RhodotronSimulatorGUI::renderer::Renderer", this, "iterate()");			
+        timer->Connect("Timeout()", "Renderer", this, "iterate()");			
         timer->TurnOn();
     }
 
@@ -422,7 +428,7 @@ namespace RhodotronSimulatorGUI::renderer{
         _save_gif = true;
         gSystem->mkdir(_temp_gif_frames_path, true);
         gSystem->Unlink("animation.gif");
-        timer->Connect("Timeout()", "RhodotronSimulatorGUI::renderer::Renderer", this, "iterate()");			
+        timer->Connect("Timeout()", "Renderer", this, "iterate()");			
         timer->TurnOn();
     }
 
@@ -487,8 +493,9 @@ namespace RhodotronSimulatorGUI::renderer{
                 return i;
             }
         }
-
+        #ifdef DEBUG
         std::cerr << "No such time : " <<  time << std::endl;
+        #endif
         return -1;
     }
 
@@ -518,4 +525,4 @@ namespace RhodotronSimulatorGUI::renderer{
         pt->AddText(temp);
         pt->Draw();
     }
-}
+//}

@@ -32,14 +32,14 @@
 #include "../gui_frames_common.h"
 #include "../config_frame/gui_config_frame.h"
 #include "../../renderer/gui_renderer.h"
-#include "../../analyzer/definitions.h"
+#include "../../analyzer/gui_analyzer.h"
 #include "../../comm/sim_server.h"
 #include "../../data/gui_sim_dataprovider.h"
 #include "sweep_control_frames/gui_sweep_phaselag_frame.h"
 
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
     enum SweepType{
         PhaseLagSweep
@@ -48,16 +48,16 @@ namespace RhodotronSimulatorGUI::frames{
 
     class SweepFrame : public TGVerticalFrame{
         const TGWindow* parent;
-        Analysis::Analyzer* analyzer;
+        Analyzer* analyzer;
         GUISimulationHandler* sim_handler;
-        data::DataProvider* dataProvider;
+        DataProvider* dataProvider;
 
         ConfigurationFrame* config_frame;
 
         TGComboBox* _sweepSelection;
         std::vector<SweepType> _sweepTypes;
 
-        subframes::PhaseLagSweepControlFrame* _phaselag_control_frame;
+        PhaseLagSweepControlFrame* _phaselag_control_frame;
 
         float _phaselag_start;
         float _phaselag_end;
@@ -67,15 +67,17 @@ namespace RhodotronSimulatorGUI::frames{
         void _fillSweepSelection();
 
     public:
-        SweepFrame(const TGWindow* p, UInt_t w, UInt_t h, Analysis::Analyzer* analyzer_, GUISimulationHandler* sim_handler_, data::DataProvider* dataProvider_, ConfigurationFrame* config_frame_);
+        SweepFrame(const TGWindow* p, UInt_t w, UInt_t h, Analyzer* analyzer_, GUISimulationHandler* sim_handler_, DataProvider* dataProvider_, ConfigurationFrame* config_frame_);
 
+        void Setup();
+        
         void SweepTypeSelected(Int_t id);
 
         void NavigateTo(TGFrame* child_frame);
         void OnNavigatedTo();
         void HideAll();
     };
-}
+//}
 
 
 

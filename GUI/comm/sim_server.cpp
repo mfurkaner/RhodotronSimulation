@@ -15,7 +15,7 @@ const std::vector<std::string> GUISimulationHandler::sim_args = { sim_exe, "-fd"
 
 void GUISimulationHandler::spawn_simulation(){
     if( isRunning )return;
-    if (_status) _status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_starting.c_str());
+    if (_status) _status->SetText(Run_frame_status_title_starting.c_str());
     isRunning = true;
     extern char** environ;
 
@@ -52,7 +52,10 @@ void GUISimulationHandler::pause_simulation(){
     int* status;
     int cpid = waitpid(_sim_pid, status, WNOHANG);
     if (cpid < 0) return;
-    if (status != NULL && (WIFEXITED(status))) {
+    if (status != NULL && (WIFSTOPPED(status))) {
+        #ifdef DEBUG
+        std::cerr << "WIFSTOPPED:" << WIFSTOPPED(status) << std::endl;
+        #endif
         return;
     }
     kill(_sim_pid, SIGSTOP);
@@ -64,7 +67,10 @@ void GUISimulationHandler::continue_simulation(){
     int* status;
     int cpid = waitpid(_sim_pid, status, WNOHANG);
     if (cpid < 0) return;
-    if (status != NULL && (WIFEXITED(status))) {
+    if (status != NULL && (WIFSTOPPED(status))) {
+        #ifdef DEBUG
+        std::cerr << "WIFSTOPPED:" << WIFSTOPPED(status) << std::endl;
+        #endif
         return;
     }
     kill(_sim_pid, SIGCONT);
@@ -78,7 +84,9 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
 
     int _fd = open_pipe(worker_args.pipe_name.c_str());
     if (_fd < 0){
+        #ifdef DEBUG
         perror("open_pipe failed in sim_server_work");
+        #endif
         return;
     }
 
@@ -90,7 +98,7 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
     while ( *worker_args.terminate == false ){
         if(alreadyPaused == false && reportStatus && *worker_args.pause){
             worker_args.status_mutex->lock();
-            worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_paused.c_str());
+            worker_args.status->SetText(Run_frame_status_title_paused.c_str());
             worker_args.status_mutex->unlock();
             std::this_thread::yield();
             alreadyPaused = true;
@@ -109,7 +117,7 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
         }
         if (reportStatus){
             worker_args.status_mutex->lock();
-            worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_running.c_str());
+            worker_args.status->SetText(Run_frame_status_title_running.c_str());
             worker_args.status_mutex->unlock();
         }
         if ( (recvd_signal & SIM_RUNNING) == 0){
@@ -118,7 +126,7 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
     }
     if (reportStatus){
         worker_args.status_mutex->lock();
-        worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_finished.c_str());
+        worker_args.status->SetText(Run_frame_status_title_finished.c_str());
         worker_args.status_mutex->unlock();
     }
     worker_args.owner->isRunning = false;

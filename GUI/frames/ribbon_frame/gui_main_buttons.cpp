@@ -1,8 +1,8 @@
 #include "gui_main_buttons.h"
+#include "../gui_main_frame.h"
 
 
-
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
 
     const std::vector<std::string> MainButtonsFrame::button_names = {"Configuration", "Simulate", "Sweep", "Render", "Analyze", "Quit"};
@@ -10,18 +10,43 @@ namespace RhodotronSimulatorGUI::frames{
     const std::vector<std::string> MainButtonsFrame::button_functions = {"ConfigurationPressed()", "SimulatePressed()", "SweepPressed()","RenderPressed()",
                                                                          "AnalyzePressed()",  "QuitPressed()"};
 
+    void MainButtonsFrame::ConfigurationPressed(){
+        ((MainFrame*)parent)->ConfigurationPressed();
+    }
+    void MainButtonsFrame::SimulatePressed(){
+        ((MainFrame*)parent)->SimulatePressed();
+    }
+    void MainButtonsFrame::SweepPressed(){
+        ((MainFrame*)parent)->SweepPressed();
+    }
+    void MainButtonsFrame::RenderPressed(){
+        ((MainFrame*)parent)->RenderPressed();
+    }
+    void MainButtonsFrame::AnalyzePressed(){
+        ((MainFrame*)parent)->AnalyzePressed();
+    }
+    void MainButtonsFrame::QuitPressed(){
+        ((MainFrame*)parent)->QuitPressed();
+    }
+
     MainButtonsFrame::MainButtonsFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGHorizontalFrame(p, w, h){
         parent = p;
         // add the buttons
+        
         for (int i = 0; i < button_names.size(); i++){
             // Setup the button
-            auto button = new TGTextButton(this, button_names.at(i).c_str(), i ); //= TGTextButton(this, button_names.at(i).c_str(), i );
-            button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::MainFrame", (void*)parent, button_functions.at(i).c_str());
+            auto button = new TGTextButton(this, button_names.at(i).c_str(), -1); //= TGTextButton(this, button_names.at(i).c_str(), i );
             // add to the frame and the list
             this->AddFrame(button, center_x_layout);
             buttons.push_back(button);
         }
 
+    }
+
+    void MainButtonsFrame::SetupButtons(){
+        for (int i = 0; i < buttons.size(); i++){
+            buttons[i]->Connect("Clicked()", "MainButtonsFrame", this, button_functions.at(i).c_str());
+        }
     }
 
     void MainButtonsFrame::HideByName(const std::string& name){
@@ -68,9 +93,9 @@ namespace RhodotronSimulatorGUI::frames{
     }
 
     void MainButtonsFrame::EnableAll(){
-        for(int index = 0; index < button_names.size(); index++){
+        for(int index = 0; index < buttons.size(); index++){
             buttons[index]->SetEnabled(true);
         }
     }
 
-}
+//}

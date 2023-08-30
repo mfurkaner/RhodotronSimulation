@@ -27,7 +27,7 @@
 #include <fstream>
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
 
     #define MAIN_FRAME_W 900
@@ -190,6 +190,6 @@ namespace RhodotronSimulatorGUI::frames{
     #define DEFAULT_SIM_BPATH "xy/magnet.txt"
     #define DEFAULT_SIM_PPATH "xy/paths/"
     #define DEFAULT_SIM_CPATH "xy/settings.txt"
-}
+//}
 
 #endif

@@ -33,10 +33,11 @@
 
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
     class MainButtonsFrame : public TGHorizontalFrame{
         std::vector<TGTextButton*> buttons;
+        //TGTextButton* button;
         const TGWindow* parent;
         
     public:
@@ -44,6 +45,15 @@ namespace RhodotronSimulatorGUI::frames{
         static const std::vector<std::string> button_functions;
 
         MainButtonsFrame(const TGWindow* p, UInt_t w, UInt_t h);
+
+        void SetupButtons();
+
+        void ConfigurationPressed();
+        void SimulatePressed();
+        void SweepPressed();
+        void RenderPressed();
+        void AnalyzePressed();
+        void QuitPressed();
 
         void HideByName(const std::string& name);
         void ShowByName(const std::string& name);
@@ -53,7 +63,7 @@ namespace RhodotronSimulatorGUI::frames{
     };
 
 
-}
+//}
 
 
 

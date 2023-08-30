@@ -1,8 +1,8 @@
 #include "gui_E_config_frame.h"
-#include "../gui_config_frame.h"
+#include "../../../data/gui_data_types.h"
 #include <sstream>
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     TGHorizontalFrame* EConfigurationFrame::_init_cavity_desc_frame(){
 
@@ -120,7 +120,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     std::string EConfigurationFrame::ProduceEConfiguration(){
         std::string eConfiguration;
 
-        for (  const auto cell : ConfigurationFrame::configs ){
+        for (  const auto cell : configs ){
             if ( cell.Type != E )
                 continue;
             
@@ -156,7 +156,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 default:
+                    #ifdef DEBUG
                     std::cerr << "Unknown command in ProduceEConfiguration: " << cell.Value << std::endl;
+                    #endif
                     break;
             }
 
@@ -185,7 +187,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
             AvailableConfigIndex command = endofconfig;
 
-            for( const auto cell : ConfigurationFrame::configs ){
+            for( const auto cell : configs ){
                 if ( cell.Type == E && cell.Value == cmd){
                     command = cell.Index;
                     break;
@@ -215,7 +217,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                     break;
                 }
                 default:
+                    #ifdef DEBUG
                     std::cerr << "Unknown command in SetEConfiguration: " << line << std::endl;
+                    #endif
                     break;
             }
         }
@@ -224,4 +228,4 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     void EConfigurationFrame::SetPhaseLag(double phase){
         _phase_lag_entry->SetNumber(phase, false);
     }
-}
+//}

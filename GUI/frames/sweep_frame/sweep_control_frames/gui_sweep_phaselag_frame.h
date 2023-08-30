@@ -9,9 +9,8 @@
 #include "gui_sweep_base_subframe.h"
 #include "../../../data/gui_data_types.h"
 
-using namespace RhodotronSimulatorGUI::data::PhaseLagSweep;
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     struct PhaseLagSweepWorkerArguments;
 
@@ -48,8 +47,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         bool _sweeping_mode_active = false;
     public:
         PhaseLagSweepControlFrame(const TGWindow* p, UInt_t w, UInt_t h, 
-            Analysis::Analyzer* analyzer_, GUISimulationHandler* sim_handler_, data::DataProvider* dataProvider_, ConfigurationFrame* config_frame_);
+            Analyzer* analyzer_, GUISimulationHandler* sim_handler_, DataProvider* dataProvider_, ConfigurationFrame* config_frame_);
 
+        void Setup();
         
         void ClearGraphs();
         void DrawPhaseLagvsAverageE();
@@ -74,8 +74,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     struct PhaseLagSweepWorkerArguments{
         int start_phase;
         int end_phase;
-        Analysis::Analyzer* analyzer;
-        data::DataProvider* dataProvider;
+        Analyzer* analyzer;
+        DataProvider* dataProvider;
         GUISimulationHandler* sim_handler;
         ConfigurationFrame* config_frame;
 
@@ -91,6 +91,6 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     };
 
 
-}
+//}
 
 #endif

@@ -33,13 +33,13 @@
 
 #include "../gui_frames_common.h"
 #include "../../renderer/gui_renderer.h"
-#include "../../analyzer/definitions.h"
+#include "../../analyzer/gui_analyzer.h"
 #include "analysis_control_frames/gui_E_dist_analysis_frame.h"
 #include "analysis_control_frames/gui_t_vs_E_analysis_frame.h"
 
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
     enum AnalysisType{
         EnergyDistribution, single_e_t_vs_E
@@ -48,13 +48,14 @@ namespace RhodotronSimulatorGUI::frames{
     class AnalysisFrame : public TGVerticalFrame{
         TRootEmbeddedCanvas* canvas;
         const TGWindow* parent;
-        Analysis::Analyzer* analyzer;
+        Analyzer* analyzer;
 
         TGComboBox* _analysisSelection;
         std::vector<AnalysisType> _analysisTypes;
+        TGTextButton* _save_button;
 
-        subframes::EDistributionControlFrame* _Edist_control_frame;
-        subframes::TvsEControlFrame* _tvsE_control_frame;
+        EDistributionControlFrame* _Edist_control_frame;
+        TvsEControlFrame* _tvsE_control_frame;
 
         float _starttime = 0;
         float _endtime = 40;
@@ -66,7 +67,9 @@ namespace RhodotronSimulatorGUI::frames{
         void _fillAnalysisSelection();
 
     public:
-        AnalysisFrame(const TGWindow* p, UInt_t w, UInt_t h, Analysis::Analyzer* analyzer_);
+        AnalysisFrame(const TGWindow* p, UInt_t w, UInt_t h, Analyzer* analyzer_);
+
+        void Setup();
 
         void SetTimeInterval(float starttime, float endtime);
         void SetEnumBnum(int _enum, int _bnum);
@@ -87,7 +90,7 @@ namespace RhodotronSimulatorGUI::frames{
         void HideAll(bool hide_canvas = false);
     };
 
-}
+//}
 
 
 

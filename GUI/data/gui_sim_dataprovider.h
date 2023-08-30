@@ -2,51 +2,11 @@
 #define GUI_DATAPROVIDER_H
 
 
-#include "../../SIM/basic/vector.h"
+
+#include "gui_data_types.h"
 
 
-namespace RhodotronSimulatorGUI::data{
-
- 
-    /// @brief Description of single electron at time ElectronSnapshot.time
-    struct ElectronSnapshot{
-        float time;
-        float energy;
-        vector3d position;
-        vector3d velocity;
-    };
-
-    /// @brief Description of single electron over some time
-    struct ElectronLog{
-        std::vector<ElectronSnapshot> time_slices;
-        int e_index;
-        int b_index;
-    };
-
-    /// @brief Description of the E vector at the point RFPoint.position, with constant time
-    struct RFPoint{
-        vector3d position;
-        vector3d field;
-        float magnitude;
-    };
-
-    /// @brief Description of an E field at time RFSnapshot.time
-    struct RFSnapshot{
-        float time;
-        float max = 0; // in MV/s
-        std::vector<RFPoint> field;
-    };
-
-    /// @brief Description of an E field over some time
-    struct RFLog{
-        float RF_max = 0; // in MV/m
-        std::vector<RFSnapshot> time_slices;
-    };
-
-    /// @brief Description of a static B field
-    struct StaticMagneticFieldLog{
-        std::vector<std::pair<float, float>> non_zero_positions;
-    };
+//namespace RhodotronSimulatorGUI::data{
 
 
     class DataProvider{
@@ -96,7 +56,7 @@ namespace RhodotronSimulatorGUI::data{
     };
 
 
-}
+//}
 
 
 #endif

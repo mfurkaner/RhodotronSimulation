@@ -1,11 +1,16 @@
 #include "gui_main_frame.h" 
 #include "TGMsgBox.h"
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
 
     MainFrame::MainFrame(const TGWindow*p) : TGMainFrame(p, MAIN_FRAME_W, MAIN_FRAME_H){
         SetCleanup(kDeepCleanup);
+        SetName("RhodoSim_GUI");
+        SetWindowName("RhodoSim GUI");
+        this->Resize(w,h);
+        this->SetWMSizeHints(900, 900, 1100, 1100, 50, 50);
+        
         main_buttons_frame = new MainButtonsFrame(this, MAIN_BUTTON_FRAME_W, MAIN_BUTTON_FRAME_H);
         config_frame = new ConfigurationFrame(this, CONFIG_FRAME_W, CONFIG_FRAME_H);
         render_frame = new RenderFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &renderer);
@@ -13,11 +18,13 @@ namespace RhodotronSimulatorGUI::frames{
         run_frame = new RunFrame(this, RENDER_FRAME_W, RENDER_FRAME_H);
         sweep_frame = new SweepFrame(this, RENDER_FRAME_W, RENDER_FRAME_H, &analyzer, &sim_handler, &dataProvider, config_frame);
 
-        Handlers::GUIMessageBoxHandler::CreateObject(this);
+        GUIMessageBoxHandler::CreateObject(this);
 
         renderer.SetDataProvider(&dataProvider);
         analyzer.SetDataProvider(&dataProvider);
         run_frame->SetSimulationHandler(&sim_handler);
+        run_frame->SetDataProvider(&dataProvider);
+        run_frame->SetRenderer(&renderer);
 
         this->AddFrame(main_buttons_frame, center_x_layout);
         this->AddFrame(config_frame, center_x_layout);
@@ -26,12 +33,7 @@ namespace RhodotronSimulatorGUI::frames{
         this->AddFrame(analysis_frame, center_x_layout);
         this->AddFrame(sweep_frame, center_x_layout);
 
-        SetName("RhodoSim_GUI");
-        SetWindowName("RhodoSim GUI");
-
         MapSubwindows();
-
-        Resize( GetDefaultSize() );
         MapWindow();
 
         this->HideFrame(render_frame);
@@ -39,15 +41,25 @@ namespace RhodotronSimulatorGUI::frames{
         this->HideFrame(run_frame);
         this->HideFrame(config_frame);
         this->HideFrame(sweep_frame);
-        this->Resize(w,h);
-        this->SetWMSizeHints(900, 900, 1100, 1100, 50, 50);
+        Print();
 
         NavigateToConfigFrame();
+
     }
 
     MainFrame::~MainFrame(){
-        Handlers::GUIMessageBoxHandler::DestroyObject();
+        GUIMessageBoxHandler::DestroyObject();
         DeleteWindow();
+    }
+
+    void MainFrame::SetupFrame(){
+        main_buttons_frame->SetupButtons();
+
+        analysis_frame->Setup();
+        config_frame->Setup();
+        render_frame->Setup();
+        run_frame->Setup();
+        sweep_frame->Setup();
     }
 
     void MainFrame::ClearData(){
@@ -67,6 +79,7 @@ namespace RhodotronSimulatorGUI::frames{
         config_frame->LoadCompletedConfig();
 
         if ( dataProvider.isDataFilled() == false){
+            std::cout << "Filling dataProvider" << std::endl;
             dataProvider.clearLogs();
             dataProvider.SetEnum(config_frame->GetEnum());
             dataProvider.SetBnum(config_frame->GetBnum());
@@ -118,13 +131,21 @@ namespace RhodotronSimulatorGUI::frames{
 
     void MainFrame::SimulatePressed(){
         config_frame->SaveConfigPressed();
+        dataProvider.clearLogs();
+        dataProvider.SetEnum(config_frame->GetEnum());
+        dataProvider.SetBnum(config_frame->GetBnum());
+        dataProvider.SetElogPath(config_frame->GetPPath());
+        dataProvider.SetRflogPath(config_frame->GetEPath());
+        dataProvider.SetStaticBfieldlogPath(config_frame->GetBPath());
         NavigateToSimalateFrame();
     }
 
     void MainFrame::QuitPressed(){
-        auto msgboxHandler = Handlers::GUIMessageBoxHandler::GetObject();
+        auto msgboxHandler = GUIMessageBoxHandler::GetObject();
         if(msgboxHandler == NULL){
+            #ifdef DEBUG
             std::cerr << "msgboxHandler is NULL!" << std::endl;
+            #endif
             return;
         }
 
@@ -152,9 +173,10 @@ namespace RhodotronSimulatorGUI::frames{
                 config_frame->SaveConfigPressed();
             }
         }
-        Handlers::GUIMessageBoxHandler::DestroyObject();
+        GUIMessageBoxHandler::DestroyObject();
         std::this_thread::sleep_for(std::chrono::milliseconds(50));
         DeleteWindow();
+        exit(EXIT_SUCCESS);
     }
 
     void MainFrame::NavigateTo(TGFrame* childFrame){
@@ -171,7 +193,7 @@ namespace RhodotronSimulatorGUI::frames{
     void MainFrame::NavigateToConfigFrame(){
         this->Resize(w, h);
 
-        config_frame->LoadConfigPressed();
+        //config_frame->LoadConfigPressed();
 
         main_buttons_frame->EnableAll();
         main_buttons_frame->DisableByName("Configuration");
@@ -210,4 +232,4 @@ namespace RhodotronSimulatorGUI::frames{
         render_frame->OnNavigatedTo();
     }
 
-}
+//}

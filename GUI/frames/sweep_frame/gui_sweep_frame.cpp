@@ -2,9 +2,9 @@
 
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
-    SweepFrame::SweepFrame(const TGWindow* p, UInt_t w, UInt_t h, Analysis::Analyzer* analyzer_, GUISimulationHandler* sim_handler_, data::DataProvider* dataProvider_, ConfigurationFrame* config_frame_) : TGVerticalFrame(p, w, h){
+    SweepFrame::SweepFrame(const TGWindow* p, UInt_t w, UInt_t h, Analyzer* analyzer_, GUISimulationHandler* sim_handler_, DataProvider* dataProvider_, ConfigurationFrame* config_frame_) : TGVerticalFrame(p, w, h){
         parent = p;
 
         analyzer = analyzer_;
@@ -13,13 +13,15 @@ namespace RhodotronSimulatorGUI::frames{
         config_frame = config_frame_;
 
         _sweepSelection = new TGComboBox(this);
-        _sweepSelection->Connect("Selected(Int_t)", "RhodotronSimulatorGUI::frames::SweepFrame", this, "SweepTypeSelected(Int_t)");
+
         _sweepSelection->Resize(200,20);
         _fillSweepSelection();
 
-        _phaselag_control_frame = new subframes::PhaseLagSweepControlFrame(this, 600, 900, analyzer, sim_handler, dataProvider, config_frame);
+        _phaselag_control_frame = new PhaseLagSweepControlFrame(this, 600, 900, analyzer, sim_handler, dataProvider, config_frame);
         this->AddFrame(_sweepSelection, center_x_layout);
         this->AddFrame(_phaselag_control_frame, center_layout_notoppadding);
+
+        Layout();
 
         active_frame = _phaselag_control_frame;
     }
@@ -27,6 +29,11 @@ namespace RhodotronSimulatorGUI::frames{
     void SweepFrame::_fillSweepSelection(){
         _sweepSelection->NewEntry(Sweep_type_phaselag_description_text.c_str());
         _sweepTypes.push_back(PhaseLagSweep);
+    }
+
+    void SweepFrame::Setup(){
+        _sweepSelection->Connect("Selected(Int_t)", "SweepFrame", this, "SweepTypeSelected(Int_t)");
+        _phaselag_control_frame->Setup();
     }
 
     void SweepFrame::SweepTypeSelected(Int_t id){
@@ -48,12 +55,13 @@ namespace RhodotronSimulatorGUI::frames{
 
     void SweepFrame::OnNavigatedTo(){
         HideAll();
+        //Layout();
     }
 
     void SweepFrame::NavigateTo(TGFrame* child_frame){
         HideAll();
         this->ShowFrame(child_frame);
-        this->Layout();
+        //this->Layout();
 
         active_frame = child_frame;
     }
@@ -61,6 +69,6 @@ namespace RhodotronSimulatorGUI::frames{
     void SweepFrame::HideAll(){
         this->HideFrame(_phaselag_control_frame);
 
-        this->Layout();
+        //this->Layout();
     }
-}
+//}

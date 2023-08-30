@@ -1,7 +1,7 @@
 
 
 
-namespace RhodotronSimulatorGUI::renderer{
+//namespace RhodotronSimulatorGUI::renderer{
     
     #define COLOR_B_PIXEL_STATIC kOrange - 9
     
@@ -11,4 +11,4 @@ namespace RhodotronSimulatorGUI::renderer{
     #define SIZE_E_ARROW_MULTIPLIER 0.1
 
 
-}
+//}

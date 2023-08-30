@@ -35,7 +35,7 @@
 
 #include "../../gui_frames_common.h"
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     class GunConfigurationFrame : public TGVerticalFrame{
         const TGWindow* parent;
@@ -74,7 +74,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         const int GetBnum(){ return (_bnum_entry ? (int)_bnum_entry->GetNumber() : 0); }
         const float GetTargetEn(){ return (_targetE_entry ? _targetE_entry->GetNumber() : 0); }
     };
-}
+//}
 
 
 #endif

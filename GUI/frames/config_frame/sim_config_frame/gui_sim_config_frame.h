@@ -35,7 +35,7 @@
 
 #include "../../gui_frames_common.h"
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     class SimConfigurationFrame : public TGVerticalFrame{
 
@@ -75,6 +75,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         SimConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h, const TGWindow* realParent);
 
+        void Setup();
+
         std::string ProduceSimConfiguration();
         void SetSimConfiguration(std::string config);
 
@@ -87,6 +89,6 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         void SetDefaultConfiguration();
     };
-}
+//}
 
 #endif

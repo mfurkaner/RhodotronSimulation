@@ -1,7 +1,7 @@
 #include "gui_B_config_frame.h"
 #include <sstream>
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
 #pragma region INIT_SUB_FRAMES
     TGHorizontalFrame* BConfigurationFrame::_init_magnet_edit_frame(){
@@ -36,16 +36,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGHorizontalFrame* magnet_edit_buttons_frame = new TGHorizontalFrame(this, CONFIG_FRAME_LINE_W, CONFIG_FRAME_LINE_H);
 
         _add_magnet_button = new TGTextButton(magnet_edit_buttons_frame, "Add");
-        _add_magnet_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
-            this, "AddPressed()");
+
 
         _save_magnet_button = new TGTextButton(magnet_edit_buttons_frame, "Save");
-        _save_magnet_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
-            this, "SavePressed()");
+
 
         _delete_magnet_button = new TGTextButton(magnet_edit_buttons_frame, "Delete");
-        _delete_magnet_button->Connect("Clicked()", "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
-            this, "DeletePressed()");
+
 
         magnet_edit_buttons_frame->AddFrame(_add_magnet_button, center_x_layout);
         magnet_edit_buttons_frame->AddFrame(_save_magnet_button, center_x_layout);
@@ -82,9 +79,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         _magnets_listbox = new TGListBox(this, -1);
         _magnets_listbox->Resize(B_CONFIGURATION_MAGNETS_LISTBOX_SIZE_X, B_CONFIGURATION_MAGNETS_LISTBOX_SIZE_Y);
-        _magnets_listbox->GetContainer()->Connect("DoubleClicked(TGFrame*, Int_t)", 
-        "RhodotronSimulatorGUI::frames::subframes::BConfigurationFrame",
-        this, "MagnetDoubleClicked(TGFrame*, Int_t)");
+
 
         LoadDefaultMagnets();
 
@@ -102,6 +97,18 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         this->AddFrame(magnet_edit_frame, mag_line_frames_layout);
         this->AddFrame(magnet_edit_buttons_frame, mag_line_frames_layout);
         this->AddFrame(mag_rotation_edit_frame, mag_last_line_frame_layout);
+    }
+
+    void BConfigurationFrame::Setup(){
+        _magnets_listbox->GetContainer()->Connect("DoubleClicked(TGFrame*, Int_t)", 
+        "BConfigurationFrame",
+        this, "MagnetDoubleClicked(TGFrame*, Int_t)");
+
+        _add_magnet_button->Connect("Clicked()", "BConfigurationFrame",this, "AddPressed()");
+
+        _save_magnet_button->Connect("Clicked()", "BConfigurationFrame", this, "SavePressed()");
+
+        _delete_magnet_button->Connect("Clicked()", "BConfigurationFrame", this, "DeletePressed()");
     }
 
     void BConfigurationFrame::AddPressed(){
@@ -200,7 +207,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 AddMagnet(value);
             }
             else{
-                std::cerr << "Unknown command " << cmd << std::endl;
+                #ifdef DEBUG
+                std::cerr << "Unknown command in config : " << cmd << std::endl;
+                #endif
             }
         }
     }
@@ -245,4 +254,4 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         R = atof(second.c_str());
         r = atof(third.c_str());
     }
-}
+//}

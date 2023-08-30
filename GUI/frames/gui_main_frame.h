@@ -38,17 +38,17 @@
 #include "analysis_frame/gui_analysis_frame.h"
 #include "sweep_frame/gui_sweep_frame.h"
 #include "../data/gui_sim_dataprovider.h"
-#include "../analyzer/definitions.h"
+#include "../analyzer/gui_analyzer.h"
 #include "../msgbox/gui_msgbox_handler.h"
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
     class MainFrame : public TGMainFrame {
         GUISimulationHandler sim_handler;
-        renderer::Renderer renderer;
-        data::DataProvider dataProvider;
-        Analysis::Analyzer analyzer;
+        Renderer renderer;
+        DataProvider dataProvider;
+        Analyzer analyzer;
 
         MainButtonsFrame* main_buttons_frame;
 
@@ -71,6 +71,8 @@ namespace RhodotronSimulatorGUI::frames{
     public:
         MainFrame(const TGWindow*p);
         ~MainFrame();
+
+        void SetupFrame();
         
         void ClearData();
         void FillData();
@@ -91,6 +93,6 @@ namespace RhodotronSimulatorGUI::frames{
 
     };
 
-}
+//}
 
 #endif

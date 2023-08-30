@@ -32,11 +32,11 @@
 
 #include "../gui_frames_common.h"
 #include "../../renderer/gui_renderer.h"
-#include "../../analyzer/definitions.h"
+#include "../../analyzer/gui_analyzer.h"
 
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
     class RenderFrame : public TGVerticalFrame{
         TRootEmbeddedCanvas* canvas;
@@ -44,13 +44,18 @@ namespace RhodotronSimulatorGUI::frames{
         const TGWindow* parent;
         TGNumberEntry* active_time;
         TGSlider* time_slider;
-        renderer::Renderer* renderer;
+        Renderer* renderer;
+
+        TGTextButton* play_button;
+        TGTextButton* save_button;
 
         float _time = 0;
         float _endtime = 40;
         
     public:
-        RenderFrame(const TGWindow* p, UInt_t w, UInt_t h, renderer::Renderer* renderer_);
+        RenderFrame(const TGWindow* p, UInt_t w, UInt_t h, Renderer* renderer_);
+
+        void Setup();
 
         void SetTimeInterval(float starttime, float endtime);
         void SetTargetEnergy(float targetEn){ renderer->SetTargetEnergy(targetEn);}
@@ -72,7 +77,7 @@ namespace RhodotronSimulatorGUI::frames{
         
     };
 
-}
+//}
 
 
 

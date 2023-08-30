@@ -1,8 +1,9 @@
 #include "gui_msgbox_handler.h"
 
 
-namespace RhodotronSimulatorGUI::Handlers{
-
+//namespace RhodotronSimulatorGUI::Handlers{
+    GUIMessageBoxHandler* GUIMessageBoxHandler::_singleton = NULL;
+    
     GUIMessageBoxHandler::GUIMessageBoxHandler(TGWindow *_main){
         if(_singleton == NULL){
             main = _main;
@@ -52,4 +53,4 @@ namespace RhodotronSimulatorGUI::Handlers{
         return result;
     }
 
-}
+//}

@@ -5,16 +5,16 @@
 #include "TGMsgBox.h"
 
 
-namespace RhodotronSimulatorGUI{
+//namespace RhodotronSimulatorGUI{
     enum MessageBoxResult{
         Yes,
         No,
     };
-}
+//}
 
 
 
-namespace RhodotronSimulatorGUI::Handlers{
+//namespace RhodotronSimulatorGUI::Handlers{
 
 
     class GUIMessageBoxHandler{
@@ -31,13 +31,12 @@ namespace RhodotronSimulatorGUI::Handlers{
         static void CreateObject(TGWindow *main);
         static void DestroyObject();
 
-        RhodotronSimulatorGUI::MessageBoxResult DrawYesNoExclamation(const char * title, const char * message);
+        MessageBoxResult DrawYesNoExclamation(const char * title, const char * message);
 
-        RhodotronSimulatorGUI::MessageBoxResult DrawYesNoQuestion(const char * title, const char * message);
+        MessageBoxResult DrawYesNoQuestion(const char * title, const char * message);
 
     };
-    GUIMessageBoxHandler* GUIMessageBoxHandler::_singleton = NULL;
-
-}
+    
+//}
 
 #endif

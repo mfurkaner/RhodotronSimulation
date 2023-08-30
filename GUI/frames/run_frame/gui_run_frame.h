@@ -33,14 +33,20 @@
 
 #include "../gui_frames_common.h"
 #include "../../comm/sim_server.h"
+#include "../../data/gui_sim_dataprovider.h"
+#include "../../renderer/gui_renderer.h"
+#include "../../data/gui_data_types.h"
+#include "../../msgbox/gui_msgbox_handler.h"
 
 
 
-namespace RhodotronSimulatorGUI::frames{
+//namespace RhodotronSimulatorGUI::frames{
 
     class RunFrame : public TGVerticalFrame{
         const TGWindow* parent;
         GUISimulationHandler* sim_handler;
+        DataProvider* dp;
+        Renderer* renderer;
 
 
         TGButton* _runButton;
@@ -59,7 +65,11 @@ namespace RhodotronSimulatorGUI::frames{
     public:
         RunFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
+        void Setup();
+
         void SetSimulationHandler(GUISimulationHandler* _sim_handler){sim_handler = _sim_handler;}
+        void SetRenderer(Renderer* _renderer){renderer = _renderer;}
+        void SetDataProvider(DataProvider* _dp){dp = _dp;}
         
         void RunPressed();
         void StopPressed();
@@ -76,7 +86,7 @@ namespace RhodotronSimulatorGUI::frames{
         void OnNavigatedTo();
     };
 
-}
+//}
 
 
 

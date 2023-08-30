@@ -33,7 +33,7 @@
 
 #include "../../gui_frames_common.h"
 
-namespace RhodotronSimulatorGUI::frames::subframes{
+//namespace RhodotronSimulatorGUI::frames::subframes{
 
     struct MagnetConfigurationDetails{
         float B;
@@ -86,6 +86,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         BConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h);
 
+        void Setup();
+
         void AddPressed();
         void SavePressed();
         void DeletePressed();
@@ -100,6 +102,6 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         void LoadDefaultMagnets();
         void SetMagnetRotation(float degrees);
     };
-}
+//}
 
 #endif 

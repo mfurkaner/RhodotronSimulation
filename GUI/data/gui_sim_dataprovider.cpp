@@ -1,10 +1,10 @@
 #include "gui_sim_dataprovider.h"
-#include "../../SIM/basic/vector.cpp"
+#include "../../SIM/basic/vector.h"
 #include <fstream>
 
 
 
-std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::ElectronSnapshot& e_snapshot){
+std::istream& operator>>(std::istream& stream, ElectronSnapshot& e_snapshot){
         std::string line;
         std::getline(stream, line);
 
@@ -19,7 +19,7 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
         return stream;
     }
 
-    std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::RFPoint& rf_point){
+    std::istream& operator>>(std::istream& stream, RFPoint& rf_point){
         std::string line;
         std::getline(stream, line);
 
@@ -35,13 +35,13 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
         return stream;
     }
 
-    std::ostream& operator<<(std::ostream& stream, RhodotronSimulatorGUI::data::RFPoint& rf_point){
+    std::ostream& operator<<(std::ostream& stream, RFPoint& rf_point){
         stream << rf_point.position << "," << rf_point.field << "," << rf_point.magnitude;
         return stream;
     }
 
-    std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::RFSnapshot& rf_snapshot){
-        RhodotronSimulatorGUI::data::RFPoint point;
+    std::istream& operator>>(std::istream& stream, RFSnapshot& rf_snapshot){
+        RFPoint point;
 
         // TODO: guard atof
         std::string time_str;
@@ -72,7 +72,9 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
             }
 
             if( stream.fail() ) {
+                #ifdef DEBUG
                 std::cerr << "Error: " << strerror(errno) << " time_Str : " << time_str << std::endl;
+                #endif
                 return stream;
             }
 
@@ -82,8 +84,6 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
             }
 
             stream >> point;
-
-            //if(rf_snapshot.time == 0) std::cout << "snapshot read for t=0 : " << point.position << " " << point.field << std::endl;
 
             rf_snapshot.field.push_back(point);
             if(point.magnitude > rf_snapshot.max){
@@ -95,7 +95,7 @@ std::istream& operator>>(std::istream& stream, RhodotronSimulatorGUI::data::Elec
         return stream;
     }
 
-namespace RhodotronSimulatorGUI::data{
+//namespace RhodotronSimulatorGUI::data{
 
     void DataProvider::fillLogs(){
         _fillElectrons();
@@ -133,7 +133,9 @@ namespace RhodotronSimulatorGUI::data{
                     e.time_slices.push_back(snapshot);
 
                     if(time_step != 0 && time_step - snapshot.time + prev_time > 0.0001){
+                        #ifdef DEBUG
                         std::cerr << "   Inconsistent time step in electron log : " << filename << " t:" << snapshot.time << std::endl;
+                        #endif
                     }
 
                     time_step = snapshot.time - prev_time;
@@ -162,10 +164,13 @@ namespace RhodotronSimulatorGUI::data{
             stream >> snapshot;
 
             if ( stream.fail()){
+                #ifdef DEBUG
                 std::cerr << "stream failed at Renderer::_fillEField() : " << snapshot.time << " err = \"" << strerror(errno)  << "\" ; Checking for severeness." << std::endl;
-
+                #endif
                 if ( _rf.time_slices.size() && _rf.time_slices.back().field.size() != snapshot.field.size()){
+                    #ifdef DEBUG
                     std::cerr << "  Fail severity is high, ignoring time : " << snapshot.time << std::endl;
+                    #endif
                     continue; 
                 }
             }
@@ -178,7 +183,9 @@ namespace RhodotronSimulatorGUI::data{
             
 
             if(time_step != 0 && time_step - snapshot.time + prev_time > 0.0001){
+                #ifdef DEBUG
                 std::cerr << "   Inconsistent time step in rf log, t:" << snapshot.time << " time_step:" << time_step << std::endl;
+                #endif
             }
 
             time_step = snapshot.time - prev_time;
@@ -248,4 +255,4 @@ namespace RhodotronSimulatorGUI::data{
         return _efield_time_step;
     }
 
-}
+//}

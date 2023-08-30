@@ -1,13 +1,6 @@
 #include "gui_config_frame.h"
 
-/* #include "B_config_frame/gui_B_config_frame.cpp"
-#include "E_config_frame/gui_E_config_frame.cpp"
-#include "gun_config_frame/gui_gun_config_frame.cpp"
-#include "sim_config_frame/gui_sim_config_frame.cpp" */
-
-
-
-namespace RhodotronSimulatorGUI::frames{ 
+//namespace RhodotronSimulatorGUI::frames{ 
 
 const std::string ConfigurationFrame::config_comment = 
            {"#                  RhodoSim Configuration File\n"
@@ -39,22 +32,6 @@ const std::string ConfigurationFrame::config_comment =
             "# addmagnet = takes 3 input. (B , R, < Radial distance of center >)\n"
             "# output = output file name \n\n"};
 
-    const std::vector<ConfigurationCell> ConfigurationFrame::configs = std::vector<ConfigurationCell>(
-        {   ConfigurationCell(E,"emax", emax),              ConfigurationCell(Gun, "einmean", ein),
-            ConfigurationCell(Gun, "einstd", einstd),
-            ConfigurationCell(Gun,"targeten", targeten),   ConfigurationCell(E, "freq", frequency),
-            ConfigurationCell(E,"phaselag", phaselag),      ConfigurationCell(Sim,"starttime", starttime),
-            ConfigurationCell(Sim,"endtime", endtime),     ConfigurationCell(Sim,"dt", dt), 
-            ConfigurationCell(Gun,"guntime", guntime),     ConfigurationCell(Gun,"gunperiod", gunperiod), 
-            ConfigurationCell(Gun,"enum", _enum),          ConfigurationCell(Gun,"bunchnum", bunchnum),
-            ConfigurationCell(E,"r1", _r1),                 ConfigurationCell(E,"r2", _r2), 
-            ConfigurationCell(Sim,"epath", epath),         ConfigurationCell(Sim,"bpath", bpath), 
-            ConfigurationCell(Sim,"cpath", cpath),         ConfigurationCell(Sim,"ppath", ppath), 
-            ConfigurationCell(Sim,"multh",multh),          ConfigurationCell(Sim,"thcount",thcount),      
-            ConfigurationCell(B,"magrotation", magrotation),ConfigurationCell(B,"addmagnet", addmagnet),    
-
-        });
-
 
 
     ConfigurationFrame::ConfigurationFrame(const TGWindow* p, UInt_t w, UInt_t h) : TGVerticalFrame(p, w, h){
@@ -63,11 +40,11 @@ const std::string ConfigurationFrame::config_comment =
         auto B_E_frame = new TGHorizontalFrame(this, CONFIG_FRAME_B_FRAME_W * 2, CONFIG_FRAME_B_FRAME_H);
 
         // Add B configuration frame
-        B_config_frame = new subframes::BConfigurationFrame(B_E_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
+        B_config_frame = new BConfigurationFrame(B_E_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
         //this->AddFrame(B_config_frame, top_left_layout);
 
         // Add E configuration frame
-        E_config_frame = new subframes::EConfigurationFrame(B_E_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
+        E_config_frame = new EConfigurationFrame(B_E_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
 
 
         // Setup B & E frame
@@ -79,15 +56,20 @@ const std::string ConfigurationFrame::config_comment =
         auto gun_sim_frame = new TGHorizontalFrame(this, CONFIG_FRAME_B_FRAME_W * 2, CONFIG_FRAME_B_FRAME_H);
 
         // Add Gun configuration frame
-        gun_config_frame = new subframes::GunConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
+        gun_config_frame = new GunConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H);
         auto gun_frame_layout = new TGLayoutHints(kLHintsTop, 10, 50, 10, 10);
         gun_sim_frame->AddFrame(gun_config_frame, gun_frame_layout);
 
         // Add Sim configuration frame
-        sim_config_frame = new subframes::SimConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H, this);
+        sim_config_frame = new SimConfigurationFrame(gun_sim_frame, CONFIG_FRAME_B_FRAME_W, CONFIG_FRAME_B_FRAME_H, this);
         gun_sim_frame->AddFrame(sim_config_frame, top_layout);
 
         this->AddFrame(gun_sim_frame, center_x_layout);
+    }
+
+    void ConfigurationFrame::Setup(){
+        B_config_frame->Setup();
+        sim_config_frame->Setup();
     }
 
 
@@ -198,4 +180,4 @@ const std::string ConfigurationFrame::config_comment =
         LoadConfigFromFile(_completed_config_file_path);
     }
 
-}
+//}

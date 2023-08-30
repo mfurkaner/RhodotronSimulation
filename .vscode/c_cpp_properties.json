@@ -4,7 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/homebrew/Cellar/root/6.26.06_1/include/root/**",
+                "/opt/homebrew/Cellar/root/6.28.04_1/lib/root/**",
                 "/opt/homebrew/Cellar/**"
             ],
             "defines": [],

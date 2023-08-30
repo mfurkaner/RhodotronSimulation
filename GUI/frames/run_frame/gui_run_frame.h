@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <bitset>
 #include <fstream>
+#include <mutex>
 
 #include "../gui_frames_common.h"
 #include "../../comm/sim_server.h"
@@ -38,15 +39,22 @@
 namespace RhodotronSimulatorGUI::frames{
 
     class RunFrame : public TGVerticalFrame{
-        TGHProgressBar* progressBar;
         const TGWindow* parent;
         GUISimulationHandler* sim_handler;
 
 
         TGButton* _runButton;
         TGButton* _stopButton;
+        TGButton* _pauseButton;
+        TGButton* _continueButton;
+
+        TGHProgressBar* progressBar;
+        std::shared_ptr<std::mutex> _progressBar_mutex;
         TGLabel* _status;
+        std::shared_ptr<std::mutex> _status_mutex;
         TGLabel* _label;
+        
+        std::thread* _runCheckerThread = NULL;
         
     public:
         RunFrame(const TGWindow* p, UInt_t w, UInt_t h);
@@ -55,7 +63,17 @@ namespace RhodotronSimulatorGUI::frames{
         
         void RunPressed();
         void StopPressed();
+        void PausePressed();
+        void ContinuePressed();
 
+        void ShowRunningButtons();
+        void ShowStandbyButtons();
+
+        void RunFinished();
+
+        static void RunCheckerThreadWork(GUISimulationHandler* _sim_handler, RunFrame* _frame);
+
+        void OnNavigatedTo();
     };
 
 }

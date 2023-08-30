@@ -20,6 +20,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         TGFrame* parent;
 
         TGHProgressBar* progressBar;
+        std::shared_ptr<std::mutex> progressBar_mutex;
         TRootEmbeddedCanvas* canvas;
 
         Analysis::Analyzer* analyzer;
@@ -43,6 +44,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         dataProvider = dataProvider_;
         config_frame = config_frame_;
 
+        progressBar_mutex = std::make_shared<std::mutex>();
     }
 
 

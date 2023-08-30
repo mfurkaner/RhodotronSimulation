@@ -48,6 +48,29 @@ void GUISimulationHandler::kill_simulation(){
     cpid = waitpid(_sim_pid, status, 0);
 }
 
+void GUISimulationHandler::pause_simulation(){
+    int* status;
+    int cpid = waitpid(_sim_pid, status, WNOHANG);
+    if (cpid < 0) return;
+    if (status != NULL && (WIFEXITED(status))) {
+        return;
+    }
+    kill(_sim_pid, SIGSTOP);
+
+    *worker_pause = true;
+}
+
+void GUISimulationHandler::continue_simulation(){
+    int* status;
+    int cpid = waitpid(_sim_pid, status, WNOHANG);
+    if (cpid < 0) return;
+    if (status != NULL && (WIFEXITED(status))) {
+        return;
+    }
+    kill(_sim_pid, SIGCONT);
+    *worker_pause = false;
+}
+
 void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_args){
 
     bool reportBar = worker_args.reportProgressBar;
@@ -61,26 +84,42 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
 
     uint8_t recvd_signal;
 
+    bool alreadyPaused = false;
+
     ssize_t n ;
     while ( *worker_args.terminate == false ){
+        if(alreadyPaused == false && reportStatus && *worker_args.pause){
+            worker_args.status_mutex->lock();
+            worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_paused.c_str());
+            worker_args.status_mutex->unlock();
+            std::this_thread::yield();
+            alreadyPaused = true;
+            continue;
+        }
         n = read(_fd, &recvd_signal, SIGNAL_SIZE);
         if ( n <= 0){
+            std::this_thread::yield();
             continue;
         }
         
         std::bitset<8> a(recvd_signal /* & SIM_WORK_MASK */);
-        if (reportBar){
+        if (reportBar & worker_args.progressBar_mutex->try_lock()){
             worker_args.progressbar->SetPosition(recvd_signal & SIM_WORK_MASK);
+            worker_args.progressBar_mutex->unlock();
         }
         if (reportStatus){
+            worker_args.status_mutex->lock();
             worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_running.c_str());
+            worker_args.status_mutex->unlock();
         }
         if ( (recvd_signal & SIM_RUNNING) == 0){
             break;
         }
     }
     if (reportStatus){
+        worker_args.status_mutex->lock();
         worker_args.status->SetText(RhodotronSimulatorGUI::frames::Run_frame_status_title_finished.c_str());
+        worker_args.status_mutex->unlock();
     }
     worker_args.owner->isRunning = false;
     close_pipe(_fd, worker_args.pipe_name.c_str());
@@ -90,12 +129,18 @@ void GUISimulationHandler::sim_server_work(SimulationServerWorkerArgs worker_arg
 void GUISimulationHandler::spawn_server(bool reportProgressBar, bool reportStatus){
     SimulationServerWorkerArgs server_args;
     server_args.pipe_name = sim_server_pipe_name;
+    
     server_args.progressbar = _progressbar;
+    server_args.progressBar_mutex = _progressBar_mutex;
+
     server_args.status = _status;
+    server_args.status_mutex = _status_mutex;
+
     server_args.owner = this;
     server_args.reportProgressBar = reportProgressBar;
     server_args.reportStatus = reportStatus;
     server_args.terminate = worker_terminate;
+    server_args.pause = worker_pause;
 
     if ( worker != NULL ){
         if(worker->joinable()){
@@ -117,6 +162,7 @@ void GUISimulationHandler::join_server(){
         delete worker;
         worker = NULL;
     }
+    isRunning = false;
 }
 
 bool GUISimulationHandler::server_joinable(){
@@ -128,12 +174,14 @@ void GUISimulationHandler::kill_server(){
     join_server();
 }
 
-void GUISimulationHandler::set_progress_bar(TGProgressBar* progressbar){
+void GUISimulationHandler::set_progress_bar(TGProgressBar* progressbar, std::shared_ptr<std::mutex> progressBar_mutex){
     _progressbar = progressbar;
+    _progressBar_mutex = progressBar_mutex;
 }
 
-void GUISimulationHandler::set_status_label(TGLabel* status){
+void GUISimulationHandler::set_status_label(TGLabel* status, std::shared_ptr<std::mutex> status_mutex){
     _status = status;
+    _status_mutex = status_mutex;
 }
 
 bool GUISimulationHandler::IsRunning() const { return isRunning; }

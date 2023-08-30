@@ -102,6 +102,7 @@
         "*.icc": "cpp",
         "__bits": "cpp",
         "__memory": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "__verbose_abort": "cpp"
     }
 }

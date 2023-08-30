@@ -71,13 +71,27 @@ namespace RhodotronSimulatorGUI::frames{
     #define FONT_MEDIUM_14 "-adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-iso8859-1"
     #define FONT_MEDIUM_12 "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"
 
+    /// @brief MAIN FRAME RESOURCES
+    static const std::string Run_frame_mbox_title_quitting = "Quitting the application";
+    static const std::string Run_frame_mbox_msg_quitting = "Do you want to quit the application?";
 
+    static const std::string Run_frame_mbox_title_quitting_while_simulation = "Simulation running";
+    static const std::string Run_frame_mbox_msg_quitting_while_simulation = "A simulation is running, do you want to stop the simulation?";
+
+    static const std::string Run_frame_mbox_title_quitting_save_conf = "Configuration may not be saved";
+    static const std::string Run_frame_mbox_msg_quitting_save_conf = "Do you want to save the configuration?";
+
+    /// @brief RUN FRAME RESOURCES
     static const std::string Run_frame_title = " ~ Simulation ~";
     static const std::string Run_frame_status_title_not_running = "Simulation not running";
     static const std::string Run_frame_status_title_starting = "Starting simulation";
     static const std::string Run_frame_status_title_logging = "Logging the simulation results";
     static const std::string Run_frame_status_title_running = "Simulation is running";
+    static const std::string Run_frame_status_title_paused = "Simulation is paused";
     static const std::string Run_frame_status_title_finished = "Simulation is finished";
+
+    static const std::string Run_frame_mbox_title_stopping = "Simulation is stopping";
+    static const std::string Run_frame_mbox_msg_stopping = "Do you want to stop the simulation?";
 
     /// @brief ANALYSIS FRAME RESOURCES
     static const std::string Analysis_select_time_label_text = "Select time (ns)";

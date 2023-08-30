@@ -128,20 +128,26 @@ namespace RhodotronSimulatorGUI::frames{
             return;
         }
 
-        auto sure = msgboxHandler->DrawYesNoQuestion("Quitting the application", "Do you want to quit the application?");
+        auto sure = msgboxHandler->DrawYesNoQuestion(
+            Run_frame_mbox_title_quitting.c_str(), Run_frame_mbox_msg_quitting.c_str());
         if(sure == MessageBoxResult::No){
             return;
         }
         
         if(sim_handler.IsRunning()){
-            auto kill_sim = msgboxHandler->DrawYesNoExclamation("Simulation Running!", "A simulation is running, do you want to stop the simulation?");
+            auto kill_sim = msgboxHandler->DrawYesNoExclamation(
+                Run_frame_mbox_title_quitting_while_simulation.c_str(), Run_frame_mbox_msg_quitting_while_simulation.c_str());
             if(kill_sim == MessageBoxResult::Yes){
                 sim_handler.kill_simulation();
                 sim_handler.kill_server();
             }
+            else{
+                return;
+            }
         }
         else if(active_frame == config_frame){
-            auto save_config = msgboxHandler->DrawYesNoExclamation("Configuration may not be saved!", "Do you want to save the configuration?");
+            auto save_config = msgboxHandler->DrawYesNoExclamation(
+                Run_frame_mbox_title_quitting_save_conf.c_str(), Run_frame_mbox_msg_quitting_save_conf.c_str());
             if(save_config == MessageBoxResult::Yes){
                 config_frame->SaveConfigPressed();
             }
@@ -176,6 +182,7 @@ namespace RhodotronSimulatorGUI::frames{
         this->Resize(SIM_FRAME_W, SIM_FRAME_H + MAIN_BUTTON_FRAME_H + common_padding);
         main_buttons_frame->EnableAll();
         main_buttons_frame->DisableByName("Simulate");
+        run_frame->OnNavigatedTo();
         NavigateTo(run_frame);
     }
 

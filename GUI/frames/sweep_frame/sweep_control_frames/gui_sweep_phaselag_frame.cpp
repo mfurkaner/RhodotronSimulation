@@ -110,6 +110,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::PhaselagSweepRequested(){
+        ClearGraphs();
         PhaseLagSweepWorkerArguments worker_args;
 
         double start= phase_lag_sweep_start->GetNumber();
@@ -132,8 +133,11 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 worker->join();
             }
             delete worker;
+            worker = NULL;
         }
         *(_worker_terminate.get()) = false;
+        sim_handler->set_progress_bar(progressBar, progressBar_mutex);
+        sim_handler->set_status_label(NULL, progressBar_mutex);
         worker = new std::thread(PhaseLagSweepControlFrame::PhaselagSweepWork, worker_args);
     }
 
@@ -144,17 +148,14 @@ namespace RhodotronSimulatorGUI::frames::subframes{
                 worker->join();
             }
             delete worker;
+            worker = NULL;
         }
     }
 
     void PhaseLagSweepControlFrame::PhaselagSweepWork(PhaseLagSweepWorkerArguments args){
-        
         args.owner->SweepingModeActivate(true);
 
         args.data->clear();
-        args.sim_handler->set_progress_bar(args.owner->GetProgressBar());
-        args.sim_handler->set_status_label(NULL);
-
         
         int phaselag_start = args.start_phase;
         int phaselag_end = args.end_phase;
@@ -179,7 +180,12 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
             args.dataProvider->clearLogs();
 
-            while ( !args.sim_handler->server_joinable() ){
+            while ( args.sim_handler->IsRunning() ){
+                if(* args.terminate.get()){
+                    args.sim_handler->kill_simulation();
+                    args.sim_handler->kill_server();
+                    goto SIM_STOPPED;
+                }
                 std::this_thread::yield();
             }
             args.sim_handler->join_server();
@@ -200,7 +206,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             (*args.dataUpdated) = true;
             args.dataMutex->unlock();
         }
-
+        SIM_STOPPED:
         args.owner->SweepingModeActivate(false);
     }
 
@@ -254,7 +260,20 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         }
     }
 
+    void PhaseLagSweepControlFrame::ClearGraphs(){
+        _phase_vs_muE_graph->Clear();
+        _phase_vs_sigmaE_graph->Clear();
+        _phase_vs_sigmaR_graph->Clear();
+    }
+
     void PhaseLagSweepControlFrame::DrawPhaseLagvsAverageE(){
+        _phase_lag_data_mutex->lock();
+        if(phaselagData.size() == 0){
+            _phase_lag_data_mutex->unlock();
+            return;
+        }
+        _phase_lag_data_mutex->unlock();
+
         _active_graph = muE_vs_phase;
         this->ShowFrame(canvas);
         if(!_sweeping_mode_active){
@@ -303,6 +322,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::DrawPhaseLagvsStdE(){
+        _phase_lag_data_mutex->lock();
+        if(phaselagData.size() == 0){
+            _phase_lag_data_mutex->unlock();
+            return;
+        }
+        _phase_lag_data_mutex->unlock();
+
         _active_graph = sE_vs_phase;
         this->ShowFrame(canvas);
         if(!_sweeping_mode_active){
@@ -347,6 +373,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::DrawPhaseLagvsStdR(){
+        _phase_lag_data_mutex->lock();
+        if(phaselagData.size() == 0){
+            _phase_lag_data_mutex->unlock();
+            return;
+        }
+        _phase_lag_data_mutex->unlock();
+
         _active_graph = sR_vs_phase;
         this->ShowFrame(canvas);
         if(!_sweeping_mode_active){
@@ -411,12 +444,13 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::DrawActiveGraphIfThereIsUpdate(){
+        _data_updated_mutex->lock();
         if(_data_updated){
             DrawActiveGraph();
-            _data_updated_mutex->lock();
+
             *_data_updated = false;
-            _data_updated_mutex->unlock();
         }
+        _data_updated_mutex->unlock();
     }
 
     void PhaseLagSweepControlFrame::OnNavigatedTo(){

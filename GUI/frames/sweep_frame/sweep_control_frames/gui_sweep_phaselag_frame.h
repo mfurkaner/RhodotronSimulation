@@ -7,23 +7,11 @@
 
 #include "../../gui_frames_common.h"
 #include "gui_sweep_base_subframe.h"
+#include "../../data/gui_data_types.h"
+
+using namespace RhodotronSimulatorGUI::data::PhaseLagSweep;
 
 namespace RhodotronSimulatorGUI::frames::subframes{
-
-
-    struct PhaseLagSweepData{
-        float phase;
-        float muE;
-        float sigmaE;
-        float sigmaR;
-    };
-
-    enum PhaseLagGraphType{
-        muE_vs_phase,
-        sE_vs_phase,
-        sR_vs_phase,
-        None
-    };
 
     struct PhaseLagSweepWorkerArguments;
 
@@ -38,6 +26,7 @@ namespace RhodotronSimulatorGUI::frames::subframes{
 
         TGTextButton* _sweep_button;
         TGTextButton* _stop_button;
+
         TGTextButton* _draw_phase_vs_muE_button;
         TGTextButton* _draw_phase_vs_sigmaE_button;
         TGTextButton* _draw_phase_vs_sigmaR_button;
@@ -61,6 +50,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         PhaseLagSweepControlFrame(const TGWindow* p, UInt_t w, UInt_t h, 
             Analysis::Analyzer* analyzer_, GUISimulationHandler* sim_handler_, data::DataProvider* dataProvider_, ConfigurationFrame* config_frame_);
 
+        
+        void ClearGraphs();
         void DrawPhaseLagvsAverageE();
         void DrawPhaseLagvsStdE();
         void DrawPhaseLagvsStdR();

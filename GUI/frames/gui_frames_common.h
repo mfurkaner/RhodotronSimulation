@@ -107,6 +107,9 @@ namespace RhodotronSimulatorGUI::frames{
     static const std::string Sweep_stop_button_text = " Stop ";
     static const std::string Sweep_type_phaselag_description_text = "Phase lag sweep";
 
+    static const std::string Sweep_frame_mbox_title_sweep_stop = "Sweeping in progress";
+    static const std::string Sweep_frame_mbox_msg_sweep_stop = "A sweeping procedure is ongoing, do you want to stop the sweeping?";
+
     /// @brief B CONFIGURATION FRAME RESOURCES
     static const std::string B_configuration_title = "- B Field Configuration -";
     static const std::string B_configuration_B_entry_label_text = "B (T)";

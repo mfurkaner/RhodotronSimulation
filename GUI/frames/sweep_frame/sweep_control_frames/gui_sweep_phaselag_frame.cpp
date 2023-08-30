@@ -110,7 +110,14 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::PhaselagSweepRequested(){
+        if(_active_graph == None){
+            _active_graph = muE_vs_phase;
+        }
         ClearGraphs();
+
+        _phase_lag_data_mutex->lock();
+        phaselagData.clear();
+        _phase_lag_data_mutex->unlock();
         PhaseLagSweepWorkerArguments worker_args;
 
         double start= phase_lag_sweep_start->GetNumber();
@@ -142,7 +149,12 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::PhaselagSweepStopRequested(){
-        if ( worker != NULL){ 
+        auto msg = Handlers::GUIMessageBoxHandler::GetObject();
+        auto sure = msg->DrawYesNoExclamation(
+            Sweep_frame_mbox_title_sweep_stop.c_str(),
+            Sweep_frame_mbox_msg_sweep_stop.c_str()
+        );
+        if ( sure == Yes && worker != NULL ){ 
             *(_worker_terminate.get()) = true;
             if(worker->joinable()){
                 worker->join();
@@ -155,7 +167,9 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     void PhaseLagSweepControlFrame::PhaselagSweepWork(PhaseLagSweepWorkerArguments args){
         args.owner->SweepingModeActivate(true);
 
+        args.dataMutex->lock();
         args.data->clear();
+        args.dataMutex->unlock();
         
         int phaselag_start = args.start_phase;
         int phaselag_end = args.end_phase;
@@ -245,6 +259,8 @@ namespace RhodotronSimulatorGUI::frames::subframes{
             canvas->Resize(500,500);
             canvas->GetCanvas()->Resize();
 
+            DrawActiveGraphIfThereIsUpdate();
+
             _sweep_button->SetEnabled(true);
             _stop_button->SetEnabled(false);
             
@@ -261,9 +277,25 @@ namespace RhodotronSimulatorGUI::frames::subframes{
     }
 
     void PhaseLagSweepControlFrame::ClearGraphs(){
-        _phase_vs_muE_graph->Clear();
-        _phase_vs_sigmaE_graph->Clear();
-        _phase_vs_sigmaR_graph->Clear();
+        canvas->GetCanvas()->Clear();
+        canvas->GetCanvas()->cd();
+        HideFrame(canvas);
+        Layout();
+
+        if(_phase_vs_muE_graph != NULL){
+            delete _phase_vs_muE_graph;
+        }
+        _phase_vs_muE_graph = new TGraph();
+
+        if(_phase_vs_sigmaE_graph != NULL){
+            delete _phase_vs_sigmaE_graph;
+        }
+        _phase_vs_sigmaE_graph = new TGraph();
+
+        if(_phase_vs_sigmaR_graph != NULL){
+            delete _phase_vs_sigmaR_graph;
+        }
+        _phase_vs_sigmaR_graph = new TGraph();
     }
 
     void PhaseLagSweepControlFrame::DrawPhaseLagvsAverageE(){
@@ -282,7 +314,6 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         }
         this->Layout();
         parent->Layout();
-
         TGraph* muGraph = _phase_vs_muE_graph;
         muGraph->Clear();
 
@@ -447,10 +478,10 @@ namespace RhodotronSimulatorGUI::frames::subframes{
         _data_updated_mutex->lock();
         if(_data_updated){
             DrawActiveGraph();
-
             *_data_updated = false;
         }
         _data_updated_mutex->unlock();
+
     }
 
     void PhaseLagSweepControlFrame::OnNavigatedTo(){

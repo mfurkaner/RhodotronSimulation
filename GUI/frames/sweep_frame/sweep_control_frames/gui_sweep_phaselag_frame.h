@@ -7,7 +7,7 @@
 
 #include "../../gui_frames_common.h"
 #include "gui_sweep_base_subframe.h"
-#include "../../data/gui_data_types.h"
+#include "../../../data/gui_data_types.h"
 
 using namespace RhodotronSimulatorGUI::data::PhaseLagSweep;
 

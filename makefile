@@ -30,7 +30,16 @@ GUI_SIM_DEP=SIM/basic/vector.o
 GUI_DOBJS_NEW= $(GUI_DOBJS_1) $(GUI_DOBJS_2) $(GUI_DOBJS_3) $(GUI_DOBJS_4) $(GUI_DOBJS_5) $(GUI_DOBJS_6) $(GUI_DOBJS_7) $(GUI_SIM_DEP)
 	
 
+
+RUST=$(shell cargo build --release)
+CDFR=$(shell cd ./FieldReducer)
+CDBACK=$(shell cd ..)
+
+
 clean_o=rm -rf *.o SIM/**/*.o GUI/**/*.o
+
+
+.PHONY: fieldreducer
 
 simrhodo.exe: SIM/main_new.cpp $(DOBJS)
 	$(CPP) $(CPPFLAGS) SIM/main_new.cpp $(DOBJS) -o $@ $(LIBS) 
@@ -53,6 +62,10 @@ simrhodoGUI_debug.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)
 simrhodoGUI_ez.exe: GUI/gui_refactored.cpp
 	$(CPP) $(GUICPPFLAGS) GUI/gui_refactored.cpp -o $@ $(ROOTFLAGS)
 	$(clean_o)
+
+fieldreducer.exe: 	
+	$(RUST) \
+	$(mv ./target/release/fieldreducer.exe ../fieldreducer.exe) \
 
 %.o : %.cpp
 	$(CPP) -c $< -o $@ $(CPPFLAGS) 
@@ -80,3 +93,6 @@ gui: simrhodoGUI.exe
 gui_debug: simrhodoGUI_debug.exe
 
 gui_ez: simrhodoGUI_ez.exe
+
+fieldreducer: 
+	cd fieldreducer && cargo build --release && mv ./target/release/fieldreducer ../fieldreducer.exe && rm -r target && cd ..

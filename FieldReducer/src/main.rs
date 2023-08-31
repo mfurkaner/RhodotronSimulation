@@ -8,13 +8,18 @@ fn main() {
     let filename_arg : String = String::from("-f");
     let concentrate_arg : String = String::from("-c");
 
-    let help_message = format!("                  Field Reducer V_0.1
+    let help_message = format!("
+--------------------------------------------------------------
+                  Field Reducer V_0.1
+
 E field export file reducer for Rhodotron Simulation Software.
 31/08/2023                                        M.Furkan Er
 
-Only use this software with CST E field export files.
-{filename_arg}   :   file path input flag ({filename_arg} filepath)
-{concentrate_arg}   :   concentration flag, saves the reduced data as f32 byte array");
+Only use this software with CST Studio E field export files.
+
+{filename_arg}  :  file path input flag ({filename_arg} filepath)
+{concentrate_arg}  :  concentration flag, saves the reduced data as f32 LE bit dump
+--------------------------------------------------------------\n");
 
     let mut filename_flag : bool = false;
     let mut concentrate: bool = false;    

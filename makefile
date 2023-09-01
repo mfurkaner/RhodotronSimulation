@@ -28,6 +28,8 @@ GUI_DOBJS_7=GUI/msgbox/gui_msgbox_handler_g.o GUI/renderer/gui_renderer_g.o
 GUI_SIM_DEP=SIM/basic/vector.o
 
 GUI_DOBJS_NEW= $(GUI_DOBJS_1) $(GUI_DOBJS_2) $(GUI_DOBJS_3) $(GUI_DOBJS_4) $(GUI_DOBJS_5) $(GUI_DOBJS_6) $(GUI_DOBJS_7) $(GUI_SIM_DEP)
+
+FW_DOBJS=SIM/basic/vector.o SIM/fields/fields.o SIM/particles/electron.o
 	
 
 
@@ -67,6 +69,10 @@ fieldreducer.exe:
 	$(RUST) \
 	$(mv ./target/release/fieldreducer.exe ../fieldreducer.exe) \
 
+fieldview.exe: FieldView/fieldview.cpp $(DOBJS_DBG)
+	$(CPP) $(DEBUGFLAG) $(CPPFLAGS) FieldView/fieldview.cpp $(DOBJS_DBG) -o $@ $(LIBS) 
+	$(clean_o)
+
 %.o : %.cpp
 	$(CPP) -c $< -o $@ $(CPPFLAGS) 
 
@@ -96,3 +102,5 @@ gui_ez: simrhodoGUI_ez.exe
 
 fieldreducer: 
 	cd fieldreducer && cargo build --release && mv ./target/release/fieldreducer ../fieldreducer.exe && rm -r target && cd ..
+
+fieldview: fieldview.exe

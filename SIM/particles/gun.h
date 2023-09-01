@@ -59,6 +59,9 @@ public:
     void setNumberOfElectrons(uint64_t e_num);
     void setNumberOfBunchs(uint64_t b_num);
     void enableMT(uint32_t thread_count);
+
+    double getGunAcvtiveTime(){return gun_active_time;}
+    double getePerBunch() {return e_per_bunch;}
     
     void saveInfo(double time);
     void logPaths(vector<vector<DataStorage> >& pathsStorage, std::string pathsPath, std::string header);

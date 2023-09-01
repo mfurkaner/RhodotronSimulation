@@ -2,15 +2,14 @@
 #include <memory>
 #include "../particles/electron.h"
 
-
+#pragma region RF_FIELD
 /////////           RF FIELD
 void RFField::update(double time){
-    double w = 2 * M_PI * frequency / 1000;
-    E = sin(w*time + phase_lag*deg_to_rad)*E_max;
+
 }
 
 vector3d RFField::actOn(Electron& e){
-    vector3d Efield = getField(e.pos);                            // Calculate E vector
+    vector3d Efield = getEfield(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
     return acc;
@@ -26,13 +25,13 @@ vector3d RFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     e_dummy.vel = e.vel;
     double dt_halved = dt/2;
     // get k1
-    vector3d Efield = getField(e_dummy.pos);                                        // Calculate E vector
+    vector3d Efield = getEfield(e_dummy.pos);                                        // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                                             // Calculate F/m vector
     vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
     // get k2
     e_dummy.move(dt_halved);
     e_dummy.accelerate(k1, dt_halved);
-    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    Efield = getEfield(e_dummy.pos);                                                 // Calculate E vector
     F_m = Efield*1E6*eQMratio;                                                      // Calculate F/m vector
     vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
     // get k3
@@ -43,14 +42,19 @@ vector3d RFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     e_dummy.vel = e.vel;
     e_dummy.move(dt_halved);
     e_dummy.accelerate(k3, dt);
-    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    Efield = getEfield(e_dummy.pos);                                                 // Calculate E vector
     F_m = Efield*1E6*eQMratio;   
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
 }
 
+#pragma endregion RF_FIELD
+
+
 /////////           Coaxial RF FIELD
+#pragma region COAXIAL_RF_FIELD
+
 CoaxialRFField::~CoaxialRFField(){
     for(int i = 0; i < _childs.size(); i++){
         delete _childs[i];
@@ -58,7 +62,7 @@ CoaxialRFField::~CoaxialRFField(){
 }
 
 vector3d CoaxialRFField::actOn(Electron& e){
-    vector3d Efield = getField(e.pos);                            // Calculate E vector
+    vector3d Efield = getEfield(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
     vector3d acc = (F_m - e.vel*(e.vel*F_m)/(c*c))/e.gamma();     // Calculate a vector
     return acc;
@@ -74,13 +78,13 @@ vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     e_dummy.vel = e.vel;
     double dt_halved = dt/2;
     // get k1
-    vector3d Efield = getField(e_dummy.pos);                                        // Calculate E vector
+    vector3d Efield = getEfield(e_dummy.pos);                                        // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                                             // Calculate F/m vector
     vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
     // get k2
     e_dummy.move(dt_halved);
     e_dummy.accelerate(k1, dt_halved);
-    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    Efield = getEfield(e_dummy.pos);                                                 // Calculate E vector
     F_m = Efield*1E6*eQMratio;                                                      // Calculate F/m vector
     vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
     // get k3
@@ -91,7 +95,7 @@ vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     e_dummy.vel = e.vel;
     e_dummy.move(dt_halved);
     e_dummy.accelerate(k3, dt);
-    Efield = getField(e_dummy.pos);                                                 // Calculate E vector
+    Efield = getEfield(e_dummy.pos);                                                 // Calculate E vector
     F_m = Efield*1E6*eQMratio;   
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
@@ -99,16 +103,17 @@ vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
 }
 
 double CoaxialRFField::E_radial(double R)const{
+    if (R == 0){ return 0;}
     double E_zero = E*E_max_pos/R;
     return E_zero*((R < -r1)*(R > -r2) | (R < r2)*(R > r1));
 }
 
-vector3d CoaxialRFField::getField(vector3d position) const{
+vector3d CoaxialRFField::getEfield(vector3d& position) const{
     double radial = E_radial( position.magnitude() );
     return position.direction() * radial;
 }
 
-double CoaxialRFField::getField( double R )const{
+double CoaxialRFField::getEfield( double R )const{
     return E_radial(R);
 }
 
@@ -117,18 +122,11 @@ int CoaxialRFField::log( DataStorage& rf , double time, bool end){
     for( double i = -r2; i <= r2 ; i += 0.05){
         for (double j = -r2; j <= r2 ; j += 0.05){
             vector3d pos(i,j,0);
-            vector3d Efield = getField(pos);
+            vector3d Efield = getEfield(pos);
             if ( pos.magnitude() > r1 && Efield.magnitude() > 0){
                 char temp[10];
                 snprintf(temp, 10, "\n%.1lf", time);
                 rf << temp << "," << pos << "," << Efield << "," << Efield.magnitude();
-                /*
-                if (end){
-                    rf << ( (j+0.05 > r2) && (i+0.05 > r2)  ? "" :  );
-                }
-                else{
-                    rf << '\n';
-                }*/
                 count ++;
             }
         }
@@ -177,6 +175,170 @@ void CoaxialRFField::update(double time){
         _childs[i]->update(time);
     }
 }
+
+#pragma endregion COAXIAL_RF_FIELD
+
+#pragma region IMPORTED_RF_FIELD
+
+vector3d ImportedRFField::getEfield(vector3d& position) const {
+    RFFieldIndex nearestPosition = getNearestEPosition(position);
+    try{
+
+        return _fieldMaxValue.Efield.at(nearestPosition.z).field2D.at(nearestPosition.y).field1D.at(nearestPosition.x).E * _mult_time_coeff;
+    }catch(std::out_of_range ex){
+        return vector3d();
+    }
+}
+
+RFFieldIndex ImportedRFField::getNearestEPosition(vector3d& position) const{
+    RFFieldIndex res;
+    double step = _fieldMaxValue.E_field_position_step;
+
+    res.x = (std::round((position.X() - _fieldMaxValue.xmin)/step));
+    res.y = (std::round((position.Y() - _fieldMaxValue.ymin)/step));
+    res.z = (std::round((position.Z() - _fieldMaxValue.zmin)/step));
+
+    double z = _fieldMaxValue.Efield.at(res.z).z;
+    double y = _fieldMaxValue.Efield.at(res.z).field2D.at(res.y).y;
+    double x = _fieldMaxValue.Efield.at(res.z).field2D.at(res.y).field1D.at(res.x).x;
+    //std::cout << "Nearest position is " << x << " " << y << " " << z << std::endl;
+
+    return res;
+}
+
+vector3d ImportedRFField::getEmaxPosition() {return _fieldMaxValue.Emax_pos;}
+
+void SetMinMax(double val, double& min, double& max){
+    if( val < min ){
+        min = val;
+    }
+    if( val > max ){
+        max = val;
+    }
+}
+
+void ImportedRFField::Import(std::string filepath){
+        std::ifstream fin; 
+        fin.open(filepath, std::ios::in);
+        std::string line;
+        
+        double x, y, z, Ex, Ey, Ez, xmin, xmax, ymin, ymax, zmin, zmax, Emax;
+
+        do{
+            std::getline(fin, line);
+        }while(!fin.eof() && line.find("#", 0) != std::string::npos);
+        sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf", &x, &y, &z, &Ex, &Ey, &Ez);
+
+        Ex *= 0.000001;
+        Ey *= 0.000001;
+        Ez *= 0.000001;
+
+        xmin = x;
+        xmax = x;
+        ymin = y;
+        ymax = y;
+        zmax = z;
+        zmin = z;
+
+        Emax = sqrt(Ex*Ex + Ey*Ey + Ez*Ez);
+
+        do{
+            double z_child;
+            z_child = z;
+            RFFieldOnConstZPlane rfplane;
+            rfplane.z = z;
+
+            while(z == z_child && !fin.eof()){
+                double y_child = y;
+                RFFieldOnConstZYLine rfline;
+                rfline.y = y;
+                while(y == y_child && z == z_child && !fin.eof()){
+                    RFFieldOnConstXYZPoint rfpoint;
+                    rfpoint.x = x;
+                    rfpoint.E = vector3d(Ex, Ey, Ez);
+
+                    rfline.field1D.push_back(rfpoint);
+
+                    std::getline(fin, line);
+                    if ( line.find("#", 0) != std::string::npos){
+                        continue;
+                    }
+                    sscanf(line.c_str(), "%lf %lf %lf %lf %lf %lf", &x, &y_child, &z_child, &Ex, &Ey, &Ez);
+                    Ex *= 0.000001;
+                    Ey *= 0.000001;
+                    Ez *= 0.000001;
+                    SetMinMax(x, xmin, xmax);
+                    SetMinMax(y, ymin, ymax);
+                    SetMinMax(z, zmin, zmax);
+                    double E = sqrt(Ex*Ex + Ey*Ey + Ez*Ez);
+                    if(z_child == 0 && Emax < E){
+                        Emax = E;
+                        _fieldMaxValue.Emax_pos = vector3d(x, y_child, z_child);
+                    }
+
+                    // Edge case, we read the last line , z and y is same but x is different
+                    if(fin.eof() && z == z_child && y == y_child){
+                        RFFieldOnConstXYZPoint rfpoint_end;
+                        rfpoint_end.x = x;
+                        rfpoint_end.E = vector3d(Ex, Ey, Ez);
+                        rfline.field1D.push_back(rfpoint_end);
+                    }
+                }
+                rfplane.field2D.push_back(rfline);
+                if(y != y_child){
+                    _fieldMaxValue.E_field_position_step = abs(y - y_child);
+                }
+
+                // Edge case, we read the last line, z is same but y is different
+                if(fin.eof() && z == z_child && y != y_child){
+                    RFFieldOnConstZYLine rfline_end;
+                    RFFieldOnConstXYZPoint rfpoint_end;
+                    rfpoint_end.x = x;
+                    rfpoint_end.E = vector3d(Ex, Ey, Ez);
+                    rfline_end.y = y_child;
+                    rfline_end.field1D.push_back(rfpoint_end);
+                    rfplane.field2D.push_back(rfline_end);
+                }
+                y = y_child;
+            }
+            _fieldMaxValue.Efield.push_back(rfplane);
+            
+            // Edge case, we read the last line, z is different
+            if(fin.eof() && z != z_child ){
+                RFFieldOnConstZPlane  rfplane_end;
+                RFFieldOnConstZYLine rfline_end;
+                RFFieldOnConstXYZPoint rfpoint_end;
+
+                rfpoint_end.x = x;
+                rfpoint_end.E = vector3d(Ex, Ey, Ez);
+                rfline_end.y = y;
+                rfline_end.field1D.push_back(rfpoint_end);
+                rfplane_end.z = z_child;
+                rfplane_end.field2D.push_back(rfline_end);
+                _fieldMaxValue.Efield.push_back(rfplane_end);       
+            }
+            z = z_child;
+        }while( !fin.eof() );
+
+        _fieldMaxValue.xmax = xmax;
+        _fieldMaxValue.ymax = ymax;
+        _fieldMaxValue.zmax = zmax;
+        _fieldMaxValue.xmin = xmin;
+        _fieldMaxValue.ymin = ymin;
+        _fieldMaxValue.zmin = zmin;
+
+        fin.close();
+}
+
+
+void ImportedRFField::update(double time){
+    double w = 2 * M_PI * frequency * 0.001;
+    _mult_time_coeff = sin(w*time + phase_lag*deg_to_rad);
+}
+
+#pragma endregion IMPORTED_RF_FIELD
+
+
 
 /////////           Magnet
 double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){

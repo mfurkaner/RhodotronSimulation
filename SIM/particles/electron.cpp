@@ -139,12 +139,12 @@ vector3d Electron::interactE_RK(const RFField& E, double time_interval){
     e_dummy.vel = vel;
     double dt_halved = time_interval*0.5;
     // get k1                                    // Calculate E vector
-    vector3d F_m = E.getField(e_dummy.pos)*1E6*eQMratio;                                             // Calculate F/m vector
+    vector3d F_m = E.getEfield(e_dummy.pos)*1E6*eQMratio;                                             // Calculate F/m vector
     vector3d k1 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
     // get k2
     e_dummy.move(dt_halved);
     e_dummy.accelerate(k1, dt_halved);
-    F_m = E.getField(e_dummy.pos)*1E6*eQMratio;                                                      // Calculate F/m vector
+    F_m = E.getEfield(e_dummy.pos)*1E6*eQMratio;                                                      // Calculate F/m vector
     vector3d k2 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();      // Calculate a vector
     // get k3
     e_dummy.vel = vel;
@@ -154,7 +154,7 @@ vector3d Electron::interactE_RK(const RFField& E, double time_interval){
     e_dummy.vel = vel;
     e_dummy.move(dt_halved);
     e_dummy.accelerate(k3, time_interval);
-    F_m = E.getField(e_dummy.pos)*1E6*eQMratio;   
+    F_m = E.getEfield(e_dummy.pos)*1E6*eQMratio;   
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;

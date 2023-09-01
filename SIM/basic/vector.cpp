@@ -81,8 +81,36 @@ vector3d vector3d::operator% (const vector3d& other){
 }
 
 bool vector3d::operator==(const vector3d& other){
-    return x == other.x && y == other.y && z == other.z;
+    return (x < other.x + ROTATION_ZERO_LIMIT) && (x > other.x - ROTATION_ZERO_LIMIT) &&
+    (y < other.y + ROTATION_ZERO_LIMIT) && (y > other.y - ROTATION_ZERO_LIMIT) &&
+    (z < other.z + ROTATION_ZERO_LIMIT) && (z > other.z - ROTATION_ZERO_LIMIT);
 }
+/*
+bool vector3d::operator<(const vector3d& other) const{
+    bool res = (z < other.z);
+    if (res == false && z < other.z + ROTATION_ZERO_LIMIT ){
+        res = (y < other.y);
+        if ( res == false && y < other.y + ROTATION_ZERO_LIMIT ){
+            res = (x < other.x);
+        }
+    }
+    return res;
+}
+
+bool vector3d::operator>(const vector3d& other) const{
+    bool res = (z > other.z);
+    if (res == false && z > other.z - ROTATION_ZERO_LIMIT ){
+        res = (y < other.y);
+        if ( res == false && y > other.y - ROTATION_ZERO_LIMIT ){
+            res = (x < other.x);
+        }
+    }
+    return res;
+}
+
+bool vector3d::operator!=(const vector3d&other) const{
+    return !(*this == other);
+}*/
 
 double vector3d::magnitude(){
     return sqrt( x*x + y*y + z*z );
@@ -100,6 +128,10 @@ vector3d vector3d::direction(){
 
 void vector3d::rotate(vector3d around, double angle){
     double mag = this->magnitude();
+    // THIS CAN CAUSE ISSUES
+    if(mag < ROTATION_ZERO_LIMIT){
+        return;
+    }
     if( around.magnitude() != 1){
         around = around.direction();
     }

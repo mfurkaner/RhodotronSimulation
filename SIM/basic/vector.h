@@ -1,4 +1,6 @@
 #include <iostream>
+#include <istream>
+#include <ostream>
 #include <iomanip>
 
 #ifndef VECTOR_H
@@ -33,7 +35,11 @@ public:
     vector3d operator/(double);  
     vector3d operator/(double) const;
     void operator/=(double);  
+
     bool operator==(const vector3d&);
+    //bool operator<(const vector3d&) const;
+    //bool operator>(const vector3d&) const;
+    //bool operator!=(const vector3d&) const;
 
     double operator*(const vector3d&);             // DOT PRODUCT
     vector3d operator%(const vector3d&);           // CROSS PRUDUCT

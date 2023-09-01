@@ -39,7 +39,7 @@
         std::vector<TGTextButton*> buttons;
         //TGTextButton* button;
         const TGWindow* parent;
-        
+       
     public:
         static const std::vector<std::string> button_names;
         static const std::vector<std::string> button_functions;

@@ -3,10 +3,10 @@ LINUX  = Linux
 MAC    = Darwin
 
 CPP=clang++
-CXX=$(shell root-config --cxx) -I. -O2 -std=c++11  
+CXX=$(shell root-config --cxx) -I. -O2 -std=c++17  $(shell root-config --incdir`)
 DEBUGFLAG= -g
-CPPFLAGS= -std=c++17 -I=SIM/** -Wall -pedantic -pthread -O3
-GUICPPFLAGS= -std=c++17 -I=GUI/** 
+CPPFLAGS= -std=c++14 -I=SIM/** -Wall -pedantic -pthread -O3 -I`root-config --incdir`
+GUICPPFLAGS= -std=c++14 -I=GUI/** -I `root-config --incdir`
 LIBS= -L SIM/
 
 DOBJS=SIM/simulation/simulation.o SIM/particles/electron.o SIM/particles/bunch.o SIM/particles/gun.o SIM/fields/fields.o SIM/basic/vector.o SIM/mt/multithreading.o SIM/gnuplot/sim_renderer.o SIM/uihandler/ui_handler.o
@@ -15,9 +15,9 @@ DOBJS_DBG=SIM/simulation/simulation_dbg.o SIM/particles/electron_dbg.o SIM/parti
 ROOTFLAGS=$(shell root-config --glibs --cflags --libs)
 
 GUI_CONFIG_FRAME_DOBJS=GUI/frames/config_frame/gui_config_frame_g.o
-GUI_DOBJS=GUI/comm/sim_server_g.o $(GUI_CONFIG_FRAME_DOBJS) GUI/frames/render_frame/gui_render_frame_g.o GUI/frames/ribbon_frame/gui_main_buttons_g.o GUI/frames/gui_main_frame_g.o GUI/renderer/gui_renderer_g.o
+GUI_DOBJS=GUI/comm/sim_server_g.o $(GUI_CONFIG_FRAME_DOBJS) GUI/frames/render_frame/gui_render_frame_g.o GUI/frames/ribbon_frame/gui_main_buttons_g.o GUI/frames/MainFrame.o GUI/renderer/gui_renderer_g.o
 
-GUI_DOBJS_1=GUI/analyzer/gui_analyzer_g.o GUI/comm/sim_server_g.o GUI/data/gui_sim_dataprovider_g.o GUI/frames/gui_main_frame_g.o
+GUI_DOBJS_1=GUI/analyzer/gui_analyzer_g.o GUI/comm/sim_server_g.o GUI/data/gui_sim_dataprovider_g.o GUI/frames/MainFrame.o
 GUI_DOBJS_2=GUI/frames/analysis_frame/gui_analysis_frame_g.o GUI/frames/analysis_frame/analysis_control_frames/gui_E_dist_analysis_frame_g.o GUI/frames/analysis_frame/analysis_control_frames/gui_t_vs_E_analysis_frame_g.o
 GUI_DOBJS_3=GUI/frames/config_frame/gui_config_frame_g.o GUI/frames/config_frame/B_config_frame/gui_B_config_frame_g.o GUI/frames/config_frame/E_config_frame/gui_E_config_frame_g.o
 GUI_DOBJS_4=GUI/frames/config_frame/gun_config_frame/gui_gun_config_frame_g.o GUI/frames/config_frame/sim_config_frame/gui_sim_config_frame_g.o
@@ -54,7 +54,9 @@ simrhodo_debug.exe: SIM/main_new.cpp $(DOBJS_DBG)
 	$(clean_o)
 
 simrhodoGUI.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)
-	$(CXX) $(GUICPPFLAGS) GUI/gui_refactored.cpp $(GUI_DOBJS_NEW) -o $@ $(ROOTFLAGS) 
+	rootcint -f GUI/guistream.cxx -c GUI/frames/MainFrame.h
+	$(CXX) $(GUICPPFLAGS) -c GUI/guistream.cxx -o GUI/guistream.o -O -fPIC -I `root-config --incdir`
+	$(CXX) $(GUICPPFLAGS) GUI/gui_refactored.cpp $(GUI_DOBJS_NEW) GUI/guistream.o -o $@ $(ROOTFLAGS) 
 	$(clean_o)
 
 simrhodoGUI_debug.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)

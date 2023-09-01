@@ -10,9 +10,10 @@
 #include <iomanip>
 #include <bitset>
 #include <fstream>
+#include "TSystem.h"
+#include "frames/MainFrame.h"
 
-
-#define INTERPRETED 1
+#define INTERPRETED 0
 #define EZ 0
 
 #if (INTERPRETED == 0)
@@ -57,6 +58,7 @@ int main(int argc, char **argv){
     main_frame->SetupFrame();
     theApp.Run();
     return 0;
+
 }
 #else
 void gui_refactored(){

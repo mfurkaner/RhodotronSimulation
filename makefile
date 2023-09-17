@@ -3,10 +3,10 @@ LINUX  = Linux
 MAC    = Darwin
 
 CPP=clang++
-CXX=$(shell root-config --cxx) -I. -O2 -std=c++17  $(shell root-config --incdir`)
+CXX=$(shell root-config --cxx) -I. -O2 -std=c++17  $(shell `root-config --incdir`)
 DEBUGFLAG= -g
-CPPFLAGS= -std=c++14 -I=SIM/** -Wall -pedantic -pthread -O3 -I`root-config --incdir`
-GUICPPFLAGS= -std=c++14 -I=GUI/** -I `root-config --incdir`
+CPPFLAGS= -std=c++17 -I=SIM/** -Wall -pedantic -pthread -O3 -I`root-config --incdir`
+GUICPPFLAGS= -std=c++17 -I=GUI/** -I `root-config --incdir`
 LIBS= -L SIM/
 
 DOBJS=SIM/simulation/simulation.o SIM/particles/electron.o SIM/particles/bunch.o SIM/particles/gun.o SIM/fields/fields.o SIM/basic/vector.o SIM/mt/multithreading.o SIM/gnuplot/sim_renderer.o SIM/uihandler/ui_handler.o
@@ -40,41 +40,6 @@ CDBACK=$(shell cd ..)
 
 clean_o=rm -rf *.o SIM/**/*.o GUI/**/*.o
 
-
-.PHONY: fieldreducer
-
-simrhodo.exe: SIM/main_new.cpp $(DOBJS)
-	$(CPP) $(CPPFLAGS) SIM/main_new.cpp $(DOBJS) -o $@ $(LIBS) 
-	mkdir -p xy/paths
-	$(clean_o)
-
-simrhodo_debug.exe: SIM/main_new.cpp $(DOBJS_DBG)
-	$(CPP) $(DEBUGFLAG) $(CPPFLAGS) SIM/main_new.cpp $(DOBJS_DBG) -o $@ $(LIBS) 
-	mkdir -p xy/paths
-	$(clean_o)
-
-simrhodoGUI.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)
-	rootcint -f GUI/guistream.cxx -c GUI/frames/MainFrame.h
-	$(CXX) $(GUICPPFLAGS) -c GUI/guistream.cxx -o GUI/guistream.o -O -fPIC -I `root-config --incdir`
-	$(CXX) $(GUICPPFLAGS) GUI/gui_refactored.cpp $(GUI_DOBJS_NEW) GUI/guistream.o -o $@ $(ROOTFLAGS) 
-	$(clean_o)
-
-simrhodoGUI_debug.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)
-	$(CPP) $(DEBUGFLAG) $(GUICPPFLAGS) GUI/gui_refactored.cpp $(GUI_DOBJS_NEW) -o $@ $(ROOTFLAGS)
-	$(clean_o)
-
-simrhodoGUI_ez.exe: GUI/gui_refactored.cpp
-	$(CPP) $(GUICPPFLAGS) GUI/gui_refactored.cpp -o $@ $(ROOTFLAGS)
-	$(clean_o)
-
-fieldreducer.exe: 	
-	$(RUST) \
-	$(mv ./target/release/fieldreducer.exe ../fieldreducer.exe) \
-
-fieldview.exe: FieldView/fieldview.cpp $(DOBJS_DBG)
-	$(CPP) $(DEBUGFLAG) $(CPPFLAGS) FieldView/fieldview.cpp $(DOBJS_DBG) -o $@ $(LIBS) 
-	$(clean_o)
-
 %.o : %.cpp
 	$(CPP) -c $< -o $@ $(CPPFLAGS) 
 
@@ -84,14 +49,46 @@ fieldview.exe: FieldView/fieldview.cpp $(DOBJS_DBG)
 %_g.o: %.cpp
 	$(CXX) -c $< -o $@ $(GUICPPFLAGS) -I `root-config --incdir` 
 
+
+.PHONY: fieldreducer
+
+simrhodo.exe: SIM/main_new.cpp $(DOBJS)
+	$(CPP) $(CPPFLAGS) SIM/main_new.cpp $(DOBJS) -o $@ $(LIBS) 
+	mkdir -p bin/xy/paths
+	mv simrhodo.exe bin/simrhodo.exe
+	$(clean_o)
+
+simrhodo_debug.exe: SIM/main_new.cpp $(DOBJS_DBG)
+	$(CPP) $(DEBUGFLAG) $(CPPFLAGS) SIM/main_new.cpp $(DOBJS_DBG) -o $@ $(LIBS) 
+	mkdir -p xy/paths
+	mv simrhodo_debug.exe bin/simrhodo_debug.exe
+	$(clean_o)
+
+simrhodoGUI.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)
+	rootcint -f GUI/guistream.cxx -c GUI/frames/MainFrame.h
+	$(CPP) $(CPPFLAGS) -c SIM/basic/vector.cpp -o SIM/basic/vector.o
+	$(CXX) $(GUICPPFLAGS) -c GUI/guistream.cxx -o GUI/guistream.o -O -fPIC -I `root-config --incdir`
+	$(CXX) $(GUICPPFLAGS) GUI/gui_refactored.cpp $(GUI_DOBJS_NEW) GUI/guistream.o -o bin/$@ $(ROOTFLAGS) 
+	$(clean_o)
+
+simrhodoGUI_debug.exe: GUI/gui_refactored.cpp $(GUI_DOBJS_NEW)
+	$(CPP) $(DEBUGFLAG) $(GUICPPFLAGS) GUI/gui_refactored.cpp $(GUI_DOBJS_NEW) -o $@ $(ROOTFLAGS)
+	$(clean_o)
+
+fieldview.exe: FieldView/fieldview.cpp $(DOBJS_DBG)
+	$(CXX) $(DEBUGFLAG) $(CPPFLAGS) FieldView/fieldview.cpp $(DOBJS_DBG) -o $@ $(LIBS) 
+	mv fieldview.exe bin/fieldview.exe
+	$(clean_o)
+
+
 release: simrhodo.exe
 
 debug: simrhodo_debug.exe
 
-all: release debug
+all: release gui fieldreducer
 
 clean: 
-	rm -rf *.o SIM/**/*.o *.exe GUI/**/*.o GUI/*.o GUI/**/**/*.o GUI/**/**/**/*.o
+	rm -rf *.o SIM/**/*.o *.exe GUI/*.o GUI/**/*.o GUI/*.o GUI/**/**/*.o GUI/**/**/**/*.o
 
 cleanlogs:
 	rm -rf xy/**
@@ -103,6 +100,6 @@ gui_debug: simrhodoGUI_debug.exe
 gui_ez: simrhodoGUI_ez.exe
 
 fieldreducer: 
-	cd fieldreducer && cargo build --release && mv ./target/release/fieldreducer ../fieldreducer.exe && rm -r target && cd ..
+	cd fieldreducer && cargo build --release && mv ./target/release/fieldreducer ../bin/fieldreducer.exe && rm -r target && cd ..
 
 fieldview: fieldview.exe

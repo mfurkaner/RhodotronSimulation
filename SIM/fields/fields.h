@@ -14,6 +14,7 @@ class RFField{
 protected:
     double phase_lag = 0;           // degree
     double frequency = 107.5;       // MHz
+    double lambda = c/(107.5 * 1e+6);
 public:
     RFField() { update(0);};
     RFField(double phase_lag) : phase_lag(phase_lag) { update(0); }
@@ -49,7 +50,7 @@ public:
 
     double getE() {return E;}
     void setEmax(double E_max) {this->E_max = E_max; update(0);}
-    void setR1(double r1) {this->r1 = r1;}
+    void setR1(double r1) {this->r1 = r1; this-> E_max_pos = r1;}
     void setR2(double r2) {this->r2 = r2;}
     void setEmaxPos(double Emaxpos) {E_max_pos = Emaxpos;}     // m
 
@@ -119,6 +120,8 @@ public:
     RFFieldIndex getNearestEPosition(vector3d& position) const;
     vector3d getEmaxPosition();
 
+    void SetEmaxInLine(double theta, double newEmax);
+    void Multiply(double mult_const);
 
     void update(double time) override;
 

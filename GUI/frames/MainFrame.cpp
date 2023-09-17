@@ -35,12 +35,6 @@ ClassImp(MainFrame)
         this->AddFrame(analysis_frame, center_x_layout);
         this->AddFrame(sweep_frame, center_x_layout);
 
-
-         abutton[0]= new TGTextButton(main_buttons_frame, "QUIT Update" );
-         main_buttons_frame->AddFrame(abutton[0], new TGLayoutHints(kLHintsRight, 0, 0, 0, 0));
-         ULong_t gray; gClient->GetColorByName("gray", gray);
-         abutton[0]->Connect("Clicked()", "MainFrame", this, "QuitPressed()");
-         abutton[0]->ChangeBackground(gray);
         MapSubwindows();
         MapWindow();
 
@@ -52,7 +46,6 @@ ClassImp(MainFrame)
         Print();
 
         NavigateToConfigFrame();
-
     }
 
     MainFrame::~MainFrame(){
@@ -149,7 +142,6 @@ ClassImp(MainFrame)
     }
 
     void MainFrame::QuitPressed(){
-        std::cout<<"------------QUIT\n";
         auto msgboxHandler = GUIMessageBoxHandler::GetObject();
         if(msgboxHandler == NULL){
             #ifdef DEBUG
@@ -202,7 +194,7 @@ ClassImp(MainFrame)
     void MainFrame::NavigateToConfigFrame(){
         this->Resize(w, h);
 
-        //config_frame->LoadConfigPressed();
+        config_frame->LoadConfigPressed();
 
         main_buttons_frame->EnableAll();
         main_buttons_frame->DisableByName("Configuration");

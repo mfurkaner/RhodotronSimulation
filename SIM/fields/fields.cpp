@@ -109,8 +109,9 @@ double CoaxialRFField::E_radial(double R)const{
 }
 
 vector3d CoaxialRFField::getEfield(vector3d& position) const{
-    double radial = E_radial( position.magnitude() );
-    return position.direction() * radial;
+    double R = sqrt( position.X()*position.X() + position.Y()*position.Y() );
+    double radial = E_radial( R );
+    return position.direction() * radial * (position.Z() == 0.0 ? 1.0 : cos(2*M_PI * position.Z()/lambda));
 }
 
 double CoaxialRFField::getEfield( double R )const{
@@ -198,15 +199,51 @@ RFFieldIndex ImportedRFField::getNearestEPosition(vector3d& position) const{
     res.y = (std::round((position.Y() - _fieldMaxValue.ymin)/step));
     res.z = (std::round((position.Z() - _fieldMaxValue.zmin)/step));
 
-    double z = _fieldMaxValue.Efield.at(res.z).z;
-    double y = _fieldMaxValue.Efield.at(res.z).field2D.at(res.y).y;
-    double x = _fieldMaxValue.Efield.at(res.z).field2D.at(res.y).field1D.at(res.x).x;
-    //std::cout << "Nearest position is " << x << " " << y << " " << z << std::endl;
-
     return res;
 }
 
 vector3d ImportedRFField::getEmaxPosition() {return _fieldMaxValue.Emax_pos;}
+
+void ImportedRFField::SetEmaxInLine(double theta, double newEmax){
+    vector3d around(0,0,1);
+    vector3d line(1,0,0);
+    line.rotate(around, theta);
+
+    double Emax_in_line = 0;
+    double Emax = 0;
+
+    for(double r = _fieldMaxValue.xmin; r <= _fieldMaxValue.xmax;){
+        vector3d pos = line * r;
+
+        double E = getEfield(pos).magnitude();
+        if(E > Emax_in_line){
+            Emax_in_line = E;
+        }
+
+        r += _fieldMaxValue.E_field_position_step;
+    }
+    double mult_const = newEmax/Emax_in_line;
+    for(int z_i = 0 ; z_i < _fieldMaxValue.Efield.size(); z_i++){
+        for(int y_i = 0 ; y_i < _fieldMaxValue.Efield[z_i].field2D.size(); y_i++){
+            for(int x_i = 0 ; x_i < _fieldMaxValue.Efield[z_i].field2D[y_i].field1D.size(); x_i++){
+                _fieldMaxValue.Efield[z_i].field2D[y_i].field1D[x_i].E *= mult_const;
+            }
+        }
+    }
+
+    std::cout << "mult_const: " << mult_const << std::endl;
+
+}
+
+void ImportedRFField::Multiply(double mult_const){
+    for(int z_i = 0 ; z_i < _fieldMaxValue.Efield.size(); z_i++){
+        for(int y_i = 0 ; y_i < _fieldMaxValue.Efield[z_i].field2D.size(); y_i++){
+            for(int x_i = 0 ; x_i < _fieldMaxValue.Efield[z_i].field2D[y_i].field1D.size(); x_i++){
+                _fieldMaxValue.Efield[z_i].field2D[y_i].field1D[x_i].E *= mult_const;
+            }
+        }
+    }
+}
 
 void SetMinMax(double val, double& min, double& max){
     if( val < min ){

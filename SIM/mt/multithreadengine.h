@@ -10,7 +10,8 @@
 
 #include "../particles/gun.h"
 #include "../fields/fields.h"
-#include "../gnuplot/gnuplot.h"
+#include "../interact/interactor.h"
+
 
 #ifndef MTENGINE_H
 #define MTENGINE_H

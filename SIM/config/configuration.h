@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include "../basic/vector.h"
+#include "../basic/datastorage.h"
 #include "../fields/fields.h"
 
 using namespace std;
@@ -41,7 +42,6 @@ private:
         };
     std::ifstream fin;
     std::string filepath;
-    //bool fileIsOpen = false;
 
     double Emax;            bool EmaxIsSet = false;
     double freq;            bool freqIsSet = false;
@@ -76,241 +76,58 @@ public:
     std::vector<Magnet> magnets;
     Configuration(std::string filepath):filepath(filepath){}
 
-    void print(){
-        cout << "\n -- Simulation Configuration --\n";
-        if (isEmaxSet()) cout << "Emax : " << Emax << "\tMV/m\n";
-        if (isFreqSet()) cout << "Freq : " << freq << "\tMHz\n";
-        if (isPhaseLagSet()) cout << "Phase Lag : " << phase_lag << "\tdegree\n";
-        if (isEPathSet()) cout << "E_path : " << e_path << "\n";
-        if (isBPathSet()) cout << "B_path : " << b_path << "\n";
-        if (isPPathSet()) cout << "P_path : " << p_path << "\n";
-        if (isCPathSet()) cout << "C_path : " << c_path << "\n";
-        if (isSTimeSet()) cout << "StartTime : " << stime << "\tns\n";
-        if (isETimeSet()) cout << "EndTime : " << etime << "\tns\n";
-        if (isdTSet()) cout << "dT : " << dT << "\tns\n";
-        if (isGunTimeSet()) cout << "guntime : " << gun_time << "\tns\n";
-        if (isGunPeriodSet()) cout << "gunperiod : " << gun_period << "\tns\n";
-        if (isNumOfESet()) cout << "enum : " << num_of_e << "\n";
-        if (isNumOfBunchSet()) cout << "bunchnum : " << num_of_bunch << "\n";
-        if (isMTSet()) cout << "thcount : " << th_count << "\n";
-        if (isR1Set()) cout << "R1 : " << r1 << "\tm\n";
-        if (isR2Set()) cout << "R2 : " << r2 << "\tm\n";
-        if (magnets.size()) cout << "Magnet count :\t" << magnets.size() << "\n";
-        if (isEinSet()) cout << "Ein : " << Ein << "\tMeV\n";
-        if (isEinStdSet()) cout << "Ein : " << EinStd << "\tMeV\n";
-        if (isTargetEnSet()) cout << "TargetE : " << target_energy << "\tMeV\n";
-        if (isOutputSet()) cout << "Output : " << _output << "\n";
-        cout << "--------------------------------\n\n";
-        return;
-    }
+    void print();
 
-    double getEmax(){return Emax;}
-    double getFreq(){return freq;}
-    double getPhaseLag(){return phase_lag;}
-    std::string getEpath(){return e_path;}
-    std::string getBpath(){return b_path;}
-    std::string getPpath(){return p_path;}
-    std::string getCpath(){return c_path;}
-    double getSTime(){return stime;}
-    double getETime(){return etime;}
-    double getdT(){return dT;}
-    double getGunTime(){return gun_time;}
-    double getGunPeriod(){return gun_period;}
-    double getNumOfE(){return num_of_e;}
-    double getNumOfB(){return num_of_bunch;}
-    bool getMultiThread(){return multi_thread;}
-    unsigned int getThCount(){return th_count;}
-    double getR1(){return r1;}
-    double getR2(){return r2;}
-    double getEin(){return Ein;}
-    double getEinStd(){return EinStd;}
-    double getTargetEnergy(){return target_energy;}
-    std::string getOutput(){return _output;}
+    double getEmax();
+    double getFreq();
+    double getPhaseLag();
+    std::string getEpath();
+    std::string getBpath();
+    std::string getPpath();
+    std::string getCpath();
+    double getSTime();
+    double getETime();
+    double getdT();
+    double getGunTime();
+    double getGunPeriod();
+    double getNumOfE();
+    double getNumOfB();
+    bool getMultiThread();
+    unsigned int getThCount();
+    double getR1();
+    double getR2();
+    double getEin();
+    double getEinStd();
+    double getTargetEnergy();
+    std::string getOutput();
 
-    bool isEmaxSet(){return EmaxIsSet;}
-    bool isFreqSet(){return freqIsSet;}
-    bool isPhaseLagSet(){return phaseLagIsSet;}
-    bool isEPathSet(){return epathIsSet;}
-    bool isBPathSet(){return bpathIsSet;}
-    bool isPPathSet(){return ppathIsSet;}
-    bool isCPathSet(){return cpathIsSet;}
-    bool isSTimeSet(){return sTimeIsSet;}
-    bool isETimeSet(){return eTimeIsSet;}
-    bool isdTSet(){return dTIsSet;}
-    bool isGunTimeSet(){return gunTimeIsSet;}
-    bool isGunPeriodSet(){return gunPeriodIsSet;}
-    bool isNumOfESet(){return enumIsSet;}
-    bool isNumOfBunchSet(){return bnumIsSet;}
-    bool isMTSet(){return mtIsSet;}
-    bool isThCountSet(){return thCountIsSet;}
-    bool isR1Set(){return r1IsSet;}
-    bool isR2Set(){return r2IsSet;}
-    bool isEinSet(){return EinIsSet;}
-    bool isEinStdSet(){return EinStdIsSet;}
-    bool isTargetEnSet(){return targetEnSet;}
-    bool isOutputSet(){return outputIsSet;}
-    bool areThereMagnets(){return magnets.size() != 0;}
-    bool debugMode(){return debug_mode;}
+    bool isEmaxSet();
+    bool isFreqSet();
+    bool isPhaseLagSet();
+    bool isEPathSet();
+    bool isBPathSet();
+    bool isPPathSet();
+    bool isCPathSet();
+    bool isSTimeSet();
+    bool isETimeSet();
+    bool isdTSet();
+    bool isGunTimeSet();
+    bool isGunPeriodSet();
+    bool isNumOfESet();
+    bool isNumOfBunchSet();
+    bool isMTSet();
+    bool isThCountSet();
+    bool isR1Set();
+    bool isR2Set();
+    bool isEinSet();
+    bool isEinStdSet();
+    bool isTargetEnSet();
+    bool isOutputSet();
+    bool areThereMagnets();
+    bool debugMode();
 
-    void logConfiguration(std::string logpath){
-        fin.open(filepath, std::ios::in);
-        std::string line;
-        DataStorage configStorage(logpath);
-        configStorage.open();
-        do{
-            std::getline(fin, line);
-            configStorage << line << "\n";
-        }while( !fin.eof() );
-        fin.close();
-        configStorage.close();
-    }
-
-
-    void getConfiguration(){
-        fin.open(filepath, std::ios::in);
-        std::string cmd;
-        do{
-            std::getline(fin, cmd);
-            int i = 0;
-            for(; i < endofconfig ; i++){
-                if (cmd.find("#", 0) != std::string::npos){ 
-                    i = -1;
-                    break; 
-                }
-                else if (cmd.find(available_config[i], 0) != std::string::npos) {
-                    break;
-                }
-            }
-            switch (i)
-            {
-            case emax:
-                Emax = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                EmaxIsSet = true;
-                break;
-            case frequency:
-                freq = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                freqIsSet = true;
-                break;
-            case phaselag:
-                phase_lag = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                phaseLagIsSet = true;
-                break;
-            case epath:
-                cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                #ifdef __APPLE__
-                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
-                #endif
-                e_path = cmd;
-                epathIsSet = true;
-                break;
-            case bpath:
-                cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                #ifdef __APPLE__
-                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
-                #endif
-                b_path = cmd;
-                bpathIsSet = true;
-                break;
-            case cpath:
-                cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                #ifdef __APPLE__
-                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
-                #endif
-                c_path = cmd;
-                cpathIsSet = true;
-                break;
-            case starttime:
-                stime = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                sTimeIsSet = true;
-                break;
-            case endtime:
-                etime = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() ) ;
-                eTimeIsSet = true;
-                break;
-            case dt:
-                dT = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                dTIsSet = true;
-                break;
-            case guntime: 
-                gun_time = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                gunTimeIsSet = true;
-                break;
-            case _enum: 
-                num_of_e = atoll( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                enumIsSet = true;
-                break;
-            case multh:
-                multi_thread = atoi( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                mtIsSet = true;
-                break;
-            case thcount: 
-                th_count = atoi( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                thCountIsSet = true;
-                mtIsSet = true;
-                multi_thread = true;
-                break;
-            case _r1:
-                r1 = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                r1IsSet = true;
-                break;
-            case _r2:
-                r2 = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                r2IsSet = true;
-                break;
-            case ein:
-                Ein = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                EinIsSet = true;
-                break;
-            case ein_std:
-                EinStd = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                EinStdIsSet = true;
-                break;
-            case addmagnet:
-                if(!magRotIsSet){ break; }
-                magB = atof( cmd.substr( cmd.find('=', 0) + 1, cmd.find(',', 0) - 1).c_str() );
-                cmd = cmd.substr( cmd.find(',', 0) + 1, 50);
-                magR = atof( cmd.substr(0, cmd.find(',', 0) - 1).c_str() );
-                cmd = cmd.substr( cmd.find('<', 0) + 1, cmd.find('>', 0) - 1);
-                magdist = atof ( cmd.c_str() );
-                magpos = vector3d( -magdist, 0, 0);
-                magpos.rotate(vector3d(0,0,1), (180 - 2*mag_rotation) * ( magnets.size()+1 ) + mag_rotation);
-                magnets.push_back(Magnet(magB, magR, magpos));
-                break;
-            case magrotation:
-                mag_rotation = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                magRotIsSet = true;
-                break;
-            case bunchnum:
-                num_of_bunch = atoll( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                bnumIsSet = true;
-                break;
-            case gunperiod:
-                gun_period = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                gunPeriodIsSet = true;
-                break;
-            case targeten:
-                target_energy = atof( cmd.substr( cmd.find('=', 0) + 1, 20).c_str() );
-                targetEnSet = true;
-                break;
-            case output:
-                cmd = cmd.substr( cmd.find('=', 0) + 1, 50);
-                #ifdef __APPLE__
-                    cmd.erase(remove(cmd.begin(), cmd.end(), ' '), cmd.end());
-                #endif
-                _output = cmd;
-                outputIsSet = true;
-                break;
-            case debug:
-                debug_mode = true;
-                break;
-            default:
-                break;
-            }
-        } while( !fin.eof() );
-        fin.close();
-    }
-
-    
+    void logConfiguration(std::string logpath);
+    void getConfiguration();
 
 };
 

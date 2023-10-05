@@ -1,14 +1,13 @@
+#ifndef BUNCH_H
+#define BUNCH_H
+
 #include "../basic/consts.h"
 #include "../basic/vector.h"
 #include "../fields/fields.h"
-#include "../gnuplot/gnuplot.h"
-#include "electron.h"
+#include "../interact/interactor.h"
+#include "particle.h"
 
 using namespace std;
-
-
-#ifndef BUNCH_H
-#define BUNCH_H
 
 
 typedef pair<double, double> max_energy_rms_pair;
@@ -27,6 +26,7 @@ private:
 public:
     vector<Bunch> subBunchs;
     vector<shared_ptr<Electron>> e;
+    /*
     Bunch(unsigned int num_of_electrons, double Ein, vector3d gunpos, vector3d gundir, double gun_ns){
         E_in = Ein;
         e_count = num_of_electrons;
@@ -34,31 +34,27 @@ public:
         _LEGACY_gun_pos = gunpos;
         _LEGACY_gun_dir = gundir;
         for(int i = 0 ; i < num_of_electrons ; i++){
-            e.push_back(make_shared<Electron>(Electron(Ein, gunpos, gundir)));
-            e.back()->setLogSize(1000);
+            e.push_back(make_shared<Electron>(Electron(gunpos, gundir, Ein, )));
+            e.back()->SetLogSize(1000);
         }
         _LEGACY_ns_between = initial_length_ns/(e_count - 1);
-    }
+    }*/
 
     Bunch(){
         e_count = 0;
     }
 
-    /*Bunch(){
-        Bunch(1, 0.4, vector3d(-0.753,0,0), vector3d(1,0,0), 0);
-    }*/
-
     void saveInfo(double time){
         for(auto i : e){
-            i->saveInfo(time);
+            i->SaveInfo(time);
         }
     }
 
     Electron& getFastest();
 
     void AddElectron(double Ein, const vector3d& gunpos, const vector3d& gundir, double fire_time){
-        e.push_back(make_shared<Electron>(Ein, gunpos, gundir, fire_time));
-        e.back()->setLogSize(1000);
+        e.push_back(make_shared<Electron>(gunpos, gundir, Ein, fire_time));
+        e.back()->SetLogSize(1000);
         e_count = e.size();
     }
 
@@ -68,14 +64,14 @@ public:
     }
 
     void setEntryTime(double entry_time){this->entry_time = entry_time;}
-    void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i]->setEin(E_in);}}
+    void setEin(double E_in){ this->E_in = E_in ; for (int i = 0; i < e.size() ; i++){ e[i]->SetEin(E_in);}}
     void setNSLen(double len){ initial_length_ns = len; _LEGACY_ns_between = initial_length_ns/(e_count - 1);}
     double getEin(){ return E_in;}
     void interact(RFField& E, MagneticField& B, const double time, double time_interval);
-    void divide(unsigned int num);
-    void concat();
-    Bunch& subBunch(unsigned int index);
-    vector<Bunch*> subBunchPtr();
+    //void divide(unsigned int num);
+    //void concat();
+    //Bunch& subBunch(unsigned int index);
+    //vector<Bunch*> subBunchPtr();
     double E_ave();
     double E_rms();
     void reset();
@@ -88,7 +84,7 @@ public:
         for(int i = 0; i < e.size() && i < pathStorage.size(); i++){
             pathStorage[i].open();
             pathStorage[i] << header << "\n";
-            e[i]->loge(pathStorage[i]);
+            e[i]->Log(pathStorage[i]);
             pathStorage[i].close();
         }
     }

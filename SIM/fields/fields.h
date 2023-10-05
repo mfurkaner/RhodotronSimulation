@@ -1,14 +1,13 @@
 
 #include "../basic/vector.h"
 #include "../basic/consts.h"
-#include "../gnuplot/gnuplot.h"
+#include "../basic/datastorage.h"
 #include <memory>
 #include <map>
 
 #ifndef FIELDS_H
 #define FIELDS_H
 
-class Electron;
 
 class RFField{
 protected:
@@ -23,8 +22,8 @@ public:
     virtual vector3d getEfield(vector3d& position) const {return vector3d(0,0,0);}              // FIX
     double getEfield(double R)const{ return 0;}                         // FIX
     virtual int log(DataStorage& rf, double time, bool end = false){return 0;}             // FIX
-    vector3d actOn(Electron& e);    
-    vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);                  
+    //vector3d actOn(Electron& e);    
+    //vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);                  
     
 
     void setFreq(double freq){ frequency = freq;}
@@ -56,8 +55,8 @@ public:
 
     vector3d getEfield(vector3d& position) const override;
     double getEfield(double R) const;
-    vector3d actOn(Electron& e);
-    vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);    
+    //vector3d actOn(Electron& e);
+    //vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);    
     void update(double time) override; 
 
     int log(DataStorage& rf, double time, bool end = false) override;
@@ -111,7 +110,6 @@ private:
     RFFieldSnapshot _fieldMaxValue;
     double _mult_time_coeff;
 
-    double _current_time;
 public:
     ImportedRFField(double phaselag):RFField(phaselag){}
     vector3d getEfield(vector3d& position) const override;
@@ -136,7 +134,7 @@ class Magnet{
     double B;
     Magnet(){};
     Magnet(double B, double r, vector3d position) : r(r),  position(position), B(B){}
-    double getOptimalB(double E, double minB, double maxB, double stepsize);           // use as if the magnet is rotated like the first magnet
+    //double getOptimalB(double E, double minB, double maxB, double stepsize);           // use as if the magnet is rotated like the first magnet
 };
 
 class MagneticField{
@@ -153,8 +151,8 @@ public:
     void addMagnet(double B, double r, vector3d position);
     void addMagnet(Magnet m);
     vector3d getField(vector3d position) const;
-    vector3d actOn(Electron& e);
-    vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);        
+    //vector3d actOn(Electron& e);
+    //vector3d actOnAndGetRungeKuttaCoef(Electron& e, double dt);        
     vector3d getJerk(vector3d pos, vector3d vel, vector3d acc);
     void log(DataStorage& magnet);
     std::vector<double> getRelativeEnterDistance(){return relativeEnterDistance;}

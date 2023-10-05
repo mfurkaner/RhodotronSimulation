@@ -29,28 +29,17 @@ double Bunch::E_rms(){
 void Bunch::interact(RFField& E, MagneticField& B, const double time, double time_interval){
     for(int i = 0; i < e.size() ; i++){
 
-        #ifdef LEAP_FROG
-        e[i]->interactLF(E, B, time_interval);
-        #endif
+        //#ifdef LEAP_FROG
+        Interactor::q_EM_interaction_LF(*e[i], E, B, time_interval);
+        //#endif
 
         #ifdef RUNGE_KUTTA
-        e[i]->interactRK(E, B, time, time_interval);
+        Interactor::q_EM_interaction_RK(*e[i], E, B, time_interval);
         #endif
 
     }
 }
-
-void Bunch::divide(unsigned int num){
-    for(int i = 0; i < num ; i++){
-        Bunch sub( i ? e_count/num : e_count/num + e_count%num, E_in, _LEGACY_gun_pos, _LEGACY_gun_dir, initial_length_ns );
-        // settings
-        for(int j = 0 ; j < sub.e_count ; j++){
-            sub.e.push_back( e.at( (i ? (e_count/num)*i + e_count%num : 0)  + j ) );
-        }
-        subBunchs.push_back(sub);
-    }
-}
-
+/*
 void Bunch::concat(){
     while( !e.empty() ) e.pop_back();
     for(int i = 0; i < subBunchs.size(); i++){
@@ -73,7 +62,7 @@ vector<Bunch*> Bunch::subBunchPtr(){
         ptrv.push_back(&subBunchs[i]);
     }
     return ptrv;
-}
+}*/
 
 void Bunch::print_summary(){
   //cout << "Electron with the most energy : " << index_fastest + 1 << ") " << e[index_fastest]->Et - E0 << " MeV,\tE_ave of bunch : "<< E_ave() << " MeV,\tRMS of bunch : " << E_rms() <<  " MeV" << endl;
@@ -86,7 +75,7 @@ void Bunch::print_bunch_info(){
         //cout << "** ";
         }
         //cout << "Electron " << i+1 << ":" << endl;
-        e[i]->print_electron_info();
+        e[i]->PrintInfo();
     }
     print_summary();
 }

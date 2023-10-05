@@ -57,7 +57,7 @@ std::istream& operator>>(std::istream& stream, ElectronSnapshot& e_snapshot){
 
         float time = rf_snapshot.time;
         std::streampos prevpos;
-        int count = 0;
+        //int count = 0;
         while (!stream.eof()) {
             prevpos = stream.tellg();
 
@@ -89,7 +89,7 @@ std::istream& operator>>(std::istream& stream, ElectronSnapshot& e_snapshot){
             if(point.magnitude > rf_snapshot.max){
                 rf_snapshot.max = point.magnitude;
             }
-            count++;
+            //count++;
         }
 
         return stream;

@@ -1,13 +1,12 @@
 #include "fields.h"
 #include <memory>
-#include "../particles/electron.h"
 
 #pragma region RF_FIELD
 /////////           RF FIELD
 void RFField::update(double time){
 
 }
-
+/*
 vector3d RFField::actOn(Electron& e){
     vector3d Efield = getEfield(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
@@ -47,7 +46,7 @@ vector3d RFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
-}
+}*/
 
 #pragma endregion RF_FIELD
 
@@ -60,7 +59,7 @@ CoaxialRFField::~CoaxialRFField(){
         delete _childs[i];
     }
 }
-
+/*
 vector3d CoaxialRFField::actOn(Electron& e){
     vector3d Efield = getEfield(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
@@ -100,7 +99,7 @@ vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
-}
+}*/
 
 double CoaxialRFField::E_radial(double R)const{
     if (R == 0){ return 0;}
@@ -135,7 +134,7 @@ int CoaxialRFField::log( DataStorage& rf , double time, bool end){
     return count;
 }
 
-shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
+std::shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
     auto _copy = std::make_shared<CoaxialRFField>();
     _copy->E = E;
     _copy->r1 = r1;
@@ -210,7 +209,6 @@ void ImportedRFField::SetEmaxInLine(double theta, double newEmax){
     line.rotate(around, theta);
 
     double Emax_in_line = 0;
-    double Emax = 0;
 
     for(double r = _fieldMaxValue.xmin; r <= _fieldMaxValue.xmax;){
         vector3d pos = line * r;
@@ -378,6 +376,7 @@ void ImportedRFField::update(double time){
 
 
 /////////           Magnet
+/*
 double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
     Electron e;
     e.Et = E + E0;
@@ -402,7 +401,7 @@ double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
     }
     //cout << min_r << "  ";
     return optB;
-}
+}*/
 
 /////////           MAGNETIC FIELD
 MagneticField::~MagneticField(){
@@ -454,7 +453,7 @@ vector3d MagneticField::getField(vector3d position)const{
     }
     return vector3d(0, 0, magnets[magnet_index].B);
 }
-
+/*
 vector3d MagneticField::actOn(Electron& e){
     if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
@@ -498,7 +497,7 @@ vector3d MagneticField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
-}
+}*/
 
 
 vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){
@@ -525,7 +524,7 @@ void MagneticField::log(DataStorage& magnet){
 }
 
 
-shared_ptr<MagneticField> MagneticField::LightWeightCopy(){
+std::shared_ptr<MagneticField> MagneticField::LightWeightCopy(){
     auto newMagneticField = std::make_shared<MagneticField>();
     newMagneticField->magnets = magnets;
     return newMagneticField;

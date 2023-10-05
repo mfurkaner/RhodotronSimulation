@@ -6,9 +6,6 @@
 #include "gui_data_types.h"
 
 
-//namespace RhodotronSimulatorGUI::data{
-
-
     class DataProvider{
         bool _data_filled = false;
 

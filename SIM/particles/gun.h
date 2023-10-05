@@ -1,7 +1,7 @@
 #include "../basic/consts.h"
 #include "../basic/vector.h"
 #include "../fields/fields.h"
-#include "../gnuplot/gnuplot.h"
+#include "../basic/datastorage.h"
 #include "bunch.h"
 #include <memory>
 

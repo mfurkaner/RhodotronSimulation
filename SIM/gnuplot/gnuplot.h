@@ -1,3 +1,6 @@
+#ifndef GNUPLOT_H
+#define GNUPLOT_H
+
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -5,40 +8,7 @@
 #include <unistd.h> 
 #include <fcntl.h> 
 #include <string.h>
-
-#ifndef GNUPLOT_H
-#define GNUPLOT_H
-
-class DataStorage{
-    public:
-    std::ofstream fout;
-    std::string filepath;
-    bool fileIsOpen = false;
-
-
-    DataStorage(std::string filepath):filepath(filepath){}
-    DataStorage(const DataStorage& other){
-        filepath = other.filepath;
-        fileIsOpen = other.fileIsOpen;
-    }
-    ~DataStorage(){ if (fileIsOpen) fout.close();}
-
-    void open(){
-        fout.open(filepath, std::ios::out);
-        fileIsOpen = true;
-    }
-    void close(){
-        fout.close();
-        fileIsOpen = false;
-    }
-
-    template<typename T>
-    DataStorage& operator<<(T in){
-        fout << in;
-        return *this;
-    }
-
-};
+#include "../basic/datastorage.h"
 
 class Gnuplot{
     FILE *gnupipe = NULL;

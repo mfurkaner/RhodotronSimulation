@@ -2,6 +2,15 @@
 #include "../basic/vector.h"
 
 
+
+    std::pair<vector3d, vector3d> Interactor::q_q_interaction_LF(ChargedParticle& p1,ChargedParticle& p2, double time_interval){
+        vector3d r = p1.pos-p2.pos;
+        vector3d F_m =  r.direction() * ((_k * p1.q * p2.q )/ (r.magnitude2() * _emass_));
+        vector3d acc1 = (F_m - p1.vel*(p1.vel*F_m)*_inv_c_sq)*p1.gamma_inv();     // Calculate a vector
+        vector3d acc2 = ((F_m - p2.vel*(p2.vel*F_m)*_inv_c_sq)*p2.gamma_inv() )* -1;     // Calculate a vector
+        return std::make_pair(acc1, acc2);
+    }
+
     vector3d Interactor::q_E_interaction_LF(Electron& e, const RFField& E, double time_interval){
         vector3d Efield = E.getEfield(e.pos);                            // Calculate E vector
         vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector

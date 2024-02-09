@@ -142,7 +142,7 @@ class RhodotronSimulator : public Simulator{
 private:
     double R1;
     double R2;
-    CoaxialRFField E_field;
+    ImportedRFField E_field;
     MagneticField B_field;
 
     void _runMT();
@@ -150,15 +150,15 @@ private:
 public:
     RhodotronSimulator(double phase_lag) : Simulator(){
         this->phase_lag = phase_lag;
-        E_field = CoaxialRFField(phase_lag);
-        E_field.setR1(R1);
-        E_field.setR2(R2);
-        E_field.setEmaxPos(R1);
+        E_field = ImportedRFField(phase_lag);
+        //E_field.setR1(R1);
+        //E_field.setR2(R2);
+        //E_field.setEmaxPos(R1);
         setGunDirection(vector3d(1,0,0));
         setGunPosition(vector3d(-R2,0,0));
     }
     RhodotronSimulator(Configuration& config) : Simulator(){
-        E_field = CoaxialRFField(phase_lag);
+        E_field = ImportedRFField(phase_lag);
         getConfig(config);
         setGunDirection(vector3d(1,0,0));
         UIThreadArgs uha;
@@ -169,6 +169,8 @@ public:
         uha.state_ptr = &state;
         uha.state_mutex = state_mutex;
         ui_handler.SetUIThreadArgs(uha);
+
+        MULTI_THREAD = config.getMultiThread();
     }
 
     void StartUIHandler(){
@@ -189,14 +191,14 @@ public:
         this->phase_lag = phase_lag;
         E_field.setPhaseLag(phase_lag);
     }
-    void setEmax(double E_max){E_field.setEmax(E_max); Emax = E_max;}
+    void setEmax(double E_max){}//E_field.setEmax(E_max); Emax = E_max;}
     void setR1(double r1){
         R1 = r1;
-        E_field.setR1(R1);
+        //E_field.setR1(R1);
     }
     void setR2(double r2){
         R2 = r2;
-        E_field.setR2(R2);
+        //E_field.setR2(R2);
         setGunPosition(vector3d(-R2,0,0));
     }
     void addMagnet(double B, double r, vector3d position);

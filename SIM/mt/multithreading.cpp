@@ -3,12 +3,13 @@
 
 extern mutex mutex_lock;
 
-void threadLoop(ThreadArguments thread_arguments){
+void e_EM_interactorThreadLoop(ThreadArguments thread_arguments){
     uint64_t count = 0;
 
     double sim_time = thread_arguments.start_time;
 
     while(sim_time < thread_arguments.end_time + thread_arguments.time_interval){
+        if(*thread_arguments.wait) {std::this_thread::yield(); continue;}
         if(*thread_arguments.terminate) return;
         thread_arguments.E->update(sim_time);
         thread_arguments.i_args.time = sim_time;
@@ -22,7 +23,7 @@ void threadLoop(ThreadArguments thread_arguments){
             }
         }
 
-        interactForSingleThread(thread_arguments.i_args);
+        e_EM_interaction_forSingleThread(thread_arguments.i_args);
         // save electron info here
         sim_time+= thread_arguments.time_interval;
         count++;
@@ -32,7 +33,7 @@ void threadLoop(ThreadArguments thread_arguments){
     thread_arguments.parent_notifier_mutex->unlock();
 }
 
-void interactForSingleThread(InteractArguments& interact_arguments){
+void e_EM_interaction_forSingleThread(InteractArguments& interact_arguments){
     auto e_list = interact_arguments.e_list.get();
     auto e_size = e_list->size();
     //auto E = interact_arguments.E.get();
@@ -63,7 +64,6 @@ void saveElectronInfoForSingleThread(InteractArguments& interact_arguments){
     }
 }
 
-
 void MultiThreadEngine::setupPool( double _time_interval, double _start_time, double _end_time, Gun& gun, 
     CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron>>>>& e_list){
     threads.reserve(thread_count);
@@ -81,12 +81,12 @@ void MultiThreadEngine::setupPool( double _time_interval, double _start_time, do
         thread_arguments.terminate = child_terminate[i];
         thread_arguments.parent_notifier_mutex = child_notifier_mutexes[i];
         thread_arguments.current_thread_time = child_times[i];
-        threads.push_back(thread(threadLoop, thread_arguments));
+        threads.push_back(thread(e_EM_interactorThreadLoop, thread_arguments));
     }
 }
 
 void MultiThreadEngine::stopPool(){
-    for(int i = 0; i < threads.size(); i++){
+    for(int i = 0; i < child_terminate.size(); i++){
         *child_terminate[i] = true;
     }
     join();

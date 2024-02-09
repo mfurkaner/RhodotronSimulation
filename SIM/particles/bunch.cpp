@@ -27,17 +27,35 @@ double Bunch::E_rms(){
 
 
 void Bunch::interact(RFField& E, MagneticField& B, const double time, double time_interval){
-    for(int i = 0; i < e.size() ; i++){
+    //vector3d tot_accs[e_count];
+    std::vector<vector3d> tot_accs(e_count, vector3d());
+    /*
+    for(int i = 0; i < e.size(); i++){
+        for(int j = i + 1; j < e.size(); j++){
+            auto accs = Interactor::q_q_interaction_LF(*e[i], *e[j], time_interval);
 
+            tot_accs[i] += accs.first;
+            tot_accs[j] += accs.second;
+        }
+    }
+    */
+    for(int i = 0; i < e.size() ; i++){
+        vector3d acc;
         //#ifdef LEAP_FROG
-        Interactor::q_EM_interaction_LF(*e[i], E, B, time_interval);
+        acc = Interactor::q_EM_interaction_LF(*e[i], E, B, time_interval);
         //#endif
 
         #ifdef RUNGE_KUTTA
         Interactor::q_EM_interaction_RK(*e[i], E, B, time_interval);
         #endif
 
+        tot_accs[i] += acc;
+
+        e[i]->move(time_interval/2);
+        e[i]->accelerate(tot_accs[i], time_interval);
+        e[i]->move(time_interval/2);
     }
+
 }
 /*
 void Bunch::concat(){

@@ -68,12 +68,12 @@ void RhodotronSimulator::getConfig(Configuration& config){
 
 
 void RhodotronSimulator::updateSimulation(){
-    E_field = CoaxialRFField(phase_lag);
-    E_field.setEmax(Emax);
-    E_field.setEmaxPos(R1);
+    E_field = ImportedRFField(phase_lag);
+    //E_field.setEmax(Emax);
+    //E_field.setEmaxPos(R1);
     E_field.setFreq(freq);
-    E_field.setR1(R1);
-    E_field.setR2(R2);
+    //E_field.setR1(R1);
+    //E_field.setR2(R2);
     E_field.update(0);
     
     gun.setEin(Ein);
@@ -92,7 +92,7 @@ void RhodotronSimulator::run(){
     logBfield();     
 
     if (MULTI_THREAD)
-        _runMT();
+        _runST();
     else
         _runST();
 
@@ -106,7 +106,7 @@ void RhodotronSimulator::stop(){
     }
     logPaths();
 }
-
+/*
 void RhodotronSimulator::_runMT(){
 
     gun.fireAllWithFireTimesMT();
@@ -135,9 +135,10 @@ void RhodotronSimulator::_runMT(){
     }
     MTEngine.join();
     
-}
+}*/
 
 void RhodotronSimulator::_runST(){
+    E_field.Import("../bin/xy_data");
     while ( simulation_time < end_time + time_interval ){   
         E_field.update(simulation_time);
         

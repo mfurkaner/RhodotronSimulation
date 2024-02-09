@@ -27,6 +27,7 @@ struct InteractArguments{
 
 struct ThreadArguments{
     shared_ptr<bool> terminate;
+    shared_ptr<bool> wait;
     shared_ptr<mutex> parent_notifier_mutex;
     shared_ptr<double> current_thread_time;
 
@@ -62,10 +63,12 @@ struct ThreadArguments{
 
 };
 
-void interactForSingleThread(InteractArguments& interact_arguments);
+void e_EM_interaction_forSingleThread(InteractArguments& interact_arguments);
 void saveElectronInfoForSingleThread(InteractArguments& interact_arguments);
 
-void threadLoop(ThreadArguments thread_arguments);
+void e_EM_interactorThreadLoop(ThreadArguments thread_arguments);
+
+void e_e_interactor_thread();
 
 class MultiThreadEngine{
     std::vector<thread> threads = {};
@@ -73,6 +76,8 @@ class MultiThreadEngine{
     std::vector<shared_ptr<mutex>> child_notifier_mutexes;
     std::vector<shared_ptr<double>> child_times; 
     unsigned int thread_count = 0;
+
+    void _Handle_ee_Interactions();
 
     public:
     MultiThreadEngine() {}
@@ -82,6 +87,7 @@ class MultiThreadEngine{
 
     void setupPool( double _time_interval, double _start_time, double _end_time, Gun& gun, 
         CoaxialRFField& RF, MagneticField& B, vector<shared_ptr<vector<shared_ptr<Electron>>>>& e_list);
+
 
     void stopPool();
 

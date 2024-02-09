@@ -32,7 +32,7 @@ int main(){
 
 #include "../SIM/fields/fields.cpp"
 #include "../SIM/basic/vector.cpp"
-#include "../SIM/particles/electron.cpp"
+#include "../SIM/particles/particle.cpp"
 
 void DrawXZPlaneData(){
     std::cout << "Importing field..." << std::endl;
@@ -140,7 +140,7 @@ void DrawXZPlaneData(){
 void DrawXYPlaneData(){
     std::cout << "Importing field..." << std::endl;
     ImportedRFField importedField(90);
-    importedField.Import("../fieldreducer/examples/E.txt_clean.dat");
+    importedField.Import("../bin/xy_data");
     importedField.update(0);
     importedField.SetEmaxInLine(60, 1.0);
 
@@ -233,5 +233,5 @@ void DrawXYPlaneData(){
 
 
 void fieldview(){
-    DrawXZPlaneData();
+    DrawXYPlaneData();
 }

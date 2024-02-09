@@ -2,11 +2,12 @@ MACHINE = $(shell uname -s)
 LINUX  = Linux
 MAC    = Darwin
 
-MSG_BUILDING_SIM_LIBS=$(info    ********** Building Rhodotron Simulation Engine Libraries **********)
-MSG_BUILDING_SIM=$(info    ********** Building Rhodotron Simulation Engine **********)
-MSG_BUILDING_GUI_LIBS=$(info    **********Building Rhodotron Simulation GUI Libraries **********)
-MSG_BUILDING_GUI=$(info    ********** Building Rhodotron Simulation GUI **********)
-MSG_BUILDING_FR=$(info    ********** Building FieldReducer **********)
+MSG_BUILDING_SIM_LIBS=$(info        ********** Building Rhodotron Simulation Engine Libraries **********)
+MSG_BUILDING_SIM=$(info       ********** Building Rhodotron Simulation Engine **********)
+MSG_BUILDING_SIM_DBG=$(info        ********** Building Rhodotron Simulation Engine Debug Version **********)
+MSG_BUILDING_GUI_LIBS=$(info       **********Building Rhodotron Simulation GUI Libraries **********)
+MSG_BUILDING_GUI=$(info       ********** Building Rhodotron Simulation GUI **********)
+MSG_BUILDING_FR=$(info        ********** Building FieldReducer **********)
 
 CPP=clang++
 CXX=$(shell root-config --cxx) -I. -O2 -std=c++17  $(shell `root-config --incdir`)
@@ -118,12 +119,14 @@ e_mbgl:
 	$(MSG_BUILDING_GUI_LIBS)
 e_mbs:
 	$(MSG_BUILDING_SIM)
+e_mbs_d:
+	$(MSG_BUILDING_SIM_DBG)
 e_mbg:
 	$(MSG_BUILDING_GUI)
 e_mbfr:
 	$(MSG_BUILDING_FR)
 
-all: e_mbsl libs e_mbgl guilibs cp_shared e_mbs release e_mbg gui e_mbfr fieldreducer
+all: e_mbsl libs e_mbgl guilibs cp_shared e_mbs release e_mbs_d debug e_mbg gui e_mbfr fieldreducer
 
 clean: 
 	rm -rf lib/** bin/lib/** *.o SIM/**/*.o *.exe GUI/*.o GUI/**/*.o GUI/*.o GUI/**/**/*.o GUI/**/**/**/*.o bin/*.exe

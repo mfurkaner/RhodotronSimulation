@@ -111,6 +111,7 @@ private:
     double _mult_time_coeff;
 
 public:
+    ImportedRFField() {}
     ImportedRFField(double phaselag):RFField(phaselag){}
     vector3d getEfield(vector3d& position) const override;
     double getEfield(double R) const = delete;

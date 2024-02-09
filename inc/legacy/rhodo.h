@@ -17,8 +17,8 @@ extern bool NOTIFICATIONS;
 extern int MAX_THREAD_COUNT;
 extern bool MULTI_THREAD;
 
-const double emass = 9.10938356e-31;    // kg
-const double echarge = 1.60217662e-19;  //coulomb
+const double _emass_ = 9.10938356e-31;    // kg
+const double _echarge_ = 1.60217662e-19;  //coulomb
 const double eQMratio = -1.75882e11;    // C/kg
 
 #define deg_to_rad  0.01745

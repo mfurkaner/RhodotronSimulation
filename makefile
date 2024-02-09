@@ -132,6 +132,7 @@ clean:
 	rm -rf lib/** bin/lib/** *.o SIM/**/*.o *.exe GUI/*.o GUI/**/*.o GUI/*.o GUI/**/**/*.o GUI/**/**/**/*.o bin/*.exe
 
 libs: $(STATIC_OBJS) $(SHARED_OBJS) 
+	mkdir -p lib
 	ar cr lib/libRhodoVector.a SIM/basic/vector.o
 	ar cr lib/libRhodoDataStorage.a SIM/basic/datastorage.o
 	ar cr lib/libRhodoConfig.a SIM/config/configuration.o SIM/basic/datastorage.o
@@ -141,11 +142,13 @@ libs: $(STATIC_OBJS) $(SHARED_OBJS)
 	$(CPP) -shared $(CPPSHAREDFLAGS) -o lib/libRhodoSimUIhandler.so SIM/uihandler/ui_handler.o
 
 guilibs: $(GUI_DOBJS_NEW) $(SHARED_OBJS_GUI)
+	mkdir -p lib
 	ar cr lib/libRhodoGUIhelpers.a GUI/analyzer/gui_analyzer_g.o GUI/comm/sim_server_g.o GUI/msgbox/gui_msgbox_handler_g.o GUI/renderer/gui_renderer_g.o
 	ar cr lib/libRhodoGUIframes.a $(GUI_DOBJS_FRAMES)
 	$(CPP) -shared $(CPPSHAREDFLAGS) -o lib/libRhodoGUIdataprovider.so GUI/data/gui_sim_dataprovider.o lib/libRhodoVector.a	
 
 cp_shared:
+	mkdir -p lib
 	cp lib/libRhodoRender.so bin/lib/libRhodoRender.so
 	cp lib/libRhodoSimUIhandler.so bin/lib/libRhodoSimUIhandler.so 
 	cp lib/libRhodoGUIdataprovider.so bin/lib/libRhodoGUIdataprovider.so

@@ -26,7 +26,6 @@
         ((MainFrame*)parent)->AnalyzePressed();
     }
     void MainButtonsFrame::QuitPressed(){
-        std::cout <<"...............quit\n";
         ((MainFrame*)parent)->QuitPressed();
     }
 
@@ -45,15 +44,13 @@
     }
 
     void MainButtonsFrame::SetupButtons(){
-//      for (int i = 0; i < buttons.size(); i++){
-//          buttons[i]->Connect("Clicked()", "MainButtonsFrame", this, button_functions.at(i).c_str());
-//      }
-       buttons[0]->Connect("Clicked()", "MainButtonsFrame", this, "ConfigurationPressed()");
-       buttons[5]->Connect("Clicked()", "MainButtonsFrame", this, "QuitPressed()");
-       ULong_t yellow; gClient->GetColorByName("yellow", yellow);
-       buttons[5]->ChangeBackground(yellow);
-
-
+      for (int i = 0; i < buttons.size(); i++){
+          buttons[i]->Connect("Clicked()", "MainButtonsFrame", this, button_functions.at(i).c_str());
+      }
+//       buttons[0]->Connect("Clicked()", "MainButtonsFrame", this, "ConfigurationPressed()");
+//       buttons[5]->Connect("Clicked()", "MainButtonsFrame", this, "QuitPressed()");
+//       ULong_t yellow; gClient->GetColorByName("yellow", yellow);
+//       buttons[5]->ChangeBackground(yellow);
     }
 
     void MainButtonsFrame::HideByName(const std::string& name){

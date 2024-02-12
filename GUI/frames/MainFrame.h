@@ -92,8 +92,6 @@
         void NavigateToSimalateFrame();
 
     private:
-      TGTextButton        *abutton[2];
-
 ClassDef (MainFrame,0)
     };
 

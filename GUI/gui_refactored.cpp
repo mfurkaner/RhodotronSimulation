@@ -1,29 +1,16 @@
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <spawn.h>
-#include <sched.h>
 #include <iostream>
-#include <iomanip>
-#include <bitset>
-#include <fstream>
 #include "TSystem.h"
 #include "frames/MainFrame.h"
 
 #define INTERPRETED 0
-#define EZ 0
 
 #if (INTERPRETED == 0)
     #include "comm/signal.h"
     #include "TApplication.h"
 #endif
 
-#if (INTERPRETED == 1 || EZ == 1)
+#if (INTERPRETED == 1)
     #include "comm/signal.h"
-    #include "frames/gui_main_frame.cpp"
     #include "frames/ribbon_frame/gui_main_buttons.cpp"
     #include "frames/config_frame/gui_config_frame.cpp"
     #include "frames/config_frame/B_config_frame/gui_B_config_frame.cpp"
@@ -54,7 +41,6 @@ int main(int argc, char **argv){
     gSystem->ProcessEvents();
     //gSystem->DispatchOneEvent();
     auto main_frame = new MainFrame( gClient->GetRoot());
-    gSystem->Sleep(100);
     main_frame->SetupFrame();
     theApp.Run();
     return 0;

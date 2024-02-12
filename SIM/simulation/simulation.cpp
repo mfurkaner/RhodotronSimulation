@@ -6,33 +6,8 @@
 void Simulator::run(){
 
     // Before starting, log the magnetic field to the mag file
-    cout << "aa you are in simulator::run " << endl;
-    //logBfield();      
-    cout << "you are in simulator::run " << endl;
-    /*                                    
-    if(MULTI_THREAD){
-        //cout << MAX_THREAD_COUNT << endl;
-        bunch.divide(MAX_THREAD_COUNT);
-    }
-    while ( simulation_time < end_time ){
-        E_field.update(simulation_time);
-        
-        if ( false && STEPS_TAKEN%log_interval() == 0 ){
-            logEfield(simulation_time, simulation_time + time_interval > end_time);
-            // every 100th step, log the E field
-            saveElectronsInfo(simulation_time);
-        }
-        if( MULTI_THREAD ){
-            
-            MTEngine.doWork(bunch.subBunchPtr(), E_field, B_field, simulation_time, time_interval);
-            MTEngine.join();
-        }
-        else{
-            gun.interact(E_field, B_field, time_interval);
-        }
-        simulation_time += time_interval;
-        STEPS_TAKEN++;
-    }*/
+    cout << "you are in simulator::run " << endl;   
+
 }
 
 void Simulator::saveElectronsInfo(double time){

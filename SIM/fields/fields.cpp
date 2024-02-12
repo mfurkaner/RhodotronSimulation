@@ -1,13 +1,12 @@
 #include "fields.h"
 #include <memory>
-#include "../particles/electron.h"
 
 #pragma region RF_FIELD
 /////////           RF FIELD
 void RFField::update(double time){
 
 }
-
+/*
 vector3d RFField::actOn(Electron& e){
     vector3d Efield = getEfield(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
@@ -47,7 +46,7 @@ vector3d RFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
-}
+}*/
 
 #pragma endregion RF_FIELD
 
@@ -60,7 +59,7 @@ CoaxialRFField::~CoaxialRFField(){
         delete _childs[i];
     }
 }
-
+/*
 vector3d CoaxialRFField::actOn(Electron& e){
     vector3d Efield = getEfield(e.pos);                            // Calculate E vector
     vector3d F_m = Efield*1E6*eQMratio;                           // Calculate F/m vector
@@ -100,7 +99,7 @@ vector3d CoaxialRFField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
-}
+}*/
 
 double CoaxialRFField::E_radial(double R)const{
     if (R == 0){ return 0;}
@@ -109,8 +108,9 @@ double CoaxialRFField::E_radial(double R)const{
 }
 
 vector3d CoaxialRFField::getEfield(vector3d& position) const{
-    double radial = E_radial( position.magnitude() );
-    return position.direction() * radial;
+    double R = sqrt( position.X()*position.X() + position.Y()*position.Y() );
+    double radial = E_radial( R );
+    return position.direction() * radial * (position.Z() == 0.0 ? 1.0 : cos(2*M_PI * position.Z()/lambda));
 }
 
 double CoaxialRFField::getEfield( double R )const{
@@ -134,7 +134,7 @@ int CoaxialRFField::log( DataStorage& rf , double time, bool end){
     return count;
 }
 
-shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
+std::shared_ptr<CoaxialRFField> CoaxialRFField::Copy(){
     auto _copy = std::make_shared<CoaxialRFField>();
     _copy->E = E;
     _copy->r1 = r1;
@@ -198,15 +198,50 @@ RFFieldIndex ImportedRFField::getNearestEPosition(vector3d& position) const{
     res.y = (std::round((position.Y() - _fieldMaxValue.ymin)/step));
     res.z = (std::round((position.Z() - _fieldMaxValue.zmin)/step));
 
-    double z = _fieldMaxValue.Efield.at(res.z).z;
-    double y = _fieldMaxValue.Efield.at(res.z).field2D.at(res.y).y;
-    double x = _fieldMaxValue.Efield.at(res.z).field2D.at(res.y).field1D.at(res.x).x;
-    //std::cout << "Nearest position is " << x << " " << y << " " << z << std::endl;
-
     return res;
 }
 
 vector3d ImportedRFField::getEmaxPosition() {return _fieldMaxValue.Emax_pos;}
+
+void ImportedRFField::SetEmaxInLine(double theta, double newEmax){
+    vector3d around(0,0,1);
+    vector3d line(1,0,0);
+    line.rotate(around, theta);
+
+    double Emax_in_line = 0;
+
+    for(double r = _fieldMaxValue.xmin; r <= _fieldMaxValue.xmax;){
+        vector3d pos = line * r;
+
+        double E = getEfield(pos).magnitude();
+        if(E > Emax_in_line){
+            Emax_in_line = E;
+        }
+
+        r += _fieldMaxValue.E_field_position_step;
+    }
+    double mult_const = newEmax/Emax_in_line;
+    for(int z_i = 0 ; z_i < _fieldMaxValue.Efield.size(); z_i++){
+        for(int y_i = 0 ; y_i < _fieldMaxValue.Efield[z_i].field2D.size(); y_i++){
+            for(int x_i = 0 ; x_i < _fieldMaxValue.Efield[z_i].field2D[y_i].field1D.size(); x_i++){
+                _fieldMaxValue.Efield[z_i].field2D[y_i].field1D[x_i].E *= mult_const;
+            }
+        }
+    }
+
+    std::cout << "mult_const: " << mult_const << std::endl;
+
+}
+
+void ImportedRFField::Multiply(double mult_const){
+    for(int z_i = 0 ; z_i < _fieldMaxValue.Efield.size(); z_i++){
+        for(int y_i = 0 ; y_i < _fieldMaxValue.Efield[z_i].field2D.size(); y_i++){
+            for(int x_i = 0 ; x_i < _fieldMaxValue.Efield[z_i].field2D[y_i].field1D.size(); x_i++){
+                _fieldMaxValue.Efield[z_i].field2D[y_i].field1D[x_i].E *= mult_const;
+            }
+        }
+    }
+}
 
 void SetMinMax(double val, double& min, double& max){
     if( val < min ){
@@ -341,6 +376,7 @@ void ImportedRFField::update(double time){
 
 
 /////////           Magnet
+/*
 double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
     Electron e;
     e.Et = E + E0;
@@ -365,7 +401,7 @@ double Magnet::getOptimalB(double E, double minB, double maxB, double stepsize){
     }
     //cout << min_r << "  ";
     return optB;
-}
+}*/
 
 /////////           MAGNETIC FIELD
 MagneticField::~MagneticField(){
@@ -417,7 +453,7 @@ vector3d MagneticField::getField(vector3d position)const{
     }
     return vector3d(0, 0, magnets[magnet_index].B);
 }
-
+/*
 vector3d MagneticField::actOn(Electron& e){
     if (isInside(e.pos) == -1){
         return vector3d(0,0,0);
@@ -461,7 +497,7 @@ vector3d MagneticField::actOnAndGetRungeKuttaCoef(Electron& e, double dt){
     vector3d k4 = (F_m - e_dummy.vel*(e_dummy.vel*F_m)*_inv_c_sq)*e_dummy.gamma_inv();
 
     return (k1 + k2*2 + k3*2 + k4)/6;
-}
+}*/
 
 
 vector3d MagneticField::getJerk(vector3d pos, vector3d vel, vector3d acc){
@@ -488,7 +524,7 @@ void MagneticField::log(DataStorage& magnet){
 }
 
 
-shared_ptr<MagneticField> MagneticField::LightWeightCopy(){
+std::shared_ptr<MagneticField> MagneticField::LightWeightCopy(){
     auto newMagneticField = std::make_shared<MagneticField>();
     newMagneticField->magnets = magnets;
     return newMagneticField;

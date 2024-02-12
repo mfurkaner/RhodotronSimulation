@@ -268,8 +268,8 @@ void ImportedRFField::Import(std::string filepath){
                     Ey *= 0.000001;
                     Ez *= 0.000001;
                     SetMinMax(x, xmin, xmax);
-                    SetMinMax(y, ymin, ymax);
-                    SetMinMax(z, zmin, zmax);
+                    SetMinMax(y_child, ymin, ymax);
+                    SetMinMax(z_child, zmin, zmax);
                     double E = sqrt(Ex*Ex + Ey*Ey + Ez*Ez);
                     if(z_child == 0 && Emax < E){
                         Emax = E;

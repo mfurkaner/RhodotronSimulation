@@ -79,6 +79,47 @@ struct RFFieldOnConstZYLine{
 struct RFFieldOnConstZPlane{
     double z;
     std::vector<RFFieldOnConstZYLine> field2D;
+
+    void ShiftToRightIndexes(double xmin, double ymin, double xmax, double ymax, double step, double step_tolerance){
+        vector3d zero_vector(0,0,0);
+        std::vector<RFFieldOnConstZYLine> shiftedField2D;
+        int y_shift = 0, y_index = 0;
+        for(double y = ymin; y < ymax + step_tolerance;){
+            RFFieldOnConstZYLine line;
+            line.y = y;
+            bool line_empty = true;
+            int x_shift = 0, x_index = 0;
+            for(double x = xmin; x < xmax + step_tolerance;){
+                RFFieldOnConstXYZPoint point;
+                if(y_index < field2D.size() && x_index < field2D[y_index].size()){
+                    if(y < field2D[y_index].y + step_tolerance && x > field2D[y_index].y- step_tolerance && 
+                        x < field2D[y_index].field1D[x_index].x + step_tolerance && x > field2D[y_index].field1D[x_index].x - step_tolerance){
+
+                        point.x = field2D[y_index].field1D[x_index].x;
+                        point.E = field2D[y_index].field1D[x_index].E;
+                        x_index++;
+                        line_empty = false;
+                    }
+                    else{
+                        point.x = x;
+                        point.E = zero_vector;
+                    }
+                }
+                else{
+                    point.x = x;
+                    point.E = zero_vector;
+                }
+                line.field1D.push_back(point);
+                x+=step;
+            }
+            shiftedField2D.push_back(line);
+            y += step;
+            if(line_empty == false){
+                y_index++;
+            }
+        }
+        field2D = shiftedField2D;
+    }
 };
 
 struct RFFieldSnapshot{
